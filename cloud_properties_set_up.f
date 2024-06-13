@@ -272,6 +272,9 @@
           REAL PI0_OPPR(5, 50, 50, 13)
           REAL G0_OPPR(5, 50, 50, 13)
 
+          ! Kennedy adding cond curve interpolation
+          INTEGER MET_INDEX, LOW_MET_INDEX, HIGH_MET_INDEX, I
+          REAL, dimension(5) :: COND_CURVE_METS
           REAL DENSITY(13)
           REAL FMOLW(13)
           REAL CLOUD_MOLAR_MASSES(13)
@@ -1926,4 +1929,51 @@
       QE_OPPR(4,1:50,1:50,13)=Al2O3_PlanckMean_qext
       QE_OPPR(5,1:50,1:50,13)=Al2O3_rosselandMean_qext
 
+      ! Thomas interpolating cloud condensation curves
+      ! Temporarily define MET_INDEX (this is just to determine whether we need to interpolate)
+      WRITE(*,*), 'METALLICITY = ', METALLICITY
+      IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
+        MET_INDEX = 1
+      ELSE IF (METALLICITY .gt. 0.9 .AND. METALLICITY .lt. 1.1) THEN
+        MET_INDEX = 2
+      ELSE IF (METALLICITY .gt. 1.4 .AND. METALLICITY .lt. 1.6) THEN
+        MET_INDEX = 3
+      ELSE IF (METALLICITY .gt. 1.9 .AND. METALLICITY .lt. 2.1) THEN
+        MET_INDEX = 4
+      ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
+        MET_INDEX = 5
+      ELSE
+        ! If metallicity isnt close to one of the pre-calculated curves, interpolate between nearest 2
+        COND_CURVE_METS = (/0.0, 1.0, 1.5, 2.0, 2.5/)
+        If (METALLICITY .gt. 0.01 .AND. METALLICITY .lt. 0.99) THEN
+            LOW_MET_INDEX = 1
+            HIGH_MET_INDEX = 2
+        ELSE IF (METALLICITY .gt. 1.01	.AND. METALLICITY .lt. 1.49) THEN
+            LOW_MET_INDEX	= 2
+            HIGH_MET_INDEX = 3
+        ELSE IF (METALLICITY .gt. 1.51 .AND. METALLICITY .lt. 1.99) THEN
+            LOW_MET_INDEX = 3 
+            HIGH_MET_INDEX = 4
+        ELSE IF (METALLICITY .gt. 2.01 .AND. METALLICITY .lt. 2.49) THEN
+            LOW_MET_INDEX = 4
+            HIGH_MET_INDEX = 5
+        ELSE
+            WRITE(*,*) 'something went wrong with the metallicity, look at cloud_properties_set_up.f'
+            stop
+        END IF
+        MET_INDEX = 6
+        DO J = 1, NLAYER - 1
+            DO I = 1, NCLOUDS
+                ! WRITE(*,*) COND_CURVE_METS(LOW_MET_INDEX), COND_CURVE_METS(HIGH_MET_INDEX)
+                !TCONDS(6,J,I) = TCONDS(LOW_MET_INDEX,J,I) + ((METALLICITY - (COND_CURVE_METS(LOW_MET_INDEX))) * (TCONDS(HIGH_MET_INDEX,J,I) - TCONDS(LOW_MET_INDEX,J,I)) / (COND_CURVE_METS(HIGH_MET_INDEX) - COND_CURVE_METS(LOW_MET_INDEX)))
+                TCONDS(MET_INDEX,J,I) = (METALLICITY - (COND_CURVE_METS(LOW_MET_INDEX)))
+                TCONDS(MET_INDEX,J,I) = TCONDS(MET_INDEX,J,I) * (TCONDS(HIGH_MET_INDEX,J,I) - TCONDS(LOW_MET_INDEX,J,I))
+                TCONDS(MET_INDEX,J,I) = TCONDS(MET_INDEX,J,I) / (COND_CURVE_METS(HIGH_MET_INDEX) - COND_CURVE_METS(LOW_MET_INDEX))
+                TCONDS(MET_INDEX,J,I) = TCONDS(MET_INDEX,J,I) + TCONDS(LOW_MET_INDEX,J,I)
+            END DO
+        END DO
+        
+        WRITE(*,*) 'interpolating condensation curves between ', 
+     & COND_CURVE_METS(LOW_MET_INDEX), ' and ', COND_CURVE_METS(HIGH_MET_INDEX)
+      ENDIF
       END SUBROUTINE get_cloud_scattering_properties
