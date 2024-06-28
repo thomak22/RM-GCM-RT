@@ -367,13 +367,14 @@ C        &&&&&&&&&&&&&&& END MODIFIED START &&&&&&&&&&&&&&&
       kflag=0
       CALL INITAL
 C     ER modif for output management
+C     TK modified to play nice with restart runs
       FDAY=KRUN/ITSPD
-      IDAYS(1)=5
-      IDAYS(2)=INT(FDAY/4.-1.)
-      IDAYS(3)=INT(FDAY/2.-1.)
-      IDAYS(4)=INT(FDAY*3./4.-1.)
-      IDAYS(5)=INT(FDAY-6.)
-      IDAYS(6)=INT(FDAY-2.)
+      IDAYS(1)=5 + BEGDAY
+      IDAYS(2)=INT(FDAY/4.-1.) + BEGDAY
+      IDAYS(3)=INT(FDAY/2.-1.) + BEGDAY
+      IDAYS(4)=INT(FDAY*3./4.-1.) + BEGDAY
+      IDAYS(5)=INT(FDAY-6.) + BEGDAY
+      IDAYS(6)=INT(FDAY-2.) + BEGDAY
       ITSOUT=2600
       IFTOUT=5000
       ISFOUT=6400
