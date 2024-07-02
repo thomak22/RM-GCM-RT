@@ -65,15 +65,15 @@
 
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
-      real, dimension(50) :: input_temperature_array
+      real, dimension(100) :: input_temperature_array
       real, dimension(50) :: input_pressure_array_cgs
 
-      real, dimension(50) :: input_particle_size_array_in_meters
+      real, dimension(100) :: input_particle_size_array_in_meters
       real, dimension(50) :: particle_size_vs_layer_array_in_meters
 
-      REAL QE_OPPR(NSOL + NIR, 50, 50, NCLOUDS)
-      REAL PI0_OPPR(NSOL + NIR, 50, 50, NCLOUDS)
-      REAL G0_OPPR(NSOL + NIR, 50, 50, NCLOUDS)
+      REAL QE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL PI0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL G0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
 
       ! HAZE ARRAYS ARE DIFFERENT THAN THE OTHER ONES
       real, dimension(50, 100)  :: HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg
@@ -97,7 +97,7 @@
       real particle_size
 
       REAL, dimension (500) :: HAZE_WAV_GRID
-      REAL, dimension (50)  :: CLOUD_WAV_GRID
+      REAL, dimension (100)  :: CLOUD_WAV_GRID
 
       COMMON /CLOUD_PROPERTIES/ TCONDS, QE_OPPR, PI0_OPPR, G0_OPPR,
      &                              DENSITY, FMOLW,
@@ -154,11 +154,28 @@
      &                  19.58, 19.789, 20.0/)
 
 
-      CLOUD_WAV_GRID = (/0.1, 0.111, 0.124, 0.138, 0.154, 0.172, 0.191, 0.213, 0.238, 0.265, 0.295, 0.329,
-     &                   0.366, 0.408, 0.454, 0.506, 0.564, 0.629, 0.7, 0.78, 0.869, 0.969, 1.079, 1.202,
-     &                   1.34, 1.493, 1.663, 1.853, 2.065, 2.301, 2.563, 2.856, 3.182, 3.546, 3.95, 4.401,
-     &                   4.904, 5.464, 6.088, 6.783, 7.558, 8.421, 9.383, 10.454, 11.648, 12.978, 14.46,
-     &                   16.111, 17.951, 20.0/)
+      CLOUD_WAV_GRID = (/ 
+     &                  0.1       ,  0.10549764,  0.11129751,  0.11741624,  0.12387136, 
+     &                  0.13068136,  0.13786574,  0.1454451 ,  0.15344114,  0.16187678, 
+     &                  0.17077617,  0.18016482,  0.19006963,  0.20051896,  0.21154277, 
+     &                  0.22317262,  0.23544184,  0.24838557,  0.2620409 ,  0.27644696, 
+     &                  0.29164501,  0.30767859,  0.32459363,  0.34243861,  0.36126464, 
+     &                  0.38112565,  0.40207855,  0.42418337,  0.44750342,  0.47210553, 
+     &                  0.49806018,  0.52544171,  0.55432858,  0.58480355,  0.61695392, 
+     &                  0.6508718 ,  0.68665436,  0.72440411,  0.76422921,  0.80624375, 
+     &                  0.8505681 ,  0.89732923,  0.94666113,  0.99870511,  1.05361028, 
+     &                  1.11153393,  1.17264202,  1.23710961,  1.30512139,  1.37687221, 
+     &                  1.45256763,  1.53242451,  1.61667163,  1.70555034,  1.79931529, 
+     &                  1.89823509,  2.00259314,  2.11268842,  2.22883634,  2.35136964, 
+     &                  2.48063938,  2.6170159 ,  2.7608899 ,  2.91267357,  3.07280176, 
+     &                  3.24173321,  3.41995189,  3.60796839,  3.80632136,  4.01557904, 
+     &                  4.23634095,  4.46923955,  4.71494206,  4.97415241,  5.24761319, 
+     &                  5.53610785,  5.8404629 ,  6.16155028,  6.50028987,  6.85765214, 
+     &                  7.23466087,  7.63239618,  8.05199753,  8.49466702,  8.96167288, 
+     &                  9.45435302,  9.97411891, 10.52245965, 11.10094616, 11.71123575, 
+     &                  12.35507684, 13.03431396, 13.75089307, 14.5068671 , 15.30440182,
+     &                  16.14578209, 17.03341839, 17.96985369, 18.9577708 , 20.0
+     &                  /)
 
       ! THE THREE Condensation curve sets are for 1X, 100X, and 300X Met
       ! Sorry that this is bad code

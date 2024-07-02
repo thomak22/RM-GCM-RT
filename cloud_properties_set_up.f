@@ -21,174 +21,174 @@
 
           ! These are 50 by 50 because that's what the data in CLOUD_DATA is
           ! That can change but use to code from Elsie and Isaac
-          real, dimension(50,50) :: KCl_rosselandMean_gg
-          real, dimension(50,50) :: KCl_rosselandMean_qext
-          real, dimension(50,50) :: KCl_rosselandMean_pi0
+          real, dimension(100,100) :: KCl_rosselandMean_gg
+          real, dimension(100,100) :: KCl_rosselandMean_qext
+          real, dimension(100,100) :: KCl_rosselandMean_pi0
 
-          real, dimension(50,50) :: KCl_PlanckMean_gg
-          real, dimension(50,50) :: KCl_PlanckMean_qext
-          real, dimension(50,50) :: KCl_PlanckMean_pi0
+          real, dimension(100,100) :: KCl_PlanckMean_gg
+          real, dimension(100,100) :: KCl_PlanckMean_qext
+          real, dimension(100,100) :: KCl_PlanckMean_pi0
 
-          real, dimension(50,50) :: KCl_wav_gg
-          real, dimension(50,50) :: KCl_wav_qext
-          real, dimension(50,50) :: KCl_wav_pi0
-
-
-          real, dimension(50,50) :: ZnS_rosselandMean_gg
-          real, dimension(50,50) :: ZnS_rosselandMean_qext
-          real, dimension(50,50) :: ZnS_rosselandMean_pi0
-
-          real, dimension(50,50) :: ZnS_PlanckMean_gg
-          real, dimension(50,50) :: ZnS_PlanckMean_qext
-          real, dimension(50,50) :: ZnS_PlanckMean_pi0
-
-          real, dimension(50,50) :: ZnS_wav_gg
-          real, dimension(50,50) :: ZnS_wav_qext
-          real, dimension(50,50) :: ZnS_wav_pi0
+          real, dimension(100,100) :: KCl_wav_gg
+          real, dimension(100,100) :: KCl_wav_qext
+          real, dimension(100,100) :: KCl_wav_pi0
 
 
-          real, dimension(50,50) :: Na2S_rosselandMean_gg
-          real, dimension(50,50) :: Na2S_rosselandMean_qext
-          real, dimension(50,50) :: Na2S_rosselandMean_pi0
+          real, dimension(100,100) :: ZnS_rosselandMean_gg
+          real, dimension(100,100) :: ZnS_rosselandMean_qext
+          real, dimension(100,100) :: ZnS_rosselandMean_pi0
 
-          real, dimension(50,50) :: Na2S_PlanckMean_gg
-          real, dimension(50,50) :: Na2S_PlanckMean_qext
-          real, dimension(50,50) :: Na2S_PlanckMean_pi0
+          real, dimension(100,100) :: ZnS_PlanckMean_gg
+          real, dimension(100,100) :: ZnS_PlanckMean_qext
+          real, dimension(100,100) :: ZnS_PlanckMean_pi0
 
-          real, dimension(50,50) :: Na2S_wav_gg
-          real, dimension(50,50) :: Na2S_wav_qext
-          real, dimension(50,50) :: Na2S_wav_pi0
-
-
-          real, dimension(50,50) :: MnS_rosselandMean_gg
-          real, dimension(50,50) :: MnS_rosselandMean_qext
-          real, dimension(50,50) :: MnS_rosselandMean_pi0
-
-          real, dimension(50,50) :: MnS_PlanckMean_gg
-          real, dimension(50,50) :: MnS_PlanckMean_qext
-          real, dimension(50,50) :: MnS_PlanckMean_pi0
-
-          real, dimension(50,50) :: MnS_wav_gg
-          real, dimension(50,50) :: MnS_wav_qext
-          real, dimension(50,50) :: MnS_wav_pi0
+          real, dimension(100,100) :: ZnS_wav_gg
+          real, dimension(100,100) :: ZnS_wav_qext
+          real, dimension(100,100) :: ZnS_wav_pi0
 
 
-          real, dimension(50,50) :: Cr_rosselandMean_gg
-          real, dimension(50,50) :: Cr_rosselandMean_qext
-          real, dimension(50,50) :: Cr_rosselandMean_pi0
+          real, dimension(100,100) :: Na2S_rosselandMean_gg
+          real, dimension(100,100) :: Na2S_rosselandMean_qext
+          real, dimension(100,100) :: Na2S_rosselandMean_pi0
 
-          real, dimension(50,50) :: Cr_PlanckMean_gg
-          real, dimension(50,50) :: Cr_PlanckMean_qext
-          real, dimension(50,50) :: Cr_PlanckMean_pi0
+          real, dimension(100,100) :: Na2S_PlanckMean_gg
+          real, dimension(100,100) :: Na2S_PlanckMean_qext
+          real, dimension(100,100) :: Na2S_PlanckMean_pi0
 
-          real, dimension(50,50) :: Cr_wav_gg
-          real, dimension(50,50) :: Cr_wav_qext
-          real, dimension(50,50) :: Cr_wav_pi0
-
-
-          real, dimension(50,50) :: SiO2_rosselandMean_gg
-          real, dimension(50,50) :: SiO2_rosselandMean_qext
-          real, dimension(50,50) :: SiO2_rosselandMean_pi0
-
-          real, dimension(50,50) :: SiO2_PlanckMean_gg
-          real, dimension(50,50) :: SiO2_PlanckMean_qext
-          real, dimension(50,50) :: SiO2_PlanckMean_pi0
-
-          real, dimension(50,50) :: SiO2_wav_gg
-          real, dimension(50,50) :: SiO2_wav_qext
-          real, dimension(50,50) :: SiO2_wav_pi0
+          real, dimension(100,100) :: Na2S_wav_gg
+          real, dimension(100,100) :: Na2S_wav_qext
+          real, dimension(100,100) :: Na2S_wav_pi0
 
 
-          real, dimension(50,50) :: Mg2SiO4_rosselandMean_gg
-          real, dimension(50,50) :: Mg2SiO4_rosselandMean_qext
-          real, dimension(50,50) :: Mg2SiO4_rosselandMean_pi0
+          real, dimension(100,100) :: MnS_rosselandMean_gg
+          real, dimension(100,100) :: MnS_rosselandMean_qext
+          real, dimension(100,100) :: MnS_rosselandMean_pi0
 
-          real, dimension(50,50) :: Mg2SiO4_PlanckMean_gg
-          real, dimension(50,50) :: Mg2SiO4_PlanckMean_qext
-          real, dimension(50,50) :: Mg2SiO4_PlanckMean_pi0
+          real, dimension(100,100) :: MnS_PlanckMean_gg
+          real, dimension(100,100) :: MnS_PlanckMean_qext
+          real, dimension(100,100) :: MnS_PlanckMean_pi0
 
-          real, dimension(50,50) :: Mg2SiO4_wav_gg
-          real, dimension(50,50) :: Mg2SiO4_wav_qext
-          real, dimension(50,50) :: Mg2SiO4_wav_pi0
-
-
-          real, dimension(50,50) :: VO_rosselandMean_gg
-          real, dimension(50,50) :: VO_rosselandMean_qext
-          real, dimension(50,50) :: VO_rosselandMean_pi0
-
-          real, dimension(50,50) :: VO_PlanckMean_gg
-          real, dimension(50,50) :: VO_PlanckMean_qext
-          real, dimension(50,50) :: VO_PlanckMean_pi0
-
-          real, dimension(50,50) :: VO_wav_gg
-          real, dimension(50,50) :: VO_wav_qext
-          real, dimension(50,50) :: VO_wav_pi0
+          real, dimension(100,100) :: MnS_wav_gg
+          real, dimension(100,100) :: MnS_wav_qext
+          real, dimension(100,100) :: MnS_wav_pi0
 
 
-          real, dimension(50,50) :: Ni_rosselandMean_gg
-          real, dimension(50,50) :: Ni_rosselandMean_qext
-          real, dimension(50,50) :: Ni_rosselandMean_pi0
+          real, dimension(100,100) :: Cr_rosselandMean_gg
+          real, dimension(100,100) :: Cr_rosselandMean_qext
+          real, dimension(100,100) :: Cr_rosselandMean_pi0
 
-          real, dimension(50,50) :: Ni_PlanckMean_gg
-          real, dimension(50,50) :: Ni_PlanckMean_qext
-          real, dimension(50,50) :: Ni_PlanckMean_pi0
+          real, dimension(100,100) :: Cr_PlanckMean_gg
+          real, dimension(100,100) :: Cr_PlanckMean_qext
+          real, dimension(100,100) :: Cr_PlanckMean_pi0
 
-          real, dimension(50,50) :: Ni_wav_gg
-          real, dimension(50,50) :: Ni_wav_qext
-          real, dimension(50,50) :: Ni_wav_pi0
-
-
-          real, dimension(50,50) :: Fe_rosselandMean_gg
-          real, dimension(50,50) :: Fe_rosselandMean_qext
-          real, dimension(50,50) :: Fe_rosselandMean_pi0
-
-          real, dimension(50,50) :: Fe_PlanckMean_gg
-          real, dimension(50,50) :: Fe_PlanckMean_qext
-          real, dimension(50,50) :: Fe_PlanckMean_pi0
-
-          real, dimension(50,50) :: Fe_wav_gg
-          real, dimension(50,50) :: Fe_wav_qext
-          real, dimension(50,50) :: Fe_wav_pi0
+          real, dimension(100,100) :: Cr_wav_gg
+          real, dimension(100,100) :: Cr_wav_qext
+          real, dimension(100,100) :: Cr_wav_pi0
 
 
+          real, dimension(100,100) :: SiO2_rosselandMean_gg
+          real, dimension(100,100) :: SiO2_rosselandMean_qext
+          real, dimension(100,100) :: SiO2_rosselandMean_pi0
 
-          real, dimension(50,50) :: CaSiO4_rosselandMean_gg
-          real, dimension(50,50) :: CaSiO4_rosselandMean_qext
-          real, dimension(50,50) :: CaSiO4_rosselandMean_pi0
+          real, dimension(100,100) :: SiO2_PlanckMean_gg
+          real, dimension(100,100) :: SiO2_PlanckMean_qext
+          real, dimension(100,100) :: SiO2_PlanckMean_pi0
 
-          real, dimension(50,50) :: CaSiO4_PlanckMean_gg
-          real, dimension(50,50) :: CaSiO4_PlanckMean_qext
-          real, dimension(50,50) :: CaSiO4_PlanckMean_pi0
-
-          real, dimension(50,50) :: CaSiO4_wav_gg
-          real, dimension(50,50) :: CaSiO4_wav_qext
-          real, dimension(50,50) :: CaSiO4_wav_pi0
-
-
-          real, dimension(50,50) :: CaTiO3_rosselandMean_gg
-          real, dimension(50,50) :: CaTiO3_rosselandMean_qext
-          real, dimension(50,50) :: CaTiO3_rosselandMean_pi0
-
-          real, dimension(50,50) :: CaTiO3_PlanckMean_gg
-          real, dimension(50,50) :: CaTiO3_PlanckMean_qext
-          real, dimension(50,50) :: CaTiO3_PlanckMean_pi0
-
-          real, dimension(50,50) :: CaTiO3_wav_gg
-          real, dimension(50,50) :: CaTiO3_wav_qext
-          real, dimension(50,50) :: CaTiO3_wav_pi0
+          real, dimension(100,100) :: SiO2_wav_gg
+          real, dimension(100,100) :: SiO2_wav_qext
+          real, dimension(100,100) :: SiO2_wav_pi0
 
 
-          real, dimension(50,50) :: Al2O3_rosselandMean_gg
-          real, dimension(50,50) :: Al2O3_rosselandMean_qext
-          real, dimension(50,50) :: Al2O3_rosselandMean_pi0
+          real, dimension(100,100) :: Mg2SiO4_rosselandMean_gg
+          real, dimension(100,100) :: Mg2SiO4_rosselandMean_qext
+          real, dimension(100,100) :: Mg2SiO4_rosselandMean_pi0
 
-          real, dimension(50,50) :: Al2O3_PlanckMean_gg
-          real, dimension(50,50) :: Al2O3_PlanckMean_qext
-          real, dimension(50,50) :: Al2O3_PlanckMean_pi0
+          real, dimension(100,100) :: Mg2SiO4_PlanckMean_gg
+          real, dimension(100,100) :: Mg2SiO4_PlanckMean_qext
+          real, dimension(100,100) :: Mg2SiO4_PlanckMean_pi0
 
-          real, dimension(50,50) :: Al2O3_wav_gg
-          real, dimension(50,50) :: Al2O3_wav_qext
-          real, dimension(50,50) :: Al2O3_wav_pi0
+          real, dimension(100,100) :: Mg2SiO4_wav_gg
+          real, dimension(100,100) :: Mg2SiO4_wav_qext
+          real, dimension(100,100) :: Mg2SiO4_wav_pi0
+
+
+          real, dimension(100,100) :: VO_rosselandMean_gg
+          real, dimension(100,100) :: VO_rosselandMean_qext
+          real, dimension(100,100) :: VO_rosselandMean_pi0
+
+          real, dimension(100,100) :: VO_PlanckMean_gg
+          real, dimension(100,100) :: VO_PlanckMean_qext
+          real, dimension(100,100) :: VO_PlanckMean_pi0
+
+          real, dimension(100,100) :: VO_wav_gg
+          real, dimension(100,100) :: VO_wav_qext
+          real, dimension(100,100) :: VO_wav_pi0
+
+
+          real, dimension(100,100) :: Ni_rosselandMean_gg
+          real, dimension(100,100) :: Ni_rosselandMean_qext
+          real, dimension(100,100) :: Ni_rosselandMean_pi0
+
+          real, dimension(100,100) :: Ni_PlanckMean_gg
+          real, dimension(100,100) :: Ni_PlanckMean_qext
+          real, dimension(100,100) :: Ni_PlanckMean_pi0
+
+          real, dimension(100,100) :: Ni_wav_gg
+          real, dimension(100,100) :: Ni_wav_qext
+          real, dimension(100,100) :: Ni_wav_pi0
+
+
+          real, dimension(100,100) :: Fe_rosselandMean_gg
+          real, dimension(100,100) :: Fe_rosselandMean_qext
+          real, dimension(100,100) :: Fe_rosselandMean_pi0
+
+          real, dimension(100,100) :: Fe_PlanckMean_gg
+          real, dimension(100,100) :: Fe_PlanckMean_qext
+          real, dimension(100,100) :: Fe_PlanckMean_pi0
+
+          real, dimension(100,100) :: Fe_wav_gg
+          real, dimension(100,100) :: Fe_wav_qext
+          real, dimension(100,100) :: Fe_wav_pi0
+
+
+
+          real, dimension(100,100) :: CaSiO4_rosselandMean_gg
+          real, dimension(100,100) :: CaSiO4_rosselandMean_qext
+          real, dimension(100,100) :: CaSiO4_rosselandMean_pi0
+
+          real, dimension(100,100) :: CaSiO4_PlanckMean_gg
+          real, dimension(100,100) :: CaSiO4_PlanckMean_qext
+          real, dimension(100,100) :: CaSiO4_PlanckMean_pi0
+
+          real, dimension(100,100) :: CaSiO4_wav_gg
+          real, dimension(100,100) :: CaSiO4_wav_qext
+          real, dimension(100,100) :: CaSiO4_wav_pi0
+
+
+          real, dimension(100,100) :: CaTiO3_rosselandMean_gg
+          real, dimension(100,100) :: CaTiO3_rosselandMean_qext
+          real, dimension(100,100) :: CaTiO3_rosselandMean_pi0
+
+          real, dimension(100,100) :: CaTiO3_PlanckMean_gg
+          real, dimension(100,100) :: CaTiO3_PlanckMean_qext
+          real, dimension(100,100) :: CaTiO3_PlanckMean_pi0
+
+          real, dimension(100,100) :: CaTiO3_wav_gg
+          real, dimension(100,100) :: CaTiO3_wav_qext
+          real, dimension(100,100) :: CaTiO3_wav_pi0
+
+
+          real, dimension(100,100) :: Al2O3_rosselandMean_gg
+          real, dimension(100,100) :: Al2O3_rosselandMean_qext
+          real, dimension(100,100) :: Al2O3_rosselandMean_pi0
+
+          real, dimension(100,100) :: Al2O3_PlanckMean_gg
+          real, dimension(100,100) :: Al2O3_PlanckMean_qext
+          real, dimension(100,100) :: Al2O3_PlanckMean_pi0
+
+          real, dimension(100,100) :: Al2O3_wav_gg
+          real, dimension(100,100) :: Al2O3_wav_qext
+          real, dimension(100,100) :: Al2O3_wav_pi0
 
           ! SET UP THE CONDENSATION CURVES
           ! SHOULD BE MET DEPENDENT EVENTUALLY
@@ -268,9 +268,9 @@
           REAL CORFACT(51)
           REAL TCONDS(5, 51, 13)
 
-          REAL QE_OPPR(5, 50, 50, 13)
-          REAL PI0_OPPR(5, 50, 50, 13)
-          REAL G0_OPPR(5, 50, 50, 13)
+          REAL QE_OPPR(5, 100, 100, 13)
+          REAL PI0_OPPR(5, 100, 100, 13)
+          REAL G0_OPPR(5, 100, 100, 13)
 
           ! Kennedy adding cond curve interpolation
           INTEGER MET_INDEX, LOW_MET_INDEX, HIGH_MET_INDEX, I
@@ -279,10 +279,10 @@
           REAL FMOLW(13)
           REAL CLOUD_MOLAR_MASSES(13)
 
-          real, dimension(50) :: input_temperature_array
+          real, dimension(100) :: input_temperature_array
           real, dimension(50) :: input_pressure_array_cgs
 
-          real, dimension(50) :: input_particle_size_array_in_meters
+          real, dimension(100) :: input_particle_size_array_in_meters
           real, dimension(50) :: particle_size_vs_layer_array_in_meters
 
       COMMON /CLOUD_PROPERTIES/ TCONDS, QE_OPPR, PI0_OPPR, G0_OPPR,
@@ -879,25 +879,56 @@
      &    1098541.14, 1599858.72, 2329951.81, 3393221.77, 4941713.36, 7196856.73, 10481131.34,
      &    15264179.67, 22229964.83, 32374575.43, 47148663.63, 68664884.5, 100000000.0/)
 
-          input_particle_size_array_in_meters = (/1.000e-07,1.151e-07,1.326e-07,1.526e-07,1.758e-07,
-     &                                             2.024e-07,2.330e-07,2.683e-07,3.089e-07,3.556e-07,
-     &                                             4.095e-07,4.715e-07,5.429e-07,6.251e-07,7.197e-07,
-     &                                             8.286e-07,9.541e-07,1.099e-06,1.265e-06,1.456e-06,
-     &                                             1.677e-06,1.931e-06,2.223e-06,2.560e-06,2.947e-06,
-     &                                             3.393e-06,3.907e-06,4.498e-06,5.179e-06,5.964e-06,
-     &                                             6.866e-06,7.906e-06,9.103e-06,1.048e-05,1.207e-05,
-     &                                             1.389e-05,1.600e-05,1.842e-05,2.121e-05,2.442e-05,
-     &                                             2.812e-05,3.237e-05,3.728e-05,4.292e-05,4.942e-05,
-     &                                             5.690e-05,6.551e-05,7.543e-05,8.685e-05,1.000e-04/)
+          input_particle_size_array_in_meters = (/
+     &    1.00000000e-09, 1.12332403e-09, 1.26185688e-09, 1.41747416e-09,
+     &    1.59228279e-09, 1.78864953e-09, 2.00923300e-09, 2.25701972e-09,
+     &    2.53536449e-09, 2.84803587e-09, 3.19926714e-09, 3.59381366e-09,
+     &    4.03701726e-09, 4.53487851e-09, 5.09413801e-09, 5.72236766e-09,
+     &    6.42807312e-09, 7.22080902e-09, 8.11130831e-09, 9.11162756e-09,
+     &    1.02353102e-08, 1.14975700e-08, 1.29154967e-08, 1.45082878e-08,
+     &    1.62975083e-08, 1.83073828e-08, 2.05651231e-08, 2.31012970e-08,
+     &    2.59502421e-08, 2.91505306e-08, 3.27454916e-08, 3.67837977e-08,
+     &    4.13201240e-08, 4.64158883e-08, 5.21400829e-08, 5.85702082e-08,
+     &    6.57933225e-08, 7.39072203e-08, 8.30217568e-08, 9.32603347e-08,
+     &    1.04761575e-07, 1.17681195e-07, 1.32194115e-07, 1.48496826e-07,
+     &    1.66810054e-07, 1.87381742e-07, 2.10490414e-07, 2.36448941e-07,
+     &    2.65608778e-07, 2.98364724e-07, 3.35160265e-07, 3.76493581e-07,
+     &    4.22924287e-07, 4.75081016e-07, 5.33669923e-07, 5.99484250e-07,
+     &    6.73415066e-07, 7.56463328e-07, 8.49753436e-07, 9.54548457e-07,
+     &    1.07226722e-06, 1.20450354e-06, 1.35304777e-06, 1.51991108e-06,
+     &    1.70735265e-06, 1.91791026e-06, 2.15443469e-06, 2.42012826e-06,
+     &    2.71858824e-06, 3.05385551e-06, 3.43046929e-06, 3.85352859e-06,
+     &    4.32876128e-06, 4.86260158e-06, 5.46227722e-06, 6.13590727e-06,
+     &    6.89261210e-06, 7.74263683e-06, 8.69749003e-06, 9.77009957e-06,
+     &    1.09749877e-05, 1.23284674e-05, 1.38488637e-05, 1.55567614e-05,
+     &    1.74752840e-05, 1.96304065e-05, 2.20513074e-05, 2.47707636e-05,
+     &    2.78255940e-05, 3.12571585e-05, 3.51119173e-05, 3.94420606e-05,
+     &    4.43062146e-05, 4.97702356e-05, 5.59081018e-05, 6.28029144e-05,
+     &    7.05480231e-05, 7.92482898e-05, 8.90215085e-05, 1.00000000e-04
+     &    /)
 
-          input_temperature_array = (/100.0, 179.59183673, 259.18367347, 338.7755102, 418.36734694, 497.95918367,
-     &    577.55102041, 657.14285714, 736.73469388, 816.32653061, 895.91836735, 975.51020408, 1055.10204082,
-     &    1134.69387755, 1214.28571429, 1293.87755102, 1373.46938776, 1453.06122449, 1532.65306122,
-     &    1612.24489796, 1691.83673469, 1771.42857143, 1851.02040816, 1930.6122449, 2010.20408163,
-     &    2089.79591837, 2169.3877551, 2248.97959184, 2328.57142857, 2408.16326531, 2487.75510204,
-     &    2567.34693878, 2646.93877551, 2726.53061224, 2806.12244898, 2885.71428571, 2965.30612245,
-     &    3044.89795918, 3124.48979592, 3204.08163265, 3283.67346939, 3363.26530612, 3442.85714286,
-     &    3522.44897959, 3602.04081633, 3681.63265306, 3761.22448980, 3840.81632653, 3920.40816327, 4000.0/)
+          input_temperature_array = (/
+     &    100.0, 139.39393939393938, 178.78787878787878, 218.1818181818182, 257.57575757575756,
+     &    296.96969696969694, 336.3636363636364, 375.75757575757575, 415.1515151515151, 454.5454545454545,
+     &    493.9393939393939, 533.3333333333333, 572.7272727272727, 612.1212121212121, 651.5151515151515,
+     &    690.9090909090909, 730.3030303030303, 769.6969696969696, 809.090909090909, 848.4848484848484,
+     &    887.8787878787878, 927.2727272727273, 966.6666666666666, 1006.060606060606, 1045.4545454545455,
+     &    1084.8484848484848, 1124.2424242424242, 1163.6363636363635, 1203.030303030303, 1242.4242424242423,
+     &    1281.8181818181818, 1321.212121212121, 1360.6060606060605, 1400.0, 1439.3939393939393,
+     &    1478.7878787878788, 1518.181818181818, 1557.5757575757575, 1596.9696969696968, 1636.3636363636363,
+     &    1675.7575757575755, 1715.151515151515, 1754.5454545454545, 1793.9393939393938, 1833.3333333333333,
+     &    1872.7272727272725, 1912.121212121212, 1951.5151515151513, 1990.9090909090908, 2030.3030303030303,
+     &    2069.6969696969695, 2109.090909090909, 2148.4848484848485, 2187.8787878787875, 2227.272727272727,
+     &    2266.6666666666665, 2306.060606060606, 2345.4545454545455, 2384.8484848484845, 2424.242424242424,
+     &    2463.6363636363635, 2503.030303030303, 2542.424242424242, 2581.8181818181815, 2621.212121212121,
+     &    2660.6060606060605, 2700.0, 2739.393939393939, 2778.7878787878785, 2818.181818181818,
+     &    2857.5757575757575, 2896.9696969696965, 2936.363636363636, 2975.7575757575755, 3015.151515151515,
+     &    3054.5454545454545, 3093.9393939393935, 3133.333333333333, 3172.7272727272725, 3212.121212121212,
+     &    3251.515151515151, 3290.9090909090905, 3330.30303030303, 3369.6969696969695, 3409.090909090909,
+     &    3448.484848484848, 3487.8787878787875, 3527.272727272727, 3566.6666666666665, 3606.060606060606,
+     &    3645.454545454545, 3684.8484848484845, 3724.242424242424, 3763.6363636363635, 3803.0303030303025,
+     &    3842.424242424242, 3881.8181818181815, 3921.212121212121, 3960.6060606060605, 4000.0
+     &    /)
 
           particle_size_vs_layer_array_in_meters = (/1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07,
      &    1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07, 1e-07,
@@ -1695,239 +1726,239 @@
       tconds(5,1:51,12)=tcon_300X_MET_CaTiO3
       tconds(5,1:51,13)=tcon_300X_MET_Al2O3
 
-      G0_OPPR(1,1:50,1:50,1)=KCl_wav_gg
-      G0_OPPR(2,1:50,1:50,1)=KCl_wav_gg
-      G0_OPPR(3,1:50,1:50,1)=KCl_wav_gg
-      G0_OPPR(4,1:50,1:50,1)=KCl_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,1)=KCl_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,1)=KCl_wav_gg
+      G0_OPPR(2,1:100,1:100,1)=KCl_wav_gg
+      G0_OPPR(3,1:100,1:100,1)=KCl_wav_gg
+      G0_OPPR(4,1:100,1:100,1)=KCl_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,1)=KCl_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,2)=ZnS_wav_gg
-      G0_OPPR(2,1:50,1:50,2)=ZnS_wav_gg
-      G0_OPPR(3,1:50,1:50,2)=ZnS_wav_gg
-      G0_OPPR(4,1:50,1:50,2)=ZnS_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,2)=ZnS_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,2)=ZnS_wav_gg
+      G0_OPPR(2,1:100,1:100,2)=ZnS_wav_gg
+      G0_OPPR(3,1:100,1:100,2)=ZnS_wav_gg
+      G0_OPPR(4,1:100,1:100,2)=ZnS_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,2)=ZnS_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,3)=Na2S_wav_gg
-      G0_OPPR(2,1:50,1:50,3)=Na2S_wav_gg
-      G0_OPPR(3,1:50,1:50,3)=Na2S_wav_gg
-      G0_OPPR(4,1:50,1:50,3)=Na2S_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,3)=Na2S_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,3)=Na2S_wav_gg
+      G0_OPPR(2,1:100,1:100,3)=Na2S_wav_gg
+      G0_OPPR(3,1:100,1:100,3)=Na2S_wav_gg
+      G0_OPPR(4,1:100,1:100,3)=Na2S_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,3)=Na2S_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,4)=MnS_wav_gg
-      G0_OPPR(2,1:50,1:50,4)=MnS_wav_gg
-      G0_OPPR(3,1:50,1:50,4)=MnS_wav_gg
-      G0_OPPR(4,1:50,1:50,4)=MnS_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,4)=MnS_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,4)=MnS_wav_gg
+      G0_OPPR(2,1:100,1:100,4)=MnS_wav_gg
+      G0_OPPR(3,1:100,1:100,4)=MnS_wav_gg
+      G0_OPPR(4,1:100,1:100,4)=MnS_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,4)=MnS_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,5)=Cr_wav_gg
-      G0_OPPR(2,1:50,1:50,5)=Cr_wav_gg
-      G0_OPPR(3,1:50,1:50,5)=Cr_wav_gg
-      G0_OPPR(4,1:50,1:50,5)=Cr_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,5)=Cr_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,5)=Cr_wav_gg
+      G0_OPPR(2,1:100,1:100,5)=Cr_wav_gg
+      G0_OPPR(3,1:100,1:100,5)=Cr_wav_gg
+      G0_OPPR(4,1:100,1:100,5)=Cr_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,5)=Cr_rosselandMean_gg
 
-      G0_OPPR(1,1:50,1:50,6)=SiO2_wav_gg
-      G0_OPPR(2,1:50,1:50,6)=SiO2_wav_gg
-      G0_OPPR(3,1:50,1:50,6)=SiO2_wav_gg
-      G0_OPPR(4,1:50,1:50,6)=SiO2_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,6)=SiO2_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,6)=SiO2_wav_gg
+      G0_OPPR(2,1:100,1:100,6)=SiO2_wav_gg
+      G0_OPPR(3,1:100,1:100,6)=SiO2_wav_gg
+      G0_OPPR(4,1:100,1:100,6)=SiO2_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,6)=SiO2_rosselandMean_gg
 
-      G0_OPPR(1,1:50,1:50,7)=Mg2SiO4_wav_gg
-      G0_OPPR(2,1:50,1:50,7)=Mg2SiO4_wav_gg
-      G0_OPPR(3,1:50,1:50,7)=Mg2SiO4_wav_gg
-      G0_OPPR(4,1:50,1:50,7)=Mg2SiO4_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,7)=Mg2SiO4_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,7)=Mg2SiO4_wav_gg
+      G0_OPPR(2,1:100,1:100,7)=Mg2SiO4_wav_gg
+      G0_OPPR(3,1:100,1:100,7)=Mg2SiO4_wav_gg
+      G0_OPPR(4,1:100,1:100,7)=Mg2SiO4_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,7)=Mg2SiO4_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,8)=VO_wav_gg
-      G0_OPPR(2,1:50,1:50,8)=VO_wav_gg
-      G0_OPPR(3,1:50,1:50,8)=VO_wav_gg
-      G0_OPPR(4,1:50,1:50,8)=VO_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,8)=VO_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,8)=VO_wav_gg
+      G0_OPPR(2,1:100,1:100,8)=VO_wav_gg
+      G0_OPPR(3,1:100,1:100,8)=VO_wav_gg
+      G0_OPPR(4,1:100,1:100,8)=VO_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,8)=VO_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,9)=Ni_wav_gg
-      G0_OPPR(2,1:50,1:50,9)=Ni_wav_gg
-      G0_OPPR(3,1:50,1:50,9)=Ni_wav_gg
-      G0_OPPR(4,1:50,1:50,9)=Ni_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,9)=Ni_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,9)=Ni_wav_gg
+      G0_OPPR(2,1:100,1:100,9)=Ni_wav_gg
+      G0_OPPR(3,1:100,1:100,9)=Ni_wav_gg
+      G0_OPPR(4,1:100,1:100,9)=Ni_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,9)=Ni_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,10)=Fe_wav_gg
-      G0_OPPR(2,1:50,1:50,10)=Fe_wav_gg
-      G0_OPPR(3,1:50,1:50,10)=Fe_wav_gg
-      G0_OPPR(4,1:50,1:50,10)=Fe_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,10)=Fe_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,10)=Fe_wav_gg
+      G0_OPPR(2,1:100,1:100,10)=Fe_wav_gg
+      G0_OPPR(3,1:100,1:100,10)=Fe_wav_gg
+      G0_OPPR(4,1:100,1:100,10)=Fe_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,10)=Fe_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,11)=CaSiO4_wav_gg
-      G0_OPPR(2,1:50,1:50,11)=CaSiO4_wav_gg
-      G0_OPPR(3,1:50,1:50,11)=CaSiO4_wav_gg
-      G0_OPPR(4,1:50,1:50,11)=CaSiO4_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,11)=CaSiO4_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,11)=CaSiO4_wav_gg
+      G0_OPPR(2,1:100,1:100,11)=CaSiO4_wav_gg
+      G0_OPPR(3,1:100,1:100,11)=CaSiO4_wav_gg
+      G0_OPPR(4,1:100,1:100,11)=CaSiO4_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,11)=CaSiO4_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,12)=CaTiO3_wav_gg
-      G0_OPPR(2,1:50,1:50,12)=CaTiO3_wav_gg
-      G0_OPPR(3,1:50,1:50,12)=CaTiO3_wav_gg
-      G0_OPPR(4,1:50,1:50,12)=CaTiO3_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,12)=CaTiO3_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,12)=CaTiO3_wav_gg
+      G0_OPPR(2,1:100,1:100,12)=CaTiO3_wav_gg
+      G0_OPPR(3,1:100,1:100,12)=CaTiO3_wav_gg
+      G0_OPPR(4,1:100,1:100,12)=CaTiO3_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,12)=CaTiO3_rosselandMean_gg
       
-      G0_OPPR(1,1:50,1:50,13)=Al2O3_wav_gg
-      G0_OPPR(2,1:50,1:50,13)=Al2O3_wav_gg
-      G0_OPPR(3,1:50,1:50,13)=Al2O3_wav_gg
-      G0_OPPR(4,1:50,1:50,13)=Al2O3_PlanckMean_gg
-      G0_OPPR(5,1:50,1:50,13)=Al2O3_rosselandMean_gg
+      G0_OPPR(1,1:100,1:100,13)=Al2O3_wav_gg
+      G0_OPPR(2,1:100,1:100,13)=Al2O3_wav_gg
+      G0_OPPR(3,1:100,1:100,13)=Al2O3_wav_gg
+      G0_OPPR(4,1:100,1:100,13)=Al2O3_PlanckMean_gg
+      G0_OPPR(5,1:100,1:100,13)=Al2O3_rosselandMean_gg
       
-      PI0_OPPR(1,1:50,1:50,1)=KCl_wav_pi0
-      PI0_OPPR(2,1:50,1:50,1)=KCl_wav_pi0
-      PI0_OPPR(3,1:50,1:50,1)=KCl_wav_pi0
-      PI0_OPPR(4,1:50,1:50,1)=KCl_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,1)=KCl_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,1)=KCl_wav_pi0
+      PI0_OPPR(2,1:100,1:100,1)=KCl_wav_pi0
+      PI0_OPPR(3,1:100,1:100,1)=KCl_wav_pi0
+      PI0_OPPR(4,1:100,1:100,1)=KCl_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,1)=KCl_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,2)=ZnS_wav_pi0
-      PI0_OPPR(2,1:50,1:50,2)=ZnS_wav_pi0
-      PI0_OPPR(3,1:50,1:50,2)=ZnS_wav_pi0
-      PI0_OPPR(4,1:50,1:50,2)=ZnS_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,2)=ZnS_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,2)=ZnS_wav_pi0
+      PI0_OPPR(2,1:100,1:100,2)=ZnS_wav_pi0
+      PI0_OPPR(3,1:100,1:100,2)=ZnS_wav_pi0
+      PI0_OPPR(4,1:100,1:100,2)=ZnS_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,2)=ZnS_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,3)=Na2S_wav_pi0
-      PI0_OPPR(2,1:50,1:50,3)=Na2S_wav_pi0
-      PI0_OPPR(3,1:50,1:50,3)=Na2S_wav_pi0
-      PI0_OPPR(4,1:50,1:50,3)=Na2S_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,3)=Na2S_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,3)=Na2S_wav_pi0
+      PI0_OPPR(2,1:100,1:100,3)=Na2S_wav_pi0
+      PI0_OPPR(3,1:100,1:100,3)=Na2S_wav_pi0
+      PI0_OPPR(4,1:100,1:100,3)=Na2S_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,3)=Na2S_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,4)=MnS_wav_pi0
-      PI0_OPPR(2,1:50,1:50,4)=MnS_wav_pi0
-      PI0_OPPR(3,1:50,1:50,4)=MnS_wav_pi0
-      PI0_OPPR(4,1:50,1:50,4)=MnS_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,4)=MnS_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,4)=MnS_wav_pi0
+      PI0_OPPR(2,1:100,1:100,4)=MnS_wav_pi0
+      PI0_OPPR(3,1:100,1:100,4)=MnS_wav_pi0
+      PI0_OPPR(4,1:100,1:100,4)=MnS_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,4)=MnS_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,5)=Cr_wav_pi0
-      PI0_OPPR(2,1:50,1:50,5)=Cr_wav_pi0
-      PI0_OPPR(3,1:50,1:50,5)=Cr_wav_pi0
-      PI0_OPPR(4,1:50,1:50,5)=Cr_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,5)=Cr_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,5)=Cr_wav_pi0
+      PI0_OPPR(2,1:100,1:100,5)=Cr_wav_pi0
+      PI0_OPPR(3,1:100,1:100,5)=Cr_wav_pi0
+      PI0_OPPR(4,1:100,1:100,5)=Cr_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,5)=Cr_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,6)=SiO2_wav_pi0
-      PI0_OPPR(2,1:50,1:50,6)=SiO2_wav_pi0
-      PI0_OPPR(3,1:50,1:50,6)=SiO2_wav_pi0
-      PI0_OPPR(4,1:50,1:50,6)=SiO2_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,6)=SiO2_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,6)=SiO2_wav_pi0
+      PI0_OPPR(2,1:100,1:100,6)=SiO2_wav_pi0
+      PI0_OPPR(3,1:100,1:100,6)=SiO2_wav_pi0
+      PI0_OPPR(4,1:100,1:100,6)=SiO2_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,6)=SiO2_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,7)=Mg2SiO4_wav_pi0
-      PI0_OPPR(2,1:50,1:50,7)=Mg2SiO4_wav_pi0
-      PI0_OPPR(3,1:50,1:50,7)=Mg2SiO4_wav_pi0
-      PI0_OPPR(4,1:50,1:50,7)=Mg2SiO4_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,7)=Mg2SiO4_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,7)=Mg2SiO4_wav_pi0
+      PI0_OPPR(2,1:100,1:100,7)=Mg2SiO4_wav_pi0
+      PI0_OPPR(3,1:100,1:100,7)=Mg2SiO4_wav_pi0
+      PI0_OPPR(4,1:100,1:100,7)=Mg2SiO4_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,7)=Mg2SiO4_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,8)=VO_wav_pi0
-      PI0_OPPR(2,1:50,1:50,8)=VO_wav_pi0
-      PI0_OPPR(3,1:50,1:50,8)=VO_wav_pi0
-      PI0_OPPR(4,1:50,1:50,8)=VO_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,8)=VO_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,8)=VO_wav_pi0
+      PI0_OPPR(2,1:100,1:100,8)=VO_wav_pi0
+      PI0_OPPR(3,1:100,1:100,8)=VO_wav_pi0
+      PI0_OPPR(4,1:100,1:100,8)=VO_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,8)=VO_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,9)=Ni_wav_pi0
-      PI0_OPPR(2,1:50,1:50,9)=Ni_wav_pi0
-      PI0_OPPR(3,1:50,1:50,9)=Ni_wav_pi0
-      PI0_OPPR(4,1:50,1:50,9)=Ni_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,9)=Ni_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,9)=Ni_wav_pi0
+      PI0_OPPR(2,1:100,1:100,9)=Ni_wav_pi0
+      PI0_OPPR(3,1:100,1:100,9)=Ni_wav_pi0
+      PI0_OPPR(4,1:100,1:100,9)=Ni_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,9)=Ni_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,10)=Fe_wav_pi0
-      PI0_OPPR(2,1:50,1:50,10)=Fe_wav_pi0
-      PI0_OPPR(3,1:50,1:50,10)=Fe_wav_pi0
-      PI0_OPPR(4,1:50,1:50,10)=Fe_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,10)=Fe_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,10)=Fe_wav_pi0
+      PI0_OPPR(2,1:100,1:100,10)=Fe_wav_pi0
+      PI0_OPPR(3,1:100,1:100,10)=Fe_wav_pi0
+      PI0_OPPR(4,1:100,1:100,10)=Fe_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,10)=Fe_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,11)=CaSiO4_wav_pi0
-      PI0_OPPR(2,1:50,1:50,11)=CaSiO4_wav_pi0
-      PI0_OPPR(3,1:50,1:50,11)=CaSiO4_wav_pi0
-      PI0_OPPR(4,1:50,1:50,11)=CaSiO4_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,11)=CaSiO4_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,11)=CaSiO4_wav_pi0
+      PI0_OPPR(2,1:100,1:100,11)=CaSiO4_wav_pi0
+      PI0_OPPR(3,1:100,1:100,11)=CaSiO4_wav_pi0
+      PI0_OPPR(4,1:100,1:100,11)=CaSiO4_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,11)=CaSiO4_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,12)=CaTiO3_wav_pi0
-      PI0_OPPR(2,1:50,1:50,12)=CaTiO3_wav_pi0
-      PI0_OPPR(3,1:50,1:50,12)=CaTiO3_wav_pi0
-      PI0_OPPR(4,1:50,1:50,12)=CaTiO3_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,12)=CaTiO3_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,12)=CaTiO3_wav_pi0
+      PI0_OPPR(2,1:100,1:100,12)=CaTiO3_wav_pi0
+      PI0_OPPR(3,1:100,1:100,12)=CaTiO3_wav_pi0
+      PI0_OPPR(4,1:100,1:100,12)=CaTiO3_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,12)=CaTiO3_rosselandMean_pi0
       
-      PI0_OPPR(1,1:50,1:50,13)=Al2O3_wav_pi0
-      PI0_OPPR(2,1:50,1:50,13)=Al2O3_wav_pi0
-      PI0_OPPR(3,1:50,1:50,13)=Al2O3_wav_pi0
-      PI0_OPPR(4,1:50,1:50,13)=Al2O3_PlanckMean_pi0
-      PI0_OPPR(5,1:50,1:50,13)=Al2O3_rosselandMean_pi0
+      PI0_OPPR(1,1:100,1:100,13)=Al2O3_wav_pi0
+      PI0_OPPR(2,1:100,1:100,13)=Al2O3_wav_pi0
+      PI0_OPPR(3,1:100,1:100,13)=Al2O3_wav_pi0
+      PI0_OPPR(4,1:100,1:100,13)=Al2O3_PlanckMean_pi0
+      PI0_OPPR(5,1:100,1:100,13)=Al2O3_rosselandMean_pi0
       
-      QE_OPPR(1,1:50,1:50,1)=KCl_wav_qext
-      QE_OPPR(2,1:50,1:50,1)=KCl_wav_qext
-      QE_OPPR(3,1:50,1:50,1)=KCl_wav_qext
-      QE_OPPR(4,1:50,1:50,1)=KCl_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,1)=KCl_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,1)=KCl_wav_qext
+      QE_OPPR(2,1:100,1:100,1)=KCl_wav_qext
+      QE_OPPR(3,1:100,1:100,1)=KCl_wav_qext
+      QE_OPPR(4,1:100,1:100,1)=KCl_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,1)=KCl_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,2)=ZnS_wav_qext
-      QE_OPPR(2,1:50,1:50,2)=ZnS_wav_qext
-      QE_OPPR(3,1:50,1:50,2)=ZnS_wav_qext
-      QE_OPPR(4,1:50,1:50,2)=ZnS_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,2)=ZnS_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,2)=ZnS_wav_qext
+      QE_OPPR(2,1:100,1:100,2)=ZnS_wav_qext
+      QE_OPPR(3,1:100,1:100,2)=ZnS_wav_qext
+      QE_OPPR(4,1:100,1:100,2)=ZnS_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,2)=ZnS_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,3)=Na2S_wav_qext
-      QE_OPPR(2,1:50,1:50,3)=Na2S_wav_qext
-      QE_OPPR(3,1:50,1:50,3)=Na2S_wav_qext
-      QE_OPPR(4,1:50,1:50,3)=Na2S_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,3)=Na2S_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,3)=Na2S_wav_qext
+      QE_OPPR(2,1:100,1:100,3)=Na2S_wav_qext
+      QE_OPPR(3,1:100,1:100,3)=Na2S_wav_qext
+      QE_OPPR(4,1:100,1:100,3)=Na2S_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,3)=Na2S_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,4)=MnS_wav_qext
-      QE_OPPR(2,1:50,1:50,4)=MnS_wav_qext
-      QE_OPPR(3,1:50,1:50,4)=MnS_wav_qext
-      QE_OPPR(4,1:50,1:50,4)=MnS_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,4)=MnS_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,4)=MnS_wav_qext
+      QE_OPPR(2,1:100,1:100,4)=MnS_wav_qext
+      QE_OPPR(3,1:100,1:100,4)=MnS_wav_qext
+      QE_OPPR(4,1:100,1:100,4)=MnS_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,4)=MnS_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,5)=Cr_wav_qext
-      QE_OPPR(2,1:50,1:50,5)=Cr_wav_qext
-      QE_OPPR(3,1:50,1:50,5)=Cr_wav_qext
-      QE_OPPR(4,1:50,1:50,5)=Cr_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,5)=Cr_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,5)=Cr_wav_qext
+      QE_OPPR(2,1:100,1:100,5)=Cr_wav_qext
+      QE_OPPR(3,1:100,1:100,5)=Cr_wav_qext
+      QE_OPPR(4,1:100,1:100,5)=Cr_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,5)=Cr_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,6)=SiO2_wav_qext
-      QE_OPPR(2,1:50,1:50,6)=SiO2_wav_qext
-      QE_OPPR(3,1:50,1:50,6)=SiO2_wav_qext
-      QE_OPPR(4,1:50,1:50,6)=SiO2_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,6)=SiO2_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,6)=SiO2_wav_qext
+      QE_OPPR(2,1:100,1:100,6)=SiO2_wav_qext
+      QE_OPPR(3,1:100,1:100,6)=SiO2_wav_qext
+      QE_OPPR(4,1:100,1:100,6)=SiO2_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,6)=SiO2_rosselandMean_qext
 
-      QE_OPPR(1,1:50,1:50,7)=Mg2SiO4_wav_qext
-      QE_OPPR(2,1:50,1:50,7)=Mg2SiO4_wav_qext
-      QE_OPPR(3,1:50,1:50,7)=Mg2SiO4_wav_qext
-      QE_OPPR(4,1:50,1:50,7)=Mg2SiO4_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,7)=Mg2SiO4_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,7)=Mg2SiO4_wav_qext
+      QE_OPPR(2,1:100,1:100,7)=Mg2SiO4_wav_qext
+      QE_OPPR(3,1:100,1:100,7)=Mg2SiO4_wav_qext
+      QE_OPPR(4,1:100,1:100,7)=Mg2SiO4_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,7)=Mg2SiO4_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,8)=VO_wav_qext
-      QE_OPPR(2,1:50,1:50,8)=VO_wav_qext
-      QE_OPPR(3,1:50,1:50,8)=VO_wav_qext
-      QE_OPPR(4,1:50,1:50,8)=VO_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,8)=VO_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,8)=VO_wav_qext
+      QE_OPPR(2,1:100,1:100,8)=VO_wav_qext
+      QE_OPPR(3,1:100,1:100,8)=VO_wav_qext
+      QE_OPPR(4,1:100,1:100,8)=VO_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,8)=VO_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,9)=Ni_wav_qext
-      QE_OPPR(2,1:50,1:50,9)=Ni_wav_qext
-      QE_OPPR(3,1:50,1:50,9)=Ni_wav_qext
-      QE_OPPR(4,1:50,1:50,9)=Ni_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,9)=Ni_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,9)=Ni_wav_qext
+      QE_OPPR(2,1:100,1:100,9)=Ni_wav_qext
+      QE_OPPR(3,1:100,1:100,9)=Ni_wav_qext
+      QE_OPPR(4,1:100,1:100,9)=Ni_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,9)=Ni_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,10)=Fe_wav_qext
-      QE_OPPR(2,1:50,1:50,10)=Fe_wav_qext
-      QE_OPPR(3,1:50,1:50,10)=Fe_wav_qext
-      QE_OPPR(4,1:50,1:50,10)=Fe_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,10)=Fe_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,10)=Fe_wav_qext
+      QE_OPPR(2,1:100,1:100,10)=Fe_wav_qext
+      QE_OPPR(3,1:100,1:100,10)=Fe_wav_qext
+      QE_OPPR(4,1:100,1:100,10)=Fe_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,10)=Fe_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,11)=CaSiO4_wav_qext
-      QE_OPPR(2,1:50,1:50,11)=CaSiO4_wav_qext
-      QE_OPPR(3,1:50,1:50,11)=CaSiO4_wav_qext
-      QE_OPPR(4,1:50,1:50,11)=CaSiO4_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,11)=CaSiO4_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,11)=CaSiO4_wav_qext
+      QE_OPPR(2,1:100,1:100,11)=CaSiO4_wav_qext
+      QE_OPPR(3,1:100,1:100,11)=CaSiO4_wav_qext
+      QE_OPPR(4,1:100,1:100,11)=CaSiO4_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,11)=CaSiO4_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,12)=CaTiO3_wav_qext
-      QE_OPPR(2,1:50,1:50,12)=CaTiO3_wav_qext
-      QE_OPPR(3,1:50,1:50,12)=CaTiO3_wav_qext
-      QE_OPPR(4,1:50,1:50,12)=CaTiO3_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,12)=CaTiO3_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,12)=CaTiO3_wav_qext
+      QE_OPPR(2,1:100,1:100,12)=CaTiO3_wav_qext
+      QE_OPPR(3,1:100,1:100,12)=CaTiO3_wav_qext
+      QE_OPPR(4,1:100,1:100,12)=CaTiO3_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,12)=CaTiO3_rosselandMean_qext
       
-      QE_OPPR(1,1:50,1:50,13)=Al2O3_wav_qext
-      QE_OPPR(2,1:50,1:50,13)=Al2O3_wav_qext
-      QE_OPPR(3,1:50,1:50,13)=Al2O3_wav_qext
-      QE_OPPR(4,1:50,1:50,13)=Al2O3_PlanckMean_qext
-      QE_OPPR(5,1:50,1:50,13)=Al2O3_rosselandMean_qext
+      QE_OPPR(1,1:100,1:100,13)=Al2O3_wav_qext
+      QE_OPPR(2,1:100,1:100,13)=Al2O3_wav_qext
+      QE_OPPR(3,1:100,1:100,13)=Al2O3_wav_qext
+      QE_OPPR(4,1:100,1:100,13)=Al2O3_PlanckMean_qext
+      QE_OPPR(5,1:100,1:100,13)=Al2O3_rosselandMean_qext
 
       ! Thomas interpolating cloud condensation curves
       ! Temporarily define MET_INDEX (this is just to determine whether we need to interpolate)
