@@ -266,7 +266,7 @@
           REAL tcon_300X_MET_Al2O3(NLAYER)
 
           REAL CORFACT(51)
-          REAL TCONDS(5, 51, 13)
+          REAL TCONDS(6, 51, 13)
 
           REAL QE_OPPR(5, 100, 100, 13)
           REAL PI0_OPPR(5, 100, 100, 13)
