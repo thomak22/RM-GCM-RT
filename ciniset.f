@@ -464,10 +464,7 @@ CDIR$    IVDEP
       SIG_AREA     = 25.
       PHI_LON      = 65.
       GRAYCLDV     = .False.
-      WRITE(*,*) 'GRAYCLDV ciniset.f 1', GRAYCLDV
       READ(7,INCLOUDY)
-      WRITE(*,*) 'GRAYCLDV ciniset.f 2', GRAYCLDV
-      WRITE(*,*) 'AERLAYERS', AERLAYERS
       CALL get_cloud_scattering_properties_wrapper
 
 

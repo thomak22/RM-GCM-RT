@@ -3,10 +3,6 @@
         !   INTEGER GRAYCLDV
         !   REAL METALLICITY
           WRITE(*,*) "In get_cloud_scattering_properties_wrapper"
-          WRITE(*,*) "GRAYCLDV: ", GRAYCLDV
-          WRITE(*,*) "METALLICITY: ", METALLICITY
-          WRITE(*,*) "PICKET_FENCE_CLOUDS", PICKET_FENCE_CLOUDS
-          WRITE(*,*) "AERLAYERS", AERLAYERS 
           call get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIRP, NSOLP, GASCON, METALLICITY, GRAYCLDV)
       END SUBROUTINE get_cloud_scattering_properties_wrapper
 
@@ -2042,9 +2038,8 @@
       QE_OPPR(5,1:100,1:100,13)=Al2O3_rosselandMean_qext
 
 !   Now begins the cloud wavelength averaging:
-      write(*,*) "BEFORE AVERAGING:"
-      write(*,*) "Qe for KCl: ", QE_OPPR(1,1:100,20,1)
-      GRAYCLDV = .True.
+    !   write(*,*) "BEFORE AVERAGING:"
+    !   write(*,*) "Qe for KCl: ", QE_OPPR(1,1:100,20,1)
       IF (GRAYCLDV) THEN
           write(*,*) "Model being run with gray clouds in starlight"
           TEFFSTAR = 5780.0
@@ -2083,8 +2078,8 @@
             G0_OPPR(3,1:100,1:100,I) = TEMP_CLOUD_DATA(1:100,1:100)
           ENDDO
       ENDIF
-      write(*,*) "AFTER AVERAGING:"
-      write(*,*) "Qe for KCl: ", QE_OPPR(1,1:100,20,1)
+    !   write(*,*) "AFTER AVERAGING:"
+    !   write(*,*) "Qe for KCl: ", QE_OPPR(1,1:100,20,1)
 
 
       ! Thomas interpolating cloud condensation curves
