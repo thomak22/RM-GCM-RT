@@ -129,13 +129,13 @@ C
       CHARACTER(30) :: AEROSOLMODEL
 
       REAL TAUAEROSOL(nl+1,mg,2,jg),AEROPROF(NL+1),TCON(NL+1)
+      LOGICAL DELTASCALE,HAZES,PICKET_FENCE_CLOUDS,GRAYCLDV
 
-      LOGICAL DELTASCALE,HAZES,PICKET_FENCE_CLOUDS
-
-      COMMON/CLOUDY/ AEROSOLMODEL,AERTOTTAU,CLOUDBASE,
+      COMMON/CLOUDY/AEROSOLMODEL,AERTOTTAU,CLOUDBASE,
      &               CLOUDTOP,CLDFRCT,AERHFRAC,PI0AERSW,ASYMSW,EXTFACTLW,PI0AERLW,
      &               ASYMLW,DELTASCALE,SIG_AREA,PHI_LON,TAUAEROSOL,AEROPROF,
-     &               MAXTAU,MAXTAULOC,TCON,AERSOLCOMP,MTLX,METALLICITY,HAZES,PICKET_FENCE_CLOUDS,MOLEF,AERLAYERS
+     &               MAXTAU,MAXTAULOC,TCON,AERSOLCOMP,MTLX,METALLICITY,HAZES,PICKET_FENCE_CLOUDS,MOLEF,AERLAYERS,
+     &               GRAYCLDV
 
       COMMON/OUTCON/RNTAPE,NCOEFF,NLAT,INLAT,INSPC
      +              ,RNTAPO
@@ -264,6 +264,8 @@ c     The following for parallel testing --MTR
       REAL tauaer_temp(5, NL+1, 13)
       INTEGER j1
       real denom
+      REAL, dimension (500) :: HAZE_WAV_GRID
+      REAL, dimension (100)  :: CLOUD_WAV_GRID
 
 
 
@@ -277,7 +279,7 @@ c     The following for parallel testing --MTR
      &                              HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg,
      &                              HAZE_PlanckMean_tau_per_bar,HAZE_PlanckMean_pi0, HAZE_PlanckMean_gg,
      &                              HAZE_wav_tau_per_bar,HAZE_wav_pi0, HAZE_wav_gg,
-     &                              haze_pressure_array_pascals
+     &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID
 
 
 
