@@ -1,7 +1,5 @@
       SUBROUTINE get_cloud_scattering_properties_wrapper
           include 'rcommons.h'
-        !   INTEGER GRAYCLDV
-        !   REAL METALLICITY
           WRITE(*,*) "In get_cloud_scattering_properties_wrapper"
           call get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIRP, NSOLP, GASCON, METALLICITY, GRAYCLDV)
       END SUBROUTINE get_cloud_scattering_properties_wrapper
@@ -305,8 +303,7 @@
      &                              HAZE_PlanckMean_tau_per_bar,HAZE_PlanckMean_pi0, HAZE_PlanckMean_gg,
      &                              HAZE_wav_tau_per_bar,HAZE_wav_pi0, HAZE_wav_gg,
      &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID
-!           ! Test
-          WRITE(*,*) "GRAYCLDV: ", GRAYCLDV
+
           haze_type = 'soot'
           if (haze_type .eq. 'soot') THEN
               !write(*,*) "Model being run with soot hazes"
@@ -2038,8 +2035,6 @@
       QE_OPPR(5,1:100,1:100,13)=Al2O3_rosselandMean_qext
 
 !   Now begins the cloud wavelength averaging:
-    !   write(*,*) "BEFORE AVERAGING:"
-    !   write(*,*) "Qe for KCl: ", QE_OPPR(1,1:100,20,1)
       IF (GRAYCLDV) THEN
           write(*,*) "Model being run with gray clouds in starlight"
           TEFFSTAR = 5780.0
