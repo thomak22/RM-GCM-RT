@@ -273,14 +273,14 @@
       WOL(:,:)    = 0.0
       GOL(:,:)    = 0.0
 
-      IF (picket_fence_optical_depths) THEN
+      IF (opacity_method .EQ. 'picket') THEN
           IF (NIRP .EQ. 1) THEN
               WRITE(*,*) 'Stopping! Running picket fence gas optics with the wrong number of channels'
               STOP
           ENDIF
       ENDIF
 
-      IF (picket_fence_optical_depths) THEN
+      IF (opacity_method .EQ. 'picket') THEN
         CALL opacity_wrapper(t, P_PASS, tau_IRe, tau_Ve, Beta_V, Beta_IR, GA, incident_starlight_fraction,
      &           LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS,
      &           EMISIR, EPSILON, HEATI, HEATS, HEAT, SOLNET, TPI, SQ3, SBK, AM, AVG, ALOS,
@@ -325,7 +325,7 @@
                 k = k + 1
             END DO
         END DO
-      ELSE
+      ELSE IF (opacity_method .EQ. 'dogray') THEN
           if (NSOLP .gt. 1) then
               Beta_V(1) = 1.0
               Beta_V(2) = 0.0
