@@ -28,7 +28,7 @@
 !     * ************************************************************
 !
       include 'rcommons.h'
-
+      
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1
       REAL EMISIR, EPSILON, HEATI(51), HEATS(51), HEAT(51), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
@@ -903,13 +903,13 @@
 240   CONTINUE
 
       ! Fix it for N number of channels so it doesn't break
-      DO L = LLS+1, NSOLP
+      DO L = LLS+1, NSOL
           TAUAER(L,:) = TAUAER(1,:)
           WOL(L,:)    = WOL(1,:)
           GOL(L,:)    = GOL(1,:)
       END DO
 
-      DO L = LLS+1, NSOLP
+      DO L = LLS+1, NSOL
           TAUAER(L,:) = TAUAER(2,:)
           WOL(L,:)    = WOL(2,:)
           GOL(L,:)    = GOL(2,:)
@@ -920,7 +920,7 @@
           j1 = max(1, j-1)
 
 !         First the solar at standard resolution
-          DO L = solar_calculation_indexer,NSOLP
+          DO L = solar_calculation_indexer,NSOL
               TAUL(L,J) = TAUGAS(L,J)+TAURAY(L,J)+TAUAER(L,J)
 
               if(TAUL(L,J) .lt. 1d-6 ) then
@@ -971,7 +971,7 @@
 !     NOW AGAIN FOR THE IR
       DO J = 1,NDBL
           j1 = max( 1, j-1 )
-          DO L = NSOLP+1,NTOTAL
+          DO L = NSOL+1,NTOTAL
               TAUL(L,J) = TAUGAS(L,J)+TAURAY(L,J)+TAUAER(L,J)
 
 
@@ -1033,7 +1033,7 @@
           END DO
 
           DO I = 1,NGAUSS
-              DO L = NSOLP+1,NTOTAL
+              DO L = NSOL+1,NTOTAL
                   Y3(L,I,J) =   EXP(-TAUL(L,J)/GANGLE(I))
               END DO
           END DO

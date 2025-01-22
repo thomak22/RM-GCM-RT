@@ -26,7 +26,7 @@
 !     * ************************************************************
 !
       include 'rcommons.h'
-
+      
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, M, I, L, kindex, J
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
@@ -56,7 +56,7 @@
       A7(:,:) = 0.0
       DO 200 J           =  1,NDBL
           kindex         = max( 1, j-1 )
-          DO 100  L      =  NSOLP+1,NTOTAL
+          DO 100  L      =  NSOL+1,NTOTAL
 !            HERE WE DO NO SCATTERING COEFFICIENTS
              A3(L,J)     =  PTEMP(L,KINDEX)*TPI
              A4(L,J)     =  TPI*SLOPE(L,J)
@@ -67,7 +67,7 @@
 
 !         HERE WE DO SCATTERING
           IF(IRS .NE. 0) THEN
-              DO 50 L    =  NSOLP+1,NTOTAL
+              DO 50 L    =  NSOL+1,NTOTAL
                 A1(L,J)  =  U1I(L) - TOON_AK(L,J)
                 A2(L,J)  =  GAMI(L,J)*(TOON_AK(L,J)+U1I(L))
                 A3(L,J)  =  A3(L,J)+(SLOPE(L,J)*(TPI*B3(L,J)-U1S(L)))
@@ -81,7 +81,7 @@
 !
       DO 400       J         =  1,NDBL
          DO 350    I         =  1,NGAUSS
-            DO 300 L         =  NSOLP+1,NTOTAL
+            DO 300 L         =  NSOL+1,NTOTAL
                Y1(L,I,J)  =  0.0
                Y2(L,I,J)  =  0.0
                Y4(L,I,J)  =  A7(L,J) - A4(L,J)*GANGLE(I)
@@ -90,7 +90,7 @@
 !
 !           HERE WE DO SCATTERING
             IF(IRS .NE. 0) THEN
-              DO 325 L    =  NSOLP+1,NTOTAL
+              DO 325 L    =  NSOL+1,NTOTAL
                  YA        =  A1(L,J)*(Y3(L,I,J)-EE1(L,J))/
      &                             (TOON_AK(L,J)*GANGLE(I)-1.)
                  YB        =  A2(L,J)*(1.- EE1(L,J)*Y3(L,I,J))/
@@ -109,7 +109,7 @@
 
 !
       DO 450 J             =  1,NDBL
-         DO 425  L         =  NSOLP+1,NTOTAL
+         DO 425  L         =  NSOL+1,NTOTAL
             TMID(L,J) = 0.0
             TMIU(L,J) = 0.0
             DIREC(L,J)     =  0.0
@@ -122,7 +122,7 @@
 !     CALCULATE DINTENT THE DOWNWARD INTENSITY AND DIREC THE DOWNWARD FL
 
        DO 500 I             = 1,NGAUSS
-          DO 475 L          = NSOLP+1,NTOTAL
+          DO 475 L          = NSOL+1,NTOTAL
              if( iblackbody_above .eq. 1 )then
                DINTENT(L,I,1) = PTEMPT(L)*Y3(L,I,1)*TPI +Y1(L,I,1)+(1.-Y3(L,I,1))*Y4(L,I,1)
              else
@@ -138,7 +138,7 @@
 !      DINTENT IS DOWNWARD INTENSITY * TPI. DIREC IS THE DOWNWARD FLUX.
        DO 530        J           = 2,NDBL
            DO 520    I           = 1,NGAUSS
-              DO 510 L           = NSOLP+1,NTOTAL
+              DO 510 L           = NSOL+1,NTOTAL
                  DINTENT(L,I,J)  = DINTENT(L,I,J-1)*Y3(L,I,J)
      &                              +Y1(L,I,J)+Y5(L,J)+
      &                              (1.-Y3(L,I,J))*Y4(L,I,J)
@@ -155,7 +155,7 @@
 
 
        DO 570     I               =  1,NGAUSS
-          DO 560  L               =  NSOLP+1,NTOTAL
+          DO 560  L               =  NSOL+1,NTOTAL 
              UINTENT(L,I,NDBL)  =  PTEMPG(L)*EMIS(L)
      &                               *TPI+2.*RSFX(L)*DIREC(L,NDBL)
              TMIU(L,NDBL)       =  TMIU(L,NDBL)+
@@ -170,7 +170,7 @@
       DO 650        M              = 2,NDBL
           J                        = NDBL-M+1
           DO 640    I              = 1,NGAUSS
-             DO 630 L              = NSOLP+1,NTOTAL
+             DO 630 L              = NSOL+1,NTOTAL
                   UINTENT(L,I,J)    = (UINTENT(L,I,J+1)-Y5(L,J+1))*Y3(L,I,J+1)+Y2(L,I,J+1)+(1.-Y3(L,I,J+1))*Y8(L,I,J+1)
                   TMIU(L,J)        = TMIU(L,J)+UINTENT(L,I,J)*GRATIO(I)
                   DIRECTU(L,J)     = DIRECTU(L,J) + GWEIGHT(I)*UINTENT(L,I,J)

@@ -1598,7 +1598,7 @@ C used for the calculations, by setting the values in the paramter
 C statements                                                              
 C-----------------------------------------------------------------------  
 
-      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF
+      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF,NIR,NSOL,NTOTAL
       include 'params.i'
                            
       INTEGER MXGAS,MXLEV,MXBAND,MXCL                                     
@@ -1731,7 +1731,7 @@ C used for the calculations, by setting the values in the paramter
 C statements                                                              
 C-----------------------------------------------------------------------  
                       
-      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF
+      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF,NIR,NSOL,NTOTAL
       include 'params.i'
 
       LOGICAL LLOGPLEV,LFLUXDIAG,L1DZENITH,LDIUR
@@ -3563,7 +3563,7 @@ C used for the calculations, by setting the values in the paramter
 C statements                                                              
 C-----------------------------------------------------------------------  
 
-      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF            
+      INTEGER NN,MM,NHEM,NL,MOCT,MG,JG,NWJ2,NCRAY,JGL,NTRAC,NLEVRF,NIR,NSOL,NTOTAL            
       include 'params.i'
                                                     
       INTEGER MXGAS,MXLEV,MXBAND,MXCL                                     

@@ -51,7 +51,7 @@
       EF(:,:) = 0.0
 
        DO 10 L    =  solar_calculation_indexer,LLA
-          if( L .LE. NSOLP )then
+          if( L .LE. NSOL )then
             U1I(L) = SQ3
           else
             U1I(L) = 2.0
@@ -66,7 +66,7 @@
 
 !
        DO 14 J          =  1,NLAYER
-          DO 14 L       =  solar_calculation_indexer,NSOLP
+          DO 14 L       =  solar_calculation_indexer,NSOL
 !            THESE ARE FOR TWO STREAM AND HEMISPHERIC MEANS
              B1(L,J)    =  0.5*U1I(L)*(2. - W0(L,J)*(1. + G0(L,J)))
              B2(L,J)    =  0.5*U1I(L)*W0(L,J)*(1. - G0(L,J))
@@ -80,7 +80,7 @@
   14  CONTINUE
 
       DO 15 J = 1,NDBL
-          DO 15 L = NSOLP+1,NTOTAL
+          DO 15 L = NSOL+1,NTOTAL
 !            THESE ARE FOR TWO STREAM AND HEMISPHERIC MEANS
              B1(L,J)      =  0.5*U1I(L)*(2. - W0(L,J)*(1. + G0(L,J)))
              B2(L,J)      =  0.5*U1I(L)*W0(L,J)*(1. - G0(L,J))
@@ -105,7 +105,7 @@
       J                 =  0
       DO 18 JD          =  2,JN,2
          J              =  J + 1
-         DO 18 L        =  solar_calculation_indexer,NSOLP
+         DO 18 L        =  solar_calculation_indexer,NSOL
 !          HERE ARE THE EVEN MATRIX ELEMENTS
              AF(L,JD)   =  EM1(L,J+1)*EL1(L,J)-EM2(L,J+1)*EL2(L,J)
              BF(L,JD)   =  EM1(L,J+1)* EM1(L,J)-EM2(L,J+1)*EM2(L,J)
@@ -118,7 +118,7 @@
       J                 =  0
       DO 19 JD          =  2,JN2,2
          J              =  J + 1
-         DO 19 L        =  NSOLP+1,NTOTAL
+         DO 19 L        =  NSOL+1,NTOTAL
 !          HERE ARE THE EVEN MATRIX ELEMENTS
              AF(L,JD)   =  EM1(L,J+1)*EL1(L,J)-EM2(L,J+1)*EL2(L,J)
              BF(L,JD)   =  EM1(L,J+1)* EM1(L,J)-EM2(L,J+1)*EM2(L,J)
@@ -136,7 +136,7 @@
 
 
 
-      DO 20 L        = solar_calculation_indexer,NSOLP
+      DO 20 L        = solar_calculation_indexer,NSOL
          AF(L,1)     = 0.0
          BF(L,1)     = EL1(L,1)
          EF(L,1)     = -EM1(L,1)
@@ -144,7 +144,7 @@
          BF(L,JDBLE) = EM1(L,NLAYER)-RSFX(L)*EM2(L,NLAYER)
          EF(L,JDBLE) = 0.0
   20  CONTINUE
-      DO 21 L        = NSOLP+1,NTOTAL
+      DO 21 L        = NSOL+1,NTOTAL
          AF(L,1)     = 0.0
          BF(L,1)     = EL1(L,1)
          EF(L,1)     = -EM1(L,1)

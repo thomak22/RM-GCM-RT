@@ -26,7 +26,7 @@
 !     * ********************************************************
 !
       include 'rcommons.h'
-
+      
       integer kindex, J, L, num_layers, K, index_num
 
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS
@@ -83,7 +83,7 @@
               IT1 = TT(index_num)*TT(index_num)*TT(index_num)*TT(index_num)*SBKoverPI
           END IF
 
-          DO 200 L        = NSOLP+1,NTOTAL
+          DO 200 L        = NSOL+1,NTOTAL
 
 
 

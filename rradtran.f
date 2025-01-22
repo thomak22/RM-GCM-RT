@@ -56,9 +56,8 @@
 
       REAL ttsub(2*NL+2)
 
-      integer, parameter :: nwave_alb = NTOTAL
-      real wavea(nwave_alb),albedoa(nwave_alb),t(NZ)
-      real maxopd(nwave_alb)
+      real wavea(NTOTAL),albedoa(NTOTAL),t(NZ)
+      real maxopd(NTOTAL)
       real, dimension(NIR)  :: Beta_IR
       real, dimension(NSOL) :: Beta_V
       real, dimension(NIR+NSOL,2*NL+2) :: TAURAY,TAUL,TAUGAS,TAUAER
@@ -168,18 +167,18 @@
 
 !     SURFACE REFLECTIVITY AND EMISSIVITY
 !     Hack: use spectrally dependent surface albedo
-      DO 20 L =  1,NSOLP
+      DO 20 L =  1,NSOL
          RSFX(L) = ALBSW
          EMIS(L) =  1.0 - RSFX(L)
  20   CONTINUE
 
 !...Hack: specify EMIS based on RSFX rather than visa versa
-      DO 30 L =  NSOLP+1,NTOTAL
+      DO 30 L =  NSOL+1,NTOTAL
          EMIS(L) =  EMISIR
          RSFX(L) = 1.0 - EMIS(L)
 
-         if( wave(nprob(L)).gt.wavea(nwave_alb) ) then
-             rsfx(L) = albedoa(nwave_alb)
+         if( wave(nprob(L)).gt.wavea(NTOTAL) ) then
+             rsfx(L) = albedoa(NTOTAL)
          endif
 
          EMIS(L) = 1.0 - RSFX(L)
@@ -235,7 +234,7 @@
 
 !     IF NO INFRARED SCATTERING THEN SET INDEX TO NUMBER OF SOLAR INTERVALS
       IF(IRS .EQ. 0) THEN
-          LLA  =  NSOLP
+          LLA  =  NSOL
           write(*,*) "Something funny is going on, why no IR scattering?"
           stop
       ENDIF
@@ -322,13 +321,13 @@
 !     LEVELS. THESE VALUES SHOULD BE SUPERIOR TO THOSE COMPUTED
 !     WITHOUT DOUBLING
 
-      DO L = NSOLP+1, NTOTAL
+      DO L = NSOL+1, NTOTAL
           K =  1
           DO J =  1,NLAYER
             FNET(L,J)      =  DIRECTU(L,k)-DIREC(L,k)
             DIRECTU(L,J)   =  DIRECTU(L,K)
             DIREC(L,J)     =  DIREC(L,K)
-            OPD(L,J)       =  OPD(L,K)
+            OPD(L,J)       =  OPD(L,K) 
             TAUL(L,J)      =  TAUL(L,K)
             W0(L,J)        =  W0(L,K)
             G0(L,J)        =  G0(L,K)
@@ -346,7 +345,7 @@
 !     HERE WE PRESCRIBE THE BOTTOM BOUNDARY CONDITION NET FLUX IN THE IR.
 !     BE AWARE: IT ALSO AFFECTS THE UPWARD FLUX AT THE BASE IN NEWFLUX.
 
-      DO L = NSOLP+1,NTOTAL
+      DO L = NSOL+1,NTOTAL
           FNET(L,NLAYER)=FBASEFLUX
       END DO
 
@@ -359,19 +358,19 @@
 !     WITH BOTTOM BOUNDARY CONDITION
 
 !     MALSKY CHECK THAT THIS IS THE RIGHT BOUNDARY
-      DO L =  NSOLP+1,NTOTAL
+      DO L =  NSOL+1,NTOTAL
           DIRECTU(L,NDBL) = FBASEFLUX+DIREC(L,NDBL)
       END DO
 
 
       DO J = 1, NLAYER
            DO L = 1, NTOTAL
-               IF (L .LE. NSOLP) THEN
+               IF (L .LE. NSOL) THEN
                    FNET(L,J) = FNET(L,J) * Beta_V(L)
                ELSE
-                   FNET(L,J)    = FNET(L,J)    * Beta_IR(L - NSOLP)
-                   DIREC(L,J)   = DIREC(L,J)   * Beta_IR(L - NSOLP)
-                   DIRECTU(L,J) = DIRECTU(L,J) * Beta_IR(L - NSOLP)
+                   FNET(L,J)    = FNET(L,J)    * Beta_IR(L - NSOL)
+                   DIREC(L,J)   = DIREC(L,J)   * Beta_IR(L - NSOL)
+                   DIRECTU(L,J) = DIRECTU(L,J) * Beta_IR(L - NSOL)
                END IF
            END DO
       END DO
@@ -384,13 +383,13 @@
           TERM1      =  FDEGDAY/(DPG(J+1)*G)
 
           IF(incident_starlight_fraction.ge. 0) THEN
-              DO 480 L     =  1,NSOLP
+              DO 480 L     =  1,NSOL
                   HEATS(J)   =  HEATS(J)+(FNET(L,J+1)-FNET(L,J)) * TERM1
  480          CONTINUE
           ENDIF
 
           IF (IR .NE. 0) THEN
-              DO L    =  NSOLP+1,NTOTAL
+              DO L    =  NSOL+1,NTOTAL
                   HEATI(J)   =  HEATI(J)+(FNET(L,J+1)-FNET(L,J))*TERM1
               END DO
           ENDIF
@@ -408,7 +407,7 @@
 !     Here we Calculate (4 * pi * mean_intensity) for the IR.
       IF (IR .NE. 0) THEN
         DO J = 1, NVERT
-          DO L = NSOLP+1, NTOTAL
+          DO L = NSOL+1, NTOTAL
             TMI(L,J) = TMIU(L,J)+TMID(L,J)
           end do
         end do
@@ -466,7 +465,7 @@
       
       SOLNET   = 0.0
       IF (ISL .GT. 0) THEN
-          DO 510 L       =  1,NSOLP
+          DO 510 L       =  1,NSOL
               SOLNET  = SOLNET - FNET(L,NLAYER)
               fp      = (ck1(L,1) * eL2(L,1) - ck2(L,1) * em2(L,1) + cp(L,1)) * Beta_V(L)
 
@@ -480,7 +479,7 @@
                   fdownbs2(j) = fdownbs2(J) + fm * Beta_V(L)
                   fnetbs(j)   = fnetbs(j)   + fnet(L,j)
 
-                  if (L .eq. nsolp) then
+                  if (L .eq. NSOL) then
                       fdownbs(J) = (fupbs(j) - fnetbs(j))
                   endif
 510       CONTINUE
@@ -530,7 +529,7 @@
 
 
       IF (IR .NE. 0) THEN
-          DO L        =  NSOLP+1,NTOTAL
+          DO L        =  NSOL+1,NTOTAL
              firu(L-nsol ) = firu( L-nsol ) + directu(L,1)
 
              do j = 1, nlayer
@@ -561,7 +560,7 @@ C     1st index - flux 1=SW, 2=LW
 C     2nd index - Direction 1=DN, 2=UP
 C     3rd index - Where 1=TOP, 2=SURFACE
 
-      if (NSOLP .gt. 1) then
+      if (NSOL .gt. 1) then
           RFLUXES_aerad(1,1,1) = fsl_dn_aerad(NLAYER) * Beta_V(1) +
      &                           fsl_dn_aerad(NLAYER) * Beta_V(2) +
      &                           fsl_dn_aerad(NLAYER) * Beta_V(3)

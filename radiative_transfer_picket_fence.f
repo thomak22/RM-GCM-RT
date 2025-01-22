@@ -46,11 +46,11 @@
           integer :: NLAYER, J, k
           real :: Tirr, Tint, gravity_SI, incident_starlight_fraction
 
-          real, dimension(NIRP) :: Beta_IR
-          real, dimension(NSOLP) :: Beta_V
+          real, dimension(NIR) :: Beta_IR
+          real, dimension(NSOL) :: Beta_V
 
-          real, dimension(NIRP,NL+2) :: tau_IRe
-          real, dimension(NSOLP,NL+2) :: tau_Ve
+          real, dimension(NIR,NL+2) :: tau_IRe
+          real, dimension(NSOL,NL+2) :: tau_Ve
 
           real, dimension(NL+1) :: dpe, Pl, Tl, pe, p_pass, t
           real :: k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met
@@ -79,14 +79,13 @@
           dpe(NLAYER) = 10.0 ** (LOG10(dpe(NLAYER-1)) + (LOG10(dpe(NLAYER-1)) - LOG10(dpe(NLAYER-2))))
           pl(NLAYER)  = 10.0 ** (LOG10(pl(NLAYER-1))  + (LOG10(pl(NLAYER-1))  - LOG10(pl(NLAYER-2))))
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
-
-          CALL calculate_opacities(NLAYER, NSOLP, NIRP, incident_starlight_fraction, Tirr, Tint,
+          CALL calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction, Tirr, Tint,
      &                             Tl, Pl, dpe, tau_IRe,tau_Ve, Beta_V,
      &                             Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY,pe, k_IRl, k_Vl, TOAALB)
 
       end subroutine opacity_wrapper
 
-      subroutine calculate_opacities(NLAYER, NSOLP, NIRP, incident_starlight_fraction,
+      subroutine calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction,
      &                               Tirr, Tint, Tl, Pl, dpe, tau_IRe,tau_Ve,Beta_V,
      &                               Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY, pe, k_IRl, k_Vl, TOAALB)
         ! Input:
@@ -105,9 +104,9 @@
 
         implicit none
         real :: gam_1, gam_2, tau_lim, gam_P
-        real, dimension(NSOLP) :: Beta_V, gam_V
-        real, dimension(NIRP) :: Beta_IR
-        integer :: k, NLAYER, J, NSOLP, NIRP, i
+        real, dimension(NSOL) :: Beta_V, gam_V
+        real, dimension(NIR) :: Beta_IR
+        integer :: k, NLAYER, J, NSOL, NIR, i
         real :: Teff, Tint, Tirr, incident_starlight_fraction
 
         real :: R,gravity_SI
@@ -118,11 +117,11 @@
 
         real, dimension(NLAYER) :: dpe, Pl, Tl, pe
 
-        real, dimension(NIRP, NLAYER) :: k_IRl
-        real, dimension(NSOLP,NLAYER) :: k_Vl
+        real, dimension(NIR, NLAYER) :: k_IRl
+        real, dimension(NSOL,NLAYER) :: k_Vl
 
-        real, dimension(NIRP,NLAYER+1) :: tau_IRe
-        real, dimension(NSOLP,NLAYER+1) :: tau_Ve
+        real, dimension(NIR,NLAYER+1) :: tau_IRe
+        real, dimension(NSOL,NLAYER+1) :: tau_Ve
         real :: grav
         real :: with_TiO_and_VO, METALLICITY
         real :: Bond_Albedo, TOAALB

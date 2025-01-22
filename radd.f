@@ -29,7 +29,6 @@
 !
       include 'rcommons.h'
 
-
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, kindex, J, K, L
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
@@ -68,7 +67,7 @@
         DU0                =  1./U0
         DO 10 J            =  1,NLAYER
             j1 = max( 1, j-1 )
-            DO 10 L        =  1,NSOLP
+            DO 10 L        =  1,NSOL
                B3(L,J)     =  0.5*(1.-SQ3*G0(L,J)*U0)
                B4          =  1. - B3(L,J)
                X2          =  TAUL(L,J)*DU0
@@ -104,7 +103,7 @@
                CM(L,J)     =  CM1 * x4_add
 
   10  CONTINUE
-        DO 20 L            =  1,NSOLP
+        DO 20 L            =  1,NSOL
           SFCS(L)         =  DIRECT(L,NLAYER) * RSFX(L)
   20  CONTINUE
       END IF
@@ -117,7 +116,7 @@
       IF(IRS .NE. 0)  THEN
         DO 30 J           =   1,NDBL
            KINDEX         = max(1,J-1)
-           DO 30 L        = NSOLP+1,NTOTAL
+           DO 30 L        = NSOL+1,NTOTAL
               B3(L,J)     = 1.0/(B1(L,J)+B2(L,J))
               CP(L,J)     = (PTEMP(L,KINDEX)+SLOPE(L,J)*B3(L,J))*U1S(L)
               CPB(L,J)    = CP(L,J) + SLOPE(L,J)*TAUL(L,J)*U1S(L)
@@ -129,14 +128,14 @@
   30  CONTINUE
 
 
-      DO 40 L             = NSOLP+1,NTOTAL
+      DO 40 L             = NSOL+1,NTOTAL
   40     SFCS(L)          = EMIS(L)*PTEMPG(L)*3.141592653589
       END IF
 !
       J                =  0
       DO 42 JD         =  2,JN,2
          J             =  J + 1
-         DO 42 L       =  solar_calculation_indexer,NSOLP
+         DO 42 L       =  solar_calculation_indexer,NSOL
 !           HERE ARE THE EVEN MATRIX ELEMENTS
             DF(L,JD) = (CP(L,J+1) - CPB(L,J))*EM1(L,J+1) -
      &                  (CM(L,J+1) - CMB(L,J))*EM2(L,J+1)
@@ -150,7 +149,7 @@
       J                =  0
       DO 43 JD         =  2,JN2,2
          J             =  J + 1
-         DO 43 L       =  NSOLP+1,LLA
+         DO 43 L       =  NSOL+1,LLA
 
 !           HERE ARE THE EVEN MATRIX ELEMENTS
             DF(L,JD) = (CP(L,J+1) - CPB(L,J))*EM1(L,J+1) -
@@ -166,13 +165,13 @@
 !     DIFFUSE RADIATION IS INCIDENT AT THE TOP.
 !
 !VIS
-      DO 44 L        = solar_calculation_indexer,NSOLP
+      DO 44 L        = solar_calculation_indexer,NSOL
          DF(L,1)     = -CM(L,1)
          DF(L,JDBLE) = SFCS(L)+RSFX(L)*CMB(L,NLAYER)-CPB(L,NLAYER)
          DS(L,JDBLE) = DF(L,JDBLE)/BF(L,JDBLE)
   44     AS(L,JDBLE) = AF(L,JDBLE)/BF(L,JDBLE)
 !IR
-      DO 45 L        = NSOLP+1,LLA
+      DO 45 L        = NSOL+1,LLA
          DF(L,1)     = -CM(L,1)
          DF(L,JDBLEDBLE) = SFCS(L)+RSFX(L)*CMB(L,NDBL)-CPB(L,NDBL)
          DS(L,JDBLEDBLE) = DF(L,JDBLEDBLE)/BF(L,JDBLEDBLE)
@@ -186,7 +185,7 @@
 !     ********************************************
 
       DO 46 J               = 2, JDBLE
-         DO 46 L            = solar_calculation_indexer,NSOLP
+         DO 46 L            = solar_calculation_indexer,NSOL
             X               = 1./(BF(L,JDBLE+1-J) - EF(L,JDBLE+1-J)*AS(L,JDBLE+2-J))
             AS(L,JDBLE+1-J) = AF(L,JDBLE+1-J)*X
             DS(L,JDBLE+1-J) = (DF(L,JDBLE+1-J) - EF(L,JDBLE+1-J) *DS(L,JDBLE+2-J))*X
@@ -195,7 +194,7 @@
 
 !   NOW IR
       DO 47 J               = 2, JDBLEDBLE
-         DO 47 L            = NSOLP+1,LLA
+         DO 47 L            = NSOL+1,LLA
             X               = 1./(BF(L,JDBLEDBLE+1-J) - EF(L,JDBLEDBLE+1-J)*AS(L,JDBLEDBLE+2-J))
             AS(L,JDBLEDBLE+1-J) = AF(L,JDBLEDBLE+1-J)*X
             DS(L,JDBLEDBLE+1-J) = (DF(L,JDBLEDBLE+1-J) - EF(L,JDBLEDBLE+1-J)*DS(L,JDBLEDBLE+2-J))*X
@@ -211,7 +210,7 @@
   50  CONTINUE
 
       DO 51 J       = 2, JDBLEDBLE
-         DO 51 L    = NSOLP+1,NTOTAL
+         DO 51 L    = NSOL+1,NTOTAL
             XK(L,J) = DS(L,J) - AS(L,J)*XK(L,J-1)
   51  CONTINUE
 
@@ -221,7 +220,7 @@
 !  ***************************************************************
 
       do J = 1,NLAYER
-        do L = solar_calculation_indexer,NSOLP
+        do L = solar_calculation_indexer,NSOL
           CK1(L,J)   = XK(L,2*J-1)
           CK2(L,J)   = XK(L,2*J)
 
@@ -239,7 +238,7 @@
 !  AND AGAIN FOR IR
 
       do J = 1,NDBL
-        do L = NSOLP+1,NTOTAL
+        do L = NSOL+1,NTOTAL
           CK1(L,J)   = XK(L,2*J-1)
           CK2(L,J)   = XK(L,2*J)
 

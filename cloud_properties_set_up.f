@@ -1,13 +1,13 @@
       SUBROUTINE get_cloud_scattering_properties_wrapper
           include 'rcommons.h'
           WRITE(*,*) "In get_cloud_scattering_properties_wrapper"
-          call get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIRP, NSOLP, GASCON, METALLICITY, GRAYCLDV)
+          call get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIR, NSOL, GASCON, METALLICITY, GRAYCLDV)
       END SUBROUTINE get_cloud_scattering_properties_wrapper
 
 
-      SUBROUTINE get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIRP, NSOLP, GASCON, METALLICITY, GRAYCLDV)
+      SUBROUTINE get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIR, NSOL, GASCON, METALLICITY, GRAYCLDV)
           implicit none
-          integer :: J, L, K, NL, NCLOUDS, NLAYER, NVERT, NIRP, NSOLP
+          integer :: J, L, K, NL, NCLOUDS, NLAYER, NVERT, NIR, NSOL
           real :: GAS_CONSTANT_R, GASCON, METALLICITY
           LOGICAL :: GRAYCLDV
 

@@ -1,8 +1,7 @@
 C**********************************************************
 C             SUBROUTINE RADIATION
 C**********************************************************
-      SUBROUTINE RADIATION(TROPHT,IH,NIR,NSOL)
-C Thomas edit 1/13/25 - added NIR and NSOL to the argument list
+      SUBROUTINE RADIATION(TROPHT,IH)
 C     RADIATION SCHEME DERIVED FROM PREVIOUS CMORC.F AND THE
 C     TOON CODES (TOON ET AL 1989). THE SCHEME IS CURRENTLY DOUBLE GRAY
 C     AND APPLIES THE TWO-STREAM APPROXIMATION WITH QUADRATURE IN THE
@@ -13,6 +12,7 @@ C     to the Radiation scheme temperatures from TG and TSTAR
 C
 C     Determines model resolution
       use omp_lib
+      INTEGER NIR,NSOL,NTOTAL
       include 'params.i'
 
 C     Sets basic constants, especially those needed for array dimensions

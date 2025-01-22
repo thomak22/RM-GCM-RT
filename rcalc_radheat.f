@@ -32,7 +32,7 @@
 !      use physical_constants
 
       include 'rcommons.h'
-
+      
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS,kount
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
@@ -192,13 +192,13 @@ C     ER Modif: output pressures in bar instead of mbar
           DO IL=1,NLAYER                                                  
           WRITE(62,2033),p_pass(IL)*1e-5,
      &                   uTAUL(1,IL),
-     $                   uTAUL(NSOLP+1,IL),
+     $                   uTAUL(NSOL+1,IL),
      &                   uOPD(1,IL),
-     &                   uOPD(NSOLP+1,IL),
+     &                   uOPD(NSOL+1,IL),
      &                   uW0(1,IL),
-     &                   uW0(NSOLP+1,IL),
+     &                   uW0(NSOL+1,IL),
      &                   uG0(1,IL),
-     &                   uG0(NSOLP+1,IL),
+     &                   uG0(NSOL+1,IL),
      &                   DIRECTU(4,IL)+DIRECTU(5,IL),
      &                   TMI(1,IL)+TMI(2,IL)+TMI(3,IL),
      &                   TMI(4,IL)+TMI(5,IL)
