@@ -71,7 +71,7 @@
       real, dimension(100) :: input_particle_size_array_in_meters
       real, dimension(50) :: particle_size_vs_layer_array_in_meters
 
-      REAL QE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL KE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
       REAL PI0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
       REAL G0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
 
@@ -98,8 +98,9 @@
 
       REAL, dimension (500) :: HAZE_WAV_GRID
       REAL, dimension (100)  :: CLOUD_WAV_GRID
+      REAL :: exp_92_lnsig2_pi
 
-      COMMON /CLOUD_PROPERTIES/ TCONDS, QE_OPPR, PI0_OPPR, G0_OPPR,
+      COMMON /CLOUD_PROPERTIES/ TCONDS, KE_OPPR, PI0_OPPR, G0_OPPR,
      &                              DENSITY, FMOLW,
      &                              CORFACT,
      &                              input_particle_size_array_in_meters,
@@ -109,7 +110,7 @@
      &                              HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg,
      &                              HAZE_PlanckMean_tau_per_bar,HAZE_PlanckMean_pi0, HAZE_PlanckMean_gg,
      &                              HAZE_wav_tau_per_bar,HAZE_wav_pi0, HAZE_wav_gg,
-     &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID
+     &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID, exp_92_lnsig2_pi
 
       ! THE THREE Condensation curve sets are for 1X, 100X, and 300X Met
       ! Sorry that this is bad code
@@ -250,24 +251,28 @@
                   DO L = solar_calculation_indexer,NSOLP
                       WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
 
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
+                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(1,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                   END DO
                   DO L = NSOLP+1,NTOTAL
                       WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
+                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(1,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                   END DO
               ELSE
                   DO L = solar_calculation_indexer,NSOLP
                       WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,WAV_LOC,size_loc,I)
+                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                   END DO
 
                   DO L = NSOLP+1,NTOTAL
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                                  CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,temp_loc,size_loc,I)
+                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,temp_loc,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                   END DO
               END IF
           END DO
