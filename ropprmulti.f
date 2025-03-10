@@ -66,10 +66,10 @@
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(100) :: input_temperature_array
-      real, dimension(50) :: input_pressure_array_cgs
+      real, dimension(80) :: input_pressure_array_cgs
 
       real, dimension(100) :: input_particle_size_array_in_meters
-      real, dimension(50) :: particle_size_vs_layer_array_in_meters
+      real, dimension(80) :: particle_size_vs_layer_array_in_meters
 
       REAL KE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
       REAL PI0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
