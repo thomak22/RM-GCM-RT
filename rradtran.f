@@ -19,7 +19,7 @@
      &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, num_layers, SLOPE, Y1, Y2, Y4, Y8, A1, A2, A3, A4, A5, A7, Y5,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, kount)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, kount, ITSPD)
 
 !
 !     **************************************************************
@@ -36,7 +36,7 @@
 !
       include 'rcommons.h'
 
-      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, kount
+      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, kount, itspd
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
       REAL SCDAY, RGAS, GANGLE(3), GWEIGHT(3), GRATIO(3), EMIS(5), RSFX(5),NPROB(5), SOL(5),RAYPERBAR(5),WEIGHT(5)
@@ -204,7 +204,7 @@
      &                   tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &                   fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &                   qrad,alb_tomi,alb_toai, p_pass,
-     &                   PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount)
+     &                   PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount,itspd)
       ELSE
           write(*,*) 'ERROR! Something is off about your version. Check with Isaac'
           STOP

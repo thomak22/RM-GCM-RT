@@ -15,7 +15,7 @@
      &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, p_pass,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, itspd)
 !
 !     **************************************************************
 !     *  Purpose             :  CaLculates optical properties      *
@@ -30,7 +30,7 @@
 !
       include 'rcommons.h'
 
-      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1,kount, MET_INDEX
+      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1,kount, MET_INDEX, itspd
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
       REAL SCDAY, RGAS, GANGLE(3), GWEIGHT(3), GRATIO(3), EMIS(5), RSFX(5),NPROB(5), SOL(5),RAYPERBAR(5),WEIGHT(5)
@@ -48,6 +48,7 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toais
 
+      REAL FACTOR, RAMP
       REAL DENOM
       REAL DPG(NLAYER), p_pass(NLAYER), layer_pressure_bar(NLAYER)
       REAL CONDFACT(NLAYER,NCLOUDS)
@@ -133,7 +134,6 @@
         ! If not in the list of real curves, use the interpolated curve
         MET_INDEX = 6
       END IF
-
 
       DO J  = 2,NLAYER
           layer_pressure_bar(J)  = (p_pass(J)-p_pass(J-1)) * 1e-5
@@ -394,6 +394,16 @@
       END DO
 
 
+      ramp = 5.0  ! Set an appropriate value for ramp
+      ! Apply a ramp to the cloud properties
+      IF (KOUNT/ITSPD .LT. ramp) THEN
+        factor = (KOUNT/ramp)/ITSPD
+        ! write(*,*) 'Ramping up the cloud properties by a factor of:', factor
+        ! write(*,*) 'TAUAER before ramp:', TAUAER
+        TAUAER = TAUAER * factor
+        ! write(*,*) 'TAUAER after ramp:', TAUAER
+      ENDIF
+
       iradgas = 1
       DO J = 1,NLAYER
           j1 = max(1, j-1)
@@ -528,7 +538,8 @@
               END DO
           END DO
       END DO
-
+    !   write(*,*) taul(1,:), taul(2,:), taul(3,:)
+    !   stop
       RETURN
       END
 
