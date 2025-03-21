@@ -15,7 +15,7 @@
      &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, p_pass,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, itspd)
 !
 !     **************************************************************
 !     *  Purpose             :  CaLculates optical properties      *
@@ -30,7 +30,7 @@
 !
       include 'rcommons.h'
 
-      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1,kount, MET_INDEX
+      INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1,kount, MET_INDEX, itspd
       REAL EMISIR, EPSILON, HEATI(NLAYER), HEATS(NLAYER), HEAT(NLAYER), SOLNET
       REAL TPI, SQ3, SBK,AM, AVG, ALOS
       REAL SCDAY, RGAS, GANGLE(3), GWEIGHT(3), GRATIO(3), EMIS(NTOTAL), RSFX(NTOTAL),NPROB(NTOTAL), SOL(NTOTAL)
@@ -49,6 +49,7 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toais
 
+      REAL FACTOR, RAMP
       REAL DENOM
       REAL DPG(NLAYER), p_pass(NLAYER), layer_pressure_bar(NLAYER)
       REAL CONDFACT(NLAYER,NCLOUDS)
@@ -67,14 +68,14 @@
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(100) :: input_temperature_array
-      real, dimension(50) :: input_pressure_array_cgs
+      real, dimension(80) :: input_pressure_array_cgs
 
       real, dimension(100) :: input_particle_size_array_in_meters
-      real, dimension(50) :: particle_size_vs_layer_array_in_meters
+      real, dimension(80) :: particle_size_vs_layer_array_in_meters
 
-      REAL QE_OPPR(NTOTAL, 100, 100, NCLOUDS)
-      REAL PI0_OPPR(NTOTAL, 100, 100, NCLOUDS)
-      REAL G0_OPPR(NTOTAL, 100, 100, NCLOUDS)
+      REAL KE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL PI0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL G0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
 
       ! HAZE ARRAYS ARE DIFFERENT THAN THE OTHER ONES
       real, dimension(50, 100)  :: HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg
@@ -99,8 +100,9 @@
 
       REAL, dimension (500) :: HAZE_WAV_GRID
       REAL, dimension (100)  :: CLOUD_WAV_GRID
+      REAL :: exp_92_lnsig2_pi
 
-      COMMON /CLOUD_PROPERTIES/ TCONDS, QE_OPPR, PI0_OPPR, G0_OPPR,
+      COMMON /CLOUD_PROPERTIES/ TCONDS, KE_OPPR, PI0_OPPR, G0_OPPR,
      &                              DENSITY, FMOLW,
      &                              CORFACT,
      &                              input_particle_size_array_in_meters,
@@ -110,7 +112,7 @@
      &                              HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg,
      &                              HAZE_PlanckMean_tau_per_bar,HAZE_PlanckMean_pi0, HAZE_PlanckMean_gg,
      &                              HAZE_wav_tau_per_bar,HAZE_wav_pi0, HAZE_wav_gg,
-     &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID
+     &                              haze_pressure_array_pascals, HAZE_WAV_GRID, CLOUD_WAV_GRID, exp_92_lnsig2_pi
 
       ! THE THREE Condensation curve sets are for 1X, 100X, and 300X Met
       ! Sorry that this is bad code
@@ -257,24 +259,28 @@
                     DO L = solar_calculation_indexer,NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
 
-                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(1,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
                     DO L = NSOL+1,NTOTAL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
-                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(1,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
                 ELSE
                     DO L = solar_calculation_indexer,NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
-                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,WAV_LOC,size_loc,I)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
 
                     DO L = NSOL+1,NTOTAL
-                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
-     &                                  CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,temp_loc,size_loc,I)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
                 END IF
             END DO
@@ -394,6 +400,16 @@
                 GOL(L,J) = (GOL(L,J+1) + GOL(L,J-1)) / 2.0
             END DO
         END DO
+
+        ramp = 5.0  ! Set an appropriate value for ramping up clouds linearly
+        ! Apply a ramp to the cloud properties
+        IF (KOUNT/ITSPD .LT. ramp) THEN
+          factor = (KOUNT/ramp)/ITSPD
+          ! write(*,*) 'Ramping up the cloud properties by a factor of:', factor
+          ! write(*,*) 'TAUAER before ramp:', TAUAER
+          TAUAER = TAUAER * factor
+          ! write(*,*) 'TAUAER after ramp:', TAUAER
+        ENDIF
       END IF
 
 
