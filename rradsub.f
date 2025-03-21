@@ -234,7 +234,7 @@ C     globally averaged solar constant, vertical rays
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, k_IRl, k_Vl)
 
-
+         !  write(*,*) 'made it to radtran'
           call radtran(Beta_V, Beta_IR, incident_starlight_fraction,TAURAY,TAUL,TAUGAS,TAUAER,
      &                 solar_calculation_indexer, DPG, pr, t, p_pass,
      &             ifsetup, ibinm, rfluxes_aerad, psol_aerad, heati_aerad, heats_aerad,

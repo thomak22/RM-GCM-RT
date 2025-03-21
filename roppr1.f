@@ -53,7 +53,8 @@
       real, dimension(NTOTAL,2*NL+2) :: TAUL
       real, dimension(NTOTAL,NDBL) :: SLOPE
       real, dimension(2*NL+2) :: ttsub
-
+    !   data SBK/5.6704E-8/
+      data SBKoverPI/1.80494438e-8/
 
 !     **************************************
 !     * CALCULATE PTEMP AND SLOPE          *
@@ -68,9 +69,9 @@
       !    K  =  K+1
       !END DO
 
-
-      SBK=5.6704E-8
-      SBKoverPI=SBK/PI
+    ! thomas changed these to data statements
+    !   SBK=5.6704E-8
+    !   SBKoverPI=SBK/PI
 
       DO 300 J            =   1,NDBL
 
@@ -101,6 +102,7 @@
 
  200      CONTINUE
  300  CONTINUE
+    !   write(*,*) sum(PTEMP, dim=1)/2
 
 
 

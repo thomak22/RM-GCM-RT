@@ -63,7 +63,13 @@
 !     ******************************
 !     *   CALCULATIONS FOR SOLAR   *
 !     ******************************
-
+      ! write(*,*) "SOL (RADD):", SUM(SOL)
+      ! if (ALL(TAUL.EQ.OPD)) then
+      !   write(*,*) "TAUL == OPD"
+      ! else
+      !   write(*,*) "TAUL != OPD"
+      ! endif
+      
       IF(ISL .NE. 0)  THEN
         DU0                =  1./U0
         DO 10 J            =  1,NLAYER

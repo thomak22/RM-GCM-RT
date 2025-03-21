@@ -115,279 +115,286 @@
       ! THE THREE Condensation curve sets are for 1X, 100X, and 300X Met
       ! Sorry that this is bad code
       ! Malsky
-      IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
-          MET_INDEX = 1
-      ELSE IF (METALLICITY .gt. 0.9 .AND. METALLICITY .lt. 1.1) THEN
-          MET_INDEX = 2
-      ELSE IF (METALLICITY .gt. 1.4 .AND. METALLICITY .lt. 1.6) THEN
-          MET_INDEX = 3
-      ELSE IF (METALLICITY .gt. 1.9 .AND. METALLICITY .lt. 2.1) THEN
-          MET_INDEX = 4
-      ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
-          MET_INDEX = 5
-      ELSE
-        !   write(*,*) 'Something is wrong with your metallicity'
-        !   write(*,*) 'Check ropprrmulti'
-        !   write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
-        !   stop
-        ! If not in the list of real curves, use the interpolated curve
-        MET_INDEX = 6
-      END IF
+    !   write(*,*) 'made it to ropprmulti.f'
+    !   write(*,*) 'gas taus:', TAUGAS
+      IF (aerosolcomp .eq. 'standard') THEN
+        IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
+            MET_INDEX = 1
+        ELSE IF (METALLICITY .gt. 0.9 .AND. METALLICITY .lt. 1.1) THEN
+            MET_INDEX = 2
+        ELSE IF (METALLICITY .gt. 1.4 .AND. METALLICITY .lt. 1.6) THEN
+            MET_INDEX = 3
+        ELSE IF (METALLICITY .gt. 1.9 .AND. METALLICITY .lt. 2.1) THEN
+            MET_INDEX = 4
+        ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
+            MET_INDEX = 5
+        ELSE
+            !   write(*,*) 'Something is wrong with your metallicity'
+            !   write(*,*) 'Check ropprrmulti'
+            !   write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
+            !   stop
+            ! If not in the list of real curves, use the interpolated curve
+            MET_INDEX = 6
+        END IF
 
 
-      DO J  = 2,NLAYER
-          layer_pressure_bar(J)  = (p_pass(J)-p_pass(J-1)) * 1e-5
-      END DO
+        DO J  = 2,NLAYER
+            layer_pressure_bar(J)  = (p_pass(J)-p_pass(J-1)) * 1e-5
+        END DO
 
-      layer_pressure_bar(1)=(10.0**(LOG10(layer_pressure_bar(2))-(LOG10(layer_pressure_bar(3))-
+        layer_pressure_bar(1)=(10.0**(LOG10(layer_pressure_bar(2))-(LOG10(layer_pressure_bar(3))-
      &                       LOG10(layer_pressure_bar(2)))))
 
-      ! Find the index of the haze wavelengths in the visible
-      HAZE_WAVELENGTH_INDEXES(1) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(1))),1)
-      HAZE_WAVELENGTH_INDEXES(2) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(2))),1)
-      HAZE_WAVELENGTH_INDEXES(3) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(3))),1)
+        !   WRITE(*,*) 'haze wl grid:', HAZE_WAV_GRID
+        !   WRITE(*,*) 'haze_wl_indices:', HAZE_WAVELENGTH_INDEXES
+        !   WRITE(*,*) 'RAYSCATLAM:', RAYSCATLAM
+        ! Find the index of the haze wavelengths in the visible
+        HAZE_WAVELENGTH_INDEXES(1) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(1))),1)
+        HAZE_WAVELENGTH_INDEXES(2) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(2))),1)
+        HAZE_WAVELENGTH_INDEXES(3) = MINLOC(ABS((HAZE_WAV_GRID) - (RAYSCATLAM(3))),1)
 
-      ! Find the index of the haze wavelengths at 5.0 microns
-      HAZE_WAVELENGTH_INDEXES(4) = MINLOC(ABS((HAZE_WAV_GRID) - (5.0)),1)
-      HAZE_WAVELENGTH_INDEXES(5) = MINLOC(ABS((HAZE_WAV_GRID) - (5.0)),1)
+        ! Find the index of the haze wavelengths at 5.0 microns
+        HAZE_WAVELENGTH_INDEXES(4) = MINLOC(ABS((HAZE_WAV_GRID) - (5.0)),1)
+        HAZE_WAVELENGTH_INDEXES(5) = MINLOC(ABS((HAZE_WAV_GRID) - (5.0)),1)
 
-      ! Find the index of the cloud wavelengths in the visible
-      CLOUD_WAVELENGTH_INDEXES(1) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(1))),1)
-      CLOUD_WAVELENGTH_INDEXES(2) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(2))),1)
-      CLOUD_WAVELENGTH_INDEXES(3) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(3))),1)
+        ! Find the index of the cloud wavelengths in the visible
+        CLOUD_WAVELENGTH_INDEXES(1) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(1))),1)
+        CLOUD_WAVELENGTH_INDEXES(2) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(2))),1)
+        CLOUD_WAVELENGTH_INDEXES(3) = MINLOC(ABS((CLOUD_WAV_GRID) - (RAYSCATLAM(3))),1)
 
-      ! Find the index of the haze wavelengths at 5.0 microns
-      CLOUD_WAVELENGTH_INDEXES(4) = MINLOC(ABS((CLOUD_WAV_GRID) - (5.0)),1)
-      CLOUD_WAVELENGTH_INDEXES(5) = MINLOC(ABS((CLOUD_WAV_GRID) - (5.0)),1)
+        ! Find the index of the haze wavelengths at 5.0 microns
+        CLOUD_WAVELENGTH_INDEXES(4) = MINLOC(ABS((CLOUD_WAV_GRID) - (5.0)),1)
+        CLOUD_WAVELENGTH_INDEXES(5) = MINLOC(ABS((CLOUD_WAV_GRID) - (5.0)),1)
 
-      Y3(:,:,:) = 0.0
+        Y3(:,:,:) = 0.0
 
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      !!!!!!!!         GET THE HAZE DATA FIRST       !!!!!!!!!!
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      IF (HAZES) THEN
-          DO J = 1, NLAYER
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1)  ! Both of these are in PA
-              ! This grabs the optical depth per bar, then multiply it by the pressure in bars
-              IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = HAZE_WAVELENGTH_INDEXES(2) !THIS IS THE DOUBLE GRAY VERSION
-                      TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
-                  END DO
-              ELSE
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = HAZE_WAVELENGTH_INDEXES(L)
-                      TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
-                  END DO
-              END IF
-          END DO
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!!!!!!!         GET THE HAZE DATA FIRST       !!!!!!!!!!
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        IF (HAZES) THEN
+            DO J = 1, NLAYER
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1)  ! Both of these are in PA
+                ! This grabs the optical depth per bar, then multiply it by the pressure in bars
+                IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = HAZE_WAVELENGTH_INDEXES(2) !THIS IS THE DOUBLE GRAY VERSION
+                        TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
+                    END DO
+                ELSE
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = HAZE_WAVELENGTH_INDEXES(L)
+                        TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
+                    END DO
+                END IF
+            END DO
 
-          DO J = 1, NLAYER
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1)  ! Both of these are in PA
-              temp_loc         = MINLOC(ABS(input_temperature_array - (TT(J))),1) ! Not needed for the stellar calc
+            DO J = 1, NLAYER
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1)  ! Both of these are in PA
+                temp_loc         = MINLOC(ABS(input_temperature_array - (TT(J))),1) ! Not needed for the stellar calc
 
-              ! This grabs the optical depth per bar, then multiply it by the pressure in bars
-              IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-                  DO L = NSOL+1,NTOTAL
-                      WAV_LOC = HAZE_WAVELENGTH_INDEXES(4)
-                      TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
-                  END DO
-              ELSE
-                  TAU_HAZE(NSOL+1,J)=HAZE_PlanckMean_tau_per_bar(temp_loc, haze_layer_index)*layer_pressure_bar(J)
-                  TAU_HAZE(NSOL+2,J)=HAZE_RosselandMean_tau_per_bar(temp_loc, haze_layer_index)*layer_pressure_bar(J)
-              END IF
-          END DO
-      ELSE
-           TAU_HAZE = 0.0
-      END IF
+                ! This grabs the optical depth per bar, then multiply it by the pressure in bars
+                IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
+                    DO L = NSOL+1,NTOTAL
+                        WAV_LOC = HAZE_WAVELENGTH_INDEXES(4)
+                        TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
+                    END DO
+                ELSE
+                    TAU_HAZE(NSOL+1,J)=HAZE_PlanckMean_tau_per_bar(temp_loc, haze_layer_index)*layer_pressure_bar(J)
+                    TAU_HAZE(NSOL+2,J)=HAZE_RosselandMean_tau_per_bar(temp_loc, haze_layer_index)*layer_pressure_bar(J)
+                END IF
+            END DO
+        ELSE
+            TAU_HAZE = 0.0
+        END IF
 
 
 
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-      !!!!!!!!         CLOUD SCATTERING PROPERTIES       !!!!!!!!!!
-      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        !!!!!!!!         CLOUD SCATTERING PROPERTIES       !!!!!!!!!!
+        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-      DO J = 1,NLAYER - 1
-          layer_index   = MINLOC(ABS(input_pressure_array_cgs - (p_pass(J) * 10.0)),1)
-          temp_loc      = MINLOC(ABS(input_temperature_array - (TT(J))),1)
-          particle_size = particle_size_vs_layer_array_in_meters(layer_index) ! Convert to CGS
-          size_loc      = MINLOC(ABS(input_particle_size_array_in_meters - (particle_size)), 1)
+        DO J = 1,NLAYER - 1
+            layer_index   = MINLOC(ABS(input_pressure_array_cgs - (p_pass(J) * 10.0)),1)
+            temp_loc      = MINLOC(ABS(input_temperature_array - (TT(J))),1)
+            particle_size = particle_size_vs_layer_array_in_meters(layer_index) ! Convert to CGS
+            size_loc      = MINLOC(ABS(input_particle_size_array_in_meters - (particle_size)), 1)
 
-          DO I = 1,NCLOUDS
-              ! GET THE SCATTERING PROPERTIES
-              IF (PICKET_FENCE_CLOUDS .eqv. .False.) THEN
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
-                      PI0_TEMP(L,J,I) = PI0_OPPR(1,WAV_LOC,size_loc,I)
-                      G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
-                  END DO
+            DO I = 1,NCLOUDS
+                ! GET THE SCATTERING PROPERTIES
+                IF (PICKET_FENCE_CLOUDS .eqv. .False.) THEN
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
+                        PI0_TEMP(L,J,I) = PI0_OPPR(1,WAV_LOC,size_loc,I)
+                        G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
+                    END DO
 
-                  DO L = NSOL+1,NTOTAL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
-                      PI0_TEMP(L,J,I) = PI0_OPPR(1,WAV_LOC,size_loc,I)
-                      G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
-                  END DO
-              ELSE
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
-                      PI0_TEMP(L,J,I) = PI0_OPPR(L,WAV_LOC,size_loc,I)
-                      G0_TEMP(L,J,I)  = G0_OPPR(L,WAV_LOC,size_loc,I)
-                  END DO
+                    DO L = NSOL+1,NTOTAL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
+                        PI0_TEMP(L,J,I) = PI0_OPPR(1,WAV_LOC,size_loc,I)
+                        G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
+                    END DO
+                ELSE
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
+                        PI0_TEMP(L,J,I) = PI0_OPPR(L,WAV_LOC,size_loc,I)
+                        G0_TEMP(L,J,I)  = G0_OPPR(L,WAV_LOC,size_loc,I)
+                    END DO
 
-                  DO L = NSOL+1,NTOTAL
-                      PI0_TEMP(L,J,I) = PI0_OPPR(L,temp_loc,size_loc,I)
-                      G0_TEMP(L,J,I)  = G0_OPPR(L,temp_loc,size_loc,I)
-                  END DO
-              END IF
+                    DO L = NSOL+1,NTOTAL
+                        PI0_TEMP(L,J,I) = PI0_OPPR(L,temp_loc,size_loc,I)
+                        G0_TEMP(L,J,I)  = G0_OPPR(L,temp_loc,size_loc,I)
+                    END DO
+                END IF
 
-              CONDFACT(J,I) = min(max((Tconds(MET_INDEX,layer_index,I)-TT(J))/10.,0.0),1.0)
+                CONDFACT(J,I) = min(max((Tconds(MET_INDEX,layer_index,I)-TT(J))/10.,0.0),1.0)
 
-              CLOUDLOC(J,I) = NINT(CONDFACT(J,I))*J
-              BASELEV = MAXVAL(CLOUDLOC(1:50,I),1)
-              TOPLEV(I)  = max(BASELEV-AERLAYERS,0)
+                CLOUDLOC(J,I) = NINT(CONDFACT(J,I))*J
+                BASELEV = MAXVAL(CLOUDLOC(1:50,I),1)
+                TOPLEV(I)  = max(BASELEV-AERLAYERS,0)
 
-              ! DPG is CGS before that 10x
-              IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
+                ! DPG is CGS before that 10x
+                IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
 
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
      &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
-                  END DO
-                  DO L = NSOL+1,NTOTAL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
+                    END DO
+                    DO L = NSOL+1,NTOTAL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
      &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(1,WAV_LOC,size_loc,I)
-                  END DO
-              ELSE
-                  DO L = solar_calculation_indexer,NSOL
-                      WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
+                    END DO
+                ELSE
+                    DO L = solar_calculation_indexer,NSOL
+                        WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
      &                              CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,WAV_LOC,size_loc,I)
-                  END DO
+                    END DO
 
-                  DO L = NSOL+1,NTOTAL
-                      tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
+                    DO L = NSOL+1,NTOTAL
+                        tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/density(I)*fmolw(I)*
      &                                  CONDFACT(J,I)*MTLX*CORFACT(layer_index)*QE_OPPR(L,temp_loc,size_loc,I)
-                  END DO
-              END IF
-          END DO
-      END DO
+                    END DO
+                END IF
+            END DO
+        END DO
 
 
-      ! Uncomment for compact clouds I think
-      DO I = 1,NCLOUDS
-          DO J = 1, TOPLEV(I)
-              tauaer_temp(:,J,I) = 0.0
-          END DO
+        ! Uncomment for compact clouds I think
+        DO I = 1,NCLOUDS
+            DO J = 1, TOPLEV(I)
+                tauaer_temp(:,J,I) = 0.0
+            END DO
 
-          !if (TOPLEV(I) + 4 .le. NLAYER) THEN
-          !    tauaer_temp(:,TOPLEV(I)+4,I) = tauaer_temp(:,TOPLEV(I)+4,I)*0.01 !i.e.e(-3)
-          !    tauaer_temp(:,TOPLEV(I)+3,I) = tauaer_temp(:,TOPLEV(I)+3,I)*0.03 !i.e.e(-3)
-          !    tauaer_temp(:,TOPLEV(I)+2,I) = tauaer_temp(:,TOPLEV(I)+2,I)*0.1 !i.e.e(-2)
-          !    tauaer_temp(:,TOPLEV(I)+1,I) = tauaer_temp(:,TOPLEV(I)+1,I)*0.3 !i.e.e(-1)
-          !ENDIF
-      END DO
+            !if (TOPLEV(I) + 4 .le. NLAYER) THEN
+            !    tauaer_temp(:,TOPLEV(I)+4,I) = tauaer_temp(:,TOPLEV(I)+4,I)*0.01 !i.e.e(-3)
+            !    tauaer_temp(:,TOPLEV(I)+3,I) = tauaer_temp(:,TOPLEV(I)+3,I)*0.03 !i.e.e(-3)
+            !    tauaer_temp(:,TOPLEV(I)+2,I) = tauaer_temp(:,TOPLEV(I)+2,I)*0.1 !i.e.e(-2)
+            !    tauaer_temp(:,TOPLEV(I)+1,I) = tauaer_temp(:,TOPLEV(I)+1,I)*0.3 !i.e.e(-1)
+            !ENDIF
+        END DO
 
 
-      IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-          !     SW AT STANDARD VERTICAL RESOLUTION
-          DO J = 1,NLAYER
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
+        IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
+            !     SW AT STANDARD VERTICAL RESOLUTION
+            DO J = 1,NLAYER
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
 
-              DO L = solar_calculation_indexer,NSOL
-                  WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
-                  TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
-                  WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
+                DO L = solar_calculation_indexer,NSOL
+                    WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
+                    TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
+                    WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
      &                    + (TAU_HAZE(L,J) * HAZE_wav_pi0(WAV_LOC, haze_layer_index) / (TAUAER(L,J) + 1e-8))
-                  GOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * G0_TEMP(L,J,1:NCLOUDS))
+                    GOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * G0_TEMP(L,J,1:NCLOUDS))
      &                    + (TAU_HAZE(L,J) * HAZE_wav_gg(WAV_LOC, haze_layer_index)  / (TAUAER(L,J) + 1e-8))
-              END DO
-          END DO
+                END DO
+            END DO
 
-    !     LW AT 2X VERTICAL RESOLUTION (FOR PERFORMANCE).
-          k = 1
-          DO J = 1,NDBL,2
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(K))),1)  ! Both of these are in pa
-              temp_loc         = MINLOC(ABS(input_temperature_array - (TT(K))),1) ! Not needed for the stellar calc
+        !     LW AT 2X VERTICAL RESOLUTION (FOR PERFORMANCE).
+            k = 1
+            DO J = 1,NDBL,2
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(K))),1)  ! Both of these are in pa
+                temp_loc         = MINLOC(ABS(input_temperature_array - (TT(K))),1) ! Not needed for the stellar calc
 
-              JJ = J
+                JJ = J
 
-              DO L = NSOL+1,NTOTAL
-                  ! GREP CHECK THIS
-                  WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
-                  TAUAER(L,JJ) = SUM(tauaer_temp(L,K,1:NCLOUDS)) + TAU_HAZE(L,K)
-                  WOL(L,JJ)    = SUM(tauaer_temp(L,K,1:NCLOUDS)/(TAUAER(L,JJ)+1e-8)*PI0_TEMP(L,K,1:NCLOUDS)) +
+                DO L = NSOL+1,NTOTAL
+                    ! GREP CHECK THIS
+                    WAV_LOC = CLOUD_WAVELENGTH_INDEXES(4)
+                    TAUAER(L,JJ) = SUM(tauaer_temp(L,K,1:NCLOUDS)) + TAU_HAZE(L,K)
+                    WOL(L,JJ)    = SUM(tauaer_temp(L,K,1:NCLOUDS)/(TAUAER(L,JJ)+1e-8)*PI0_TEMP(L,K,1:NCLOUDS)) +
      &                              (TAU_HAZE(L,K) * HAZE_wav_pi0(WAV_LOC, haze_layer_index) / (TAUAER(L,JJ) + 1e-8))
-                  GOL(L,JJ)    = SUM(tauaer_temp(L,K,1:NCLOUDS)/(TAUAER(L,JJ)+1e-8)*G0_TEMP(L,K,1:NCLOUDS))  +
+                    GOL(L,JJ)    = SUM(tauaer_temp(L,K,1:NCLOUDS)/(TAUAER(L,JJ)+1e-8)*G0_TEMP(L,K,1:NCLOUDS))  +
      &                              (TAU_HAZE(L,K) * HAZE_wav_gg(WAV_LOC, haze_layer_index)  / (TAUAER(L,JJ) + 1e-8))
-              END DO
-              JJ = J+1
-              DO L = NSOL+1,NTOTAL
-                  TAUAER(L,JJ) = TAUAER(L,JJ-1)
-                  WOL(L,JJ)    = WOL(L,JJ-1)
-                  GOL(L,JJ)    = GOL(L,JJ-1)
-              END DO
-              k = k+1
-          END DO
-      ELSE
-    !     SW AT STANDARD VERTICAL RESOLUTION
-          DO J = 1,NLAYER
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
-              DO L = solar_calculation_indexer,NSOL
-                  WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
-                  TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
-                  WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
+                END DO
+                JJ = J+1
+                DO L = NSOL+1,NTOTAL
+                    TAUAER(L,JJ) = TAUAER(L,JJ-1)
+                    WOL(L,JJ)    = WOL(L,JJ-1)
+                    GOL(L,JJ)    = GOL(L,JJ-1)
+                END DO
+                k = k+1
+            END DO
+        ELSE
+        !     SW AT STANDARD VERTICAL RESOLUTION
+            DO J = 1,NLAYER
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
+                DO L = solar_calculation_indexer,NSOL
+                    WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
+                    TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
+                    WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
      &                    + (TAU_HAZE(L,J) * HAZE_wav_pi0(WAV_LOC, haze_layer_index) / (TAUAER(L,J) + 1e-8))
-                  GOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * G0_TEMP(L,J,1:NCLOUDS))
+                    GOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * G0_TEMP(L,J,1:NCLOUDS))
      &                    + (TAU_HAZE(L,J) * HAZE_wav_gg(WAV_LOC, haze_layer_index)  / (TAUAER(L,J) + 1e-8))
-              END DO
-          END DO
+                END DO
+            END DO
 
-    !     LW AT 2X VERTICAL RESOLUTION (FOR PERFORMANCE).
-          k = 1
-          DO J = 1,NDBL,2
-              haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(K))),1) ! Both of these are in pa
-              temp_loc         = MINLOC(ABS(input_temperature_array - (TT(K))),1) ! Not needed for the stellar calc
+        !     LW AT 2X VERTICAL RESOLUTION (FOR PERFORMANCE).
+            k = 1
+            DO J = 1,NDBL,2
+                haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(K))),1) ! Both of these are in pa
+                temp_loc         = MINLOC(ABS(input_temperature_array - (TT(K))),1) ! Not needed for the stellar calc
 
-              JJ = J
+                JJ = J
 
-              TAUAER(NSOL+1,JJ) = SUM(tauaer_temp(NSOL+1,K,1:NCLOUDS)) + TAU_HAZE(NSOL+1,K)
-              WOL(NSOL+1,JJ) =
+                TAUAER(NSOL+1,JJ) = SUM(tauaer_temp(NSOL+1,K,1:NCLOUDS)) + TAU_HAZE(NSOL+1,K)
+                WOL(NSOL+1,JJ) =
      &        SUM(tauaer_temp(NSOL+1,K,1:NCLOUDS)/(TAUAER(NSOL+1,JJ)+1e-8)*PI0_TEMP(NSOL+1,K,1:NCLOUDS))
      &        + (TAU_HAZE(NSOL+1,K) * HAZE_PlanckMean_pi0(temp_loc, haze_layer_index) / (TAUAER(NSOL+1,JJ) + 1e-8))
-              GOL(NSOL+1,JJ) =
+                GOL(NSOL+1,JJ) =
      &        SUM(tauaer_temp(NSOL+1,K,1:NCLOUDS)/(TAUAER(NSOL+1,JJ)+1e-8)*G0_TEMP(NSOL+1,K,1:NCLOUDS))
      &        + (TAU_HAZE(NSOL+1,K) * HAZE_PlanckMean_gg(temp_loc, haze_layer_index) / (TAUAER(NSOL+1,JJ) + 1e-8))
 
 
-              TAUAER(NSOL+2,JJ) = SUM(tauaer_temp(NSOL+2,K,1:NCLOUDS)) + TAU_HAZE(NSOL+2,K)
-              WOL(NSOL+2,JJ) =
+                TAUAER(NSOL+2,JJ) = SUM(tauaer_temp(NSOL+2,K,1:NCLOUDS)) + TAU_HAZE(NSOL+2,K)
+                WOL(NSOL+2,JJ) =
      &        SUM(tauaer_temp(NSOL+2,K,1:NCLOUDS)/(TAUAER(NSOL+2,JJ)+1e-8)*PI0_TEMP(NSOL+2,K,1:NCLOUDS))
      &        + (TAU_HAZE(NSOL+2,K) * HAZE_RosselandMean_pi0(temp_loc, haze_layer_index) / (TAUAER(NSOL+2,JJ) + 1e-8))
-              GOL(NSOL+2,JJ) =
+                GOL(NSOL+2,JJ) =
      &        SUM(tauaer_temp(NSOL+2,K,1:NCLOUDS)/(TAUAER(NSOL+2,JJ)+1e-8)*G0_TEMP(NSOL+2,K,1:NCLOUDS))
      &        + (TAU_HAZE(NSOL+2,K) * HAZE_RosselandMean_gg(temp_loc, haze_layer_index) / (TAUAER(NSOL+2,JJ) + 1e-8))
 
-              JJ = J+1
-              DO L = NSOL+1,NTOTAL
-                  TAUAER(L,JJ) = TAUAER(L,JJ-1)
-                  WOL(L,JJ)    = WOL(L,JJ-1)
-                  GOL(L,JJ)    = GOL(L,JJ-1)
-              END DO
-              k = k+1
-          END DO
+                JJ = J+1
+                DO L = NSOL+1,NTOTAL
+                    TAUAER(L,JJ) = TAUAER(L,JJ-1)
+                    WOL(L,JJ)    = WOL(L,JJ-1)
+                    GOL(L,JJ)    = GOL(L,JJ-1)
+                END DO
+                k = k+1
+            END DO
+        END IF
+
+
+        ! Smooth out the cloud properties after doubling
+        DO L = NSOL+1,NTOTAL
+            DO J = 2, NDBL-1, 2
+                TAUAER(L,J) = (TAUAER(L,J+1) + TAUAER(L,J-1)) / 2.0
+                WOL(L,J) = (WOL(L,J+1) + WOL(L,J-1)) / 2.0
+                GOL(L,J) = (GOL(L,J+1) + GOL(L,J-1)) / 2.0
+            END DO
+        END DO
       END IF
-
-
-      ! Smooth out the cloud properties after doubling
-      DO L = NSOL+1,NTOTAL
-          DO J = 2, NDBL-1, 2
-              TAUAER(L,J) = (TAUAER(L,J+1) + TAUAER(L,J-1)) / 2.0
-              WOL(L,J) = (WOL(L,J+1) + WOL(L,J-1)) / 2.0
-              GOL(L,J) = (GOL(L,J+1) + GOL(L,J-1)) / 2.0
-          END DO
-      END DO
 
 
       iradgas = 1
@@ -524,7 +531,9 @@
               END DO
           END DO
       END DO
-
+    !   write(*,*) 'in ropprmulti.f'
+    !   write(*,*) 'TAUL:', TAUL(1,:)
+    !   write(*,*) 'OPD:', OPD(1,:)
       RETURN
       END
 

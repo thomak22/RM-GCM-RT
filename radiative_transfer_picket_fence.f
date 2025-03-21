@@ -77,6 +77,8 @@
           else
               write(*,*) 'Something went wrong with the temperature profile'
           end if
+          ! write(*,*) 'mu: ', incident_starlight_fraction
+          ! write(*,*) 'tt (radiative_transfer_corrk): ', tt
 
           dpe(NLAYER) = 10.0 ** (LOG10(dpe(NLAYER-1)) + (LOG10(dpe(NLAYER-1)) - LOG10(dpe(NLAYER-2))))
           pl(NLAYER)  = 10.0 ** (LOG10(pl(NLAYER-1))  + (LOG10(pl(NLAYER-1))  - LOG10(pl(NLAYER-2))))
@@ -84,7 +86,8 @@
           CALL calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction, Tirr, Tint,
      &                             Tl, Pl, dpe, tau_IRe,tau_Ve, Beta_V,
      &                             Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY,pe, k_IRl, k_Vl, TOAALB)
-
+          ! write(*,*) 'tau_IRe:', tau_IRe
+          ! write(*,*) 'tau_Vee:', tau_Ve
       end subroutine opacity_wrapper
 
       subroutine calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction,
@@ -275,6 +278,8 @@
           tau_Ve(:,k)  = ((k_Vl(:,k)  * dpe(k)) / grav)
           tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / grav)
         end do
+        ! write(*,*) 'tau_IRe: ', tau_IRe
+        ! write(*,*) 'tau_Ve: ', tau_Ve
       end subroutine calculate_opacities
 
 
@@ -313,7 +318,7 @@
         k_IR = 0.0
 
         Freedman_T = Tin
-        Freedman_P = Pin * 10.0 ! CoNLAYER to dyne cm-2
+        Freedman_P = Pin * 10.0 ! Convert to dyne cm-2
 
         Tl10 = log10(Freedman_T)
         Pl10 = log10(Freedman_P)

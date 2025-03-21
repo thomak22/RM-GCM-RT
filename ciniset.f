@@ -101,7 +101,16 @@ C
       COMMON/RESTOR/ZRES(IGN),DRES(IGN),TRES(IGN),SPRES(IGM),DAMP         
 C                                                                         
       COMMON/STATS/GMSP0,GMSPMI,LMASCOR,LMASOLD,LMASPRT
+      COMMON/SIMPIRRAD/LLOGPLEV,LFLUXDIAG,L1DZENITH,LDIUR,
+     & JSKIPLON,JSKIPLAT, DOSWRAD, DOLWRAD, LWSCAT,
+     & FLXLIMDIF,SURFEMIS, RAYSCAT, RAYSCATLAM(3), AEROSOLS,ABSSW, ABSLW,
+     & ALBSW, NEWTB, NEWTE,RAYPERBARCONS(3), with_TiO_and_VO, opacity_method
 
+      REAL SURFEMIS,ABSSW,ABSLW,ALBSW
+      LOGICAL LLOGPLEV,LFLUXDIAG,L1DZENITH,LDIUR,DOSWRAD,DOLWRAD
+     & ,LWSCAT, FLXLIMDIF, RAYSCAT,AEROSOLS
+      REAL with_TiO_and_VO
+      CHARACTER(len=6) :: opacity_method
       COMMON/CLOUDY/AEROSOLMODEL,AERTOTTAU,CLOUDBASE,
      &   CLOUDTOP,CLDFRCT,AERHFRAC,PI0AERSW,ASYMSW,EXTFACTLW,PI0AERLW,
      &   ASYMLW,DELTASCALE,SIG_AREA,PHI_LON,TAUAEROSOL,AEROPROF,
@@ -466,6 +475,8 @@ CDIR$    IVDEP
       GRAYCLDV     = .False.
       READ(7,INCLOUDY)
       CALL get_cloud_scattering_properties_wrapper
+      CALL get_gas_opacity_corrk_wrapper
+      write(*,*) ' '
 
 
       END                                                                 

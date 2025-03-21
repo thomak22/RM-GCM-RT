@@ -103,6 +103,13 @@
       real fir_dn_aerad(NL+1)
       real fir_net_aerad(NL+1)
       real fsl_net_aerad(NL+1)
+      ! Corr-K common block:
+      COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
+     &      INT_SPEC
+      REAL :: OPAC_CORRK(73, 20, 11, 8)
+      REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+      REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
+      integer :: stel_idx, chan_idx
 
       ! For getting a doubled grid for the IR channels
       REAL :: LOG_START, LOG_END, LOG_STEP
@@ -388,6 +395,53 @@
                  TAUGAS(L,J)=IR_ABS_COEFFICIENT(J)*DPGsub(J)
              END DO
           END DO
+      ELSE IF (opacity_method .EQ. 'correk') THEN
+        CALL opacity_wrapper_corrk(t, P_PASS, tau_IRe, tau_Ve, Beta_V, Beta_IR, GA, incident_starlight_fraction,
+     &           LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS,
+     &           EMISIR, EPSILON, HEATI, HEATS, HEAT, SOLNET, TPI, SQ3, SBK, AM, AVG, ALOS,
+     &  SCDAY,RGAS,GANGLE,GWEIGHT,GRATIO,EMIS,RSFX,NPROB,SOL,RAYPERBAR,WEIGHT,
+     &  GOL,WOL,WAVE,TT,Y3,U0,FDEGDAY,
+     &  WOT,GOT,PTEMPG,PTEMPT,G0,OPD,PTEMP,
+     &  uG0,uTAUL,W0,uW0,uopd,U1S,
+     &  U1I,TOON_AK,B1,B2,EE1,EM1,
+     &  EM2,EL1,EL2,GAMI,AF,
+     &  BF,EF,SFCS,B3,CK1,CK2,
+     &  CP,CPB,CM,CMB,DIRECT,EE3,
+     &  EL3,FNET,TMI,AS,DF,
+     &  DS,XK,DIREC,DIRECTU,DINTENT,
+     &  UINTENT,TMID,TMIU,tslu,total_downwelling,alb_tot,
+     &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
+     &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
+     &  qrad,alb_tomi,alb_toai, num_layers,
+     &  dpe, Pl, Tl, pe,
+     &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
+     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl)
+        ! WRITE(*,*) solar_calculation_indexer
+        ! solar calculation indexer is 1 when mu>0, NSOL+1 when mu==0, so we skip this loop
+        ! when starlight is a non-issue
+        DO L = solar_calculation_indexer,NSOL
+          tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
+        END DO
+
+        DO L = NSOL+1, NTOTAL
+          tau_IRe(L-NSOL,NLAYER) = 10.0 ** (LOG10(tau_IRe(L-NSOL,NLAYER-1))+
+     &            (LOG10(tau_IRe(L-NSOL,NLAYER-1))-LOG10(tau_IRe(L-NSOL,NLAYER-2))))
+        END DO
+
+        DO L = solar_calculation_indexer,NSOL
+            DO J = 1,NLAYER
+                TAUGAS(L,J) = tau_Ve(L,J)
+            END DO
+        END DO
+        ! smooth out the IR optical depths to twice the resolution (linear interpolation)
+        DO L = NSOL+1, NTOTAL
+            k  =  1
+            DO  J = 1,NDBL,2
+                TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
+                TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
+                k = k + 1
+            END DO
+        END DO
       END IF
 
       FNET(:,:)   = 0.0
@@ -416,11 +470,17 @@
 325       CONTINUE
 320     CONTINUE
       ENDIF
-
-      DO 360 L   =   1,NSOL
-        SOL(L)  = PSOL_aerad
- 360  CONTINUE
-
+      if ((opacity_method .EQ. 'picket') .or. (opacity_method .EQ. 'dogray')) then
+        DO L   =   1,NSOL
+          SOL(L)  = PSOL_aerad
+        END DO
+      else if (opacity_method .EQ. 'correk') then
+        DO L   =   1,NSOL
+          chan_idx = MODULO(L-1, 8) + 1
+          stel_idx = MODULO((L-chan_idx)/8,11) + 1
+          SOL(L)  = PSOL_aerad * STEL_SPEC(stel_idx)
+        END DO
+      END IF
 
 ! *********************************************************************
 !
