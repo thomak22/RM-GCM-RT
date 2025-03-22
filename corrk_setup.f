@@ -7,7 +7,7 @@
       SUBROUTINE get_gas_opacity_corrk(METALLICITY,C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO)
           implicit none
           COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &                    INT_SPEC
+     &                    INT_SPEC, OPAC_CIA
           COMMON/PLANCK_INT/PLANCK_INTS, PLANCK_TS
           INTEGER :: I, J, K, L
           REAL, INTENT(IN) :: METALLICITY, C_TO_O, FBASEFLUX
@@ -19,12 +19,14 @@
 
           CHARACTER(LEN=32) :: dummyMETALLICITY_str, dummyC_TO_O_str, tiovo_str
 
-          CHARACTER(len=80) :: FNM
+          CHARACTER(len=80) :: FNM, CIAFNM
           REAL :: TEMP_OPAC_CORRK(8,73*20*11) ! 8 gauss pts, 73 T, 20 P, 11 wavelengths
+          REAL :: TEMP_OPAC_CIA(11,73*20) ! 73 T, 20 P, 11 wavelengths
           ! COMMON BLOCK SHAPES HERE:
           REAL :: OPAC_CORRK(73, 20, 11, 8)
           REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
           REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
+          REAL :: OPAC_CIA(73, 20, 11)
 
           
           MMW = 8314.462618 / GASCON ! Mean molecular weight in g/mol (or H masses per molecule)
@@ -55,11 +57,15 @@
           ! write(*,*) 'C_TO_O: ', dummyC_TO_O_str
 
           FNM= "../kcoeffs/feh"//trim(dummyMETALLICITY_str)//"_co_"//trim(dummyC_TO_O_str)//trim(tiovo_str)//".txt"
-          
+          CIAFNM= "../CIA/cia_feh"//trim(dummyMETALLICITY_str)//"_co_"//trim(dummyC_TO_O_str)//trim(tiovo_str)//".txt"
           ! Read in k-coefficients from file
           write(*,*) 'Reading in k-coefficients from file: ', FNM
+          write(*,*) 'Reading in CIA coefficients from file: ', CIAFNM
           OPEN(UNIT=1, FILE=FNM)
           READ(1,*) TEMP_OPAC_CORRK
+          CLOSE(1)
+          OPEN(UNIT=1, FILE=CIAFNM)
+          READ(1,*) TEMP_OPAC_CIA
           CLOSE(1)
 
           ! Reshape into 4D array
@@ -76,6 +82,23 @@
               END DO
             END DO
           END DO
+
+          DO I = 1, 73
+            DO J = 1, 20
+              DO K = 1, 11
+                ! after this line we have log10(m^2/kg)
+                ! file is in units of m^2/molecule
+                OPAC_CIA(I,J,K) = LOG10(TEMP_OPAC_CIA(K,(I-1)*20+J) * 6.022e23 / (MMW/1000))
+              END DO
+            END DO
+          END DO
+          write(*,*) 'OPAC_CIA: ', OPAC_CIA
+          write(*,*) 'loc(OPAC_CIA:) ', loc(OPAC_CIA)
+          write(*,*) loc(OPAC_CORRK)
+          write(*,*) ''
+          write(*,*) ''
+          write(*,*) ''
+          write(*,*) ''
           ! write(*,*) 'test gauss: ', OPAC_CORRK(35,16,7,8)
 
           ! Set up the gauss weights of the 8 gauss points

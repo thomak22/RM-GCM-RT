@@ -24,10 +24,11 @@
 
           ! Thomas inclusions from corr-k common block
           COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &                    INT_SPEC
+     &                    INT_SPEC, OPAC_CIA
           REAL :: OPAC_CORRK(73, 20, 11, 8)
           REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
           REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
+          REAL :: OPAC_CIA(73, 20, 11)
           ! End Thomas inclusions
           REAL :: GASCON
 
@@ -51,7 +52,7 @@
           REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
           REAL qrad(NL+1),alb_tomi,alb_toai
 
-          real, dimension(NIR, NL+1) :: k_IRl
+          real, dimension(NIR, NL+1) :: k_IRl, k_CIA
           real, dimension(NSOL, NL+1) :: k_Vl
 
           integer :: NLAYER, J, k
@@ -70,6 +71,7 @@
           ! dummy vars
           real :: total_layer_taus(NLAYER), dummy_weights(NSOL)
           integer :: gauss_idx, stel_idx
+          ! write(*,*) loc(OPAC_CIA)
 
           ! write(*,*) 'gravity_SI: ', gravity_SI
           do J = 1, NL+1
@@ -96,7 +98,7 @@
           pl(NLAYER)  = 10.0 ** (LOG10(pl(NLAYER-1))  + (LOG10(pl(NLAYER-1))  - LOG10(pl(NLAYER-2))))
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
           CALL calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
-     &                                 OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, MMW)
+     &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, K_CIA, OPAC_CIA)
           ! write(*,*) 'tau_IRe: ', tau_IRe
           
           ! DO L = 1, NSOL
@@ -123,7 +125,7 @@
       end subroutine opacity_wrapper_corrk
 
       subroutine calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
-     &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK)
+     &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, K_CIA, OPAC_CIA)
 
         implicit none
         integer :: k, NLAYER, J, NSOL, NIR, i
@@ -131,12 +133,12 @@
         real :: R, gravity_SI
 
         real, dimension(NLAYER) :: dpe, Pl, Tl, pe
-        real, dimension(NIR, NLAYER) :: k_IRl
+        real, dimension(NIR, NLAYER) :: k_IRl, k_CIA
         real, dimension(NSOL,NLAYER) :: k_Vl
         real, dimension(NIR,NLAYER+1) :: tau_IRe
         real, dimension(NSOL,NLAYER+1) :: tau_Ve
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, 11, 8)
+        REAL :: OPAC_CORRK(73, 20, 11, 8), OPAC_CIA(73, 20, 11)
         REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
 
         tau_Ve(:,1) = 0.0
@@ -144,8 +146,8 @@
 
         do k = 1, NLAYER
           call local_opacities_corrk(Tl(k), Pl(k), k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL)
-          tau_IRe(:,k) = ((10.**k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
+     &                                 NLAYER, NIR, NSOL, k_CIA, OPAC_CIA)
+          tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
           tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
 
           
@@ -154,11 +156,11 @@
       end subroutine calculate_opacities_corrk
 
       subroutine local_opacities_corrk(Tin, Pin, k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL)
+     &                                 NLAYER, NIR, NSOL, k_CIA, OPAC_CIA)
         implicit none
         real :: Tin, Pin
         integer :: NLAYER, NIR, NSOL, I
-        real, dimension(NIR, NLAYER) :: k_IRl
+        real, dimension(NIR, NLAYER) :: k_IRl, k_CIA
         real, dimension(NSOL, NLAYER) :: k_Vl
         ! For now, interpolating molceular opacities (cm^2/molecule) linearly in both pressure and temperature
         ! Since we're explicitly spectral now, I think K_IRl and K_Vl are the same thing
@@ -166,7 +168,7 @@
         integer :: T_idx, P_idx, wave_idx, gauss_idx, chan_idx, k
         integer :: NTS_CORRK, NPS_CORRK
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, 11, 8)
+        REAL :: OPAC_CORRK(73, 20, 11, 8), OPAC_CIA(73, 20, 11)
         REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
 
         NTS_CORRK = 73
@@ -186,13 +188,29 @@
           gauss_idx = modulo(chan_idx - 1, 8) + 1
           wave_idx = MODULO((chan_idx - gauss_idx)/8,11) + 1
           ! k_IRl(chan_idx, k) = OPAC_CORRK(T_idx, P_idx, wave_idx, gauss_idx)
-          
+          ! interpolate molecular line opacities
+          ! write(*,*) OPAC_CIA
+          ! write(*,*) loc(OPAC_CIA)
+          ! write(*,*) loc(OPAC_CORRK)
+
 
           call bilinear_interpolation(LOG10(Tin), log10(Pin), TS_LOG_CORRK(T_idx), TS_LOG_CORRK(T_idx+1), PS_LOG_CORRK(P_idx), 
      &                                  PS_LOG_CORRK(P_idx+1), 
      &                                  OPAC_CORRK(T_idx, P_idx, wave_idx, gauss_idx), OPAC_CORRK(T_idx+1, P_idx, 
      &                                  wave_idx, gauss_idx), OPAC_CORRK(T_idx, P_idx+1, wave_idx, gauss_idx), 
      &                                  OPAC_CORRK(T_idx+1, P_idx+1, wave_idx, gauss_idx), k_IRl(chan_idx, k))
+          ! interpolate CIA opacities
+          call bilinear_interpolation(LOG10(Tin), log10(Pin), TS_LOG_CORRK(T_idx), TS_LOG_CORRK(T_idx+1), PS_LOG_CORRK(P_idx), 
+     &                                  PS_LOG_CORRK(P_idx+1), 
+     &                                  OPAC_CIA(T_idx, P_idx, wave_idx), OPAC_CIA(T_idx+1, P_idx, wave_idx),
+     &                                  OPAC_CIA(T_idx, P_idx+1, wave_idx), OPAC_CIA(T_idx+1, P_idx+1, wave_idx), 
+     &                                  k_CIA(chan_idx, k))
+          ! combine molecular line and CIA opacities (assumes gray CIA in each band)
+          ! if (k_CIA(chan_idx, k) .gt. k_IRl(chan_idx, k)-0.0) then
+          !   write(*,*) k, gauss_idx, wave_idx, k_CIA(chan_idx, k), k_IRl(chan_idx, k)
+          !   write(*,*) ''
+          ! end if
+          k_IRl(chan_idx, k) = 10**k_IRl(chan_idx, k) + 10**k_CIA(chan_idx, k) ! take both out of logspace
           ! write(*,*), 'Pin, Tin, k_IRl: ', Pin, Tin, k_IRl(chan_idx, :)
 
         end do

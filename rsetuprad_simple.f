@@ -105,10 +105,11 @@
       real fsl_net_aerad(NL+1)
       ! Corr-K common block:
       COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &      INT_SPEC
+     &      INT_SPEC, OPAC_CIA
       REAL :: OPAC_CORRK(73, 20, 11, 8)
       REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
       REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
+      REAL :: OPAC_CIA(73, 20, 11)
       integer :: stel_idx, chan_idx
 
       ! For getting a doubled grid for the IR channels
