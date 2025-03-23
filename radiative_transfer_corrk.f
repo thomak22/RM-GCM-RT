@@ -71,7 +71,6 @@
           ! dummy vars
           real :: total_layer_taus(NLAYER), dummy_weights(NSOL)
           integer :: gauss_idx, stel_idx
-          ! write(*,*) loc(OPAC_CIA)
 
           ! write(*,*) 'gravity_SI: ', gravity_SI
           do J = 1, NL+1

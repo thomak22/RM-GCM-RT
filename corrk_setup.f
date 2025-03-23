@@ -92,13 +92,6 @@
               END DO
             END DO
           END DO
-          write(*,*) 'OPAC_CIA: ', OPAC_CIA
-          write(*,*) 'loc(OPAC_CIA:) ', loc(OPAC_CIA)
-          write(*,*) loc(OPAC_CORRK)
-          write(*,*) ''
-          write(*,*) ''
-          write(*,*) ''
-          write(*,*) ''
           ! write(*,*) 'test gauss: ', OPAC_CORRK(35,16,7,8)
 
           ! Set up the gauss weights of the 8 gauss points

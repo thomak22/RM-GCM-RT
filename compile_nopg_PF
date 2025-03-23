@@ -19,4 +19,5 @@ cp igcm3_nopg_PF Planet_Run_PF
 #cp params.iPF Planet_Run_PF/params.i
 cp fort.7PF Planet_Run_PF/fort.7
 cd Planet_Run_PF
-time ./igcm3_nopg_PF
+
+(time ./igcm3_nopg_PF) 2> runtime.txt

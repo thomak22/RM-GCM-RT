@@ -18,4 +18,4 @@ mkdir Planet_Run_CK_par
 cp igcm3_nopg_par Planet_Run_CK_par
 cp fort.7corrk Planet_Run_CK_par/fort.7
 cd Planet_Run_CK_par
-time ./igcm3_nopg_par
+(time ./igcm3_nopg_par) 2> runtime.txt
