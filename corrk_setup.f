@@ -57,7 +57,7 @@
           ! write(*,*) 'C_TO_O: ', dummyC_TO_O_str
 
           FNM= "../kcoeffs/feh"//trim(dummyMETALLICITY_str)//"_co_"//trim(dummyC_TO_O_str)//trim(tiovo_str)//".txt"
-          CIAFNM= "../CIA/cia_feh"//trim(dummyMETALLICITY_str)//"_co_"//trim(dummyC_TO_O_str)//trim(tiovo_str)//".txt"
+          CIAFNM= "../continuum/cia+hmin_feh"//trim(dummyMETALLICITY_str)//"_co_"//trim(dummyC_TO_O_str)//trim(tiovo_str)//".txt"
           ! Read in k-coefficients from file
           write(*,*) 'Reading in k-coefficients from file: ', FNM
           write(*,*) 'Reading in CIA coefficients from file: ', CIAFNM
