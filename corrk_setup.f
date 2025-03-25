@@ -102,6 +102,8 @@
             END DO
           END DO
 
+
+
           ! Set up the gauss weights of the 8 gauss points
           WGTS_CORRK = (/0.16523105, 0.30976895, 0.30976895, 0.16523105, 0.00869637,
      &              0.01630363, 0.01630363, 0.00869637/)
@@ -157,22 +159,22 @@
       SUBROUTINE BIN_STELLAR_SPECTRUM(file_name, STEL_SPEC, WNO_EDGES)
           implicit none
           CHARACTER(len=80) :: file_name
-          REAL :: STEL_SPEC(11), STEL_SPEC_IN(2, 1000)
+          REAL :: STEL_SPEC(11), STEL_SPEC_IN(2, 5000)
           REAL :: WNO_EDGES(12)
           INTEGER :: I, J
-          REAL :: WNO(1000), FLUX(1000)
+          REAL :: WNO(5000), FLUX(5000)
           ! Read in the stellar spectrum
           OPEN(UNIT=1, FILE=file_name)
           READ(1,*) STEL_SPEC_IN
           CLOSE(1)
-          DO I = 1, 1000
+          DO I = 1, 5000
             WNO(I) = STEL_SPEC_IN(1,I)
             FLUX(I) = STEL_SPEC_IN(2,I)
           END DO
           ! Trapezoidal integration in each spectral band
           DO J = 1, 11
             STEL_SPEC(J) = 0.0
-            DO I = 1, 999
+            DO I = 1, 4999
               IF (WNO(I) >= WNO_EDGES(J) .AND. WNO(I) < WNO_EDGES(J+1)) THEN
                 STEL_SPEC(J) = STEL_SPEC(J) + ((FLUX(I) + FLUX(I+1))/2 *((WNO(I+1) - WNO(I)) * 3e10))
               END IF
