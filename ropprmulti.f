@@ -118,7 +118,6 @@
       ! Sorry that this is bad code
       ! Malsky
     !   write(*,*) 'made it to ropprmulti.f'
-    !   write(*,*) 'gas taus:', TAUGAS
       IF (aerosolcomp .eq. 'standard') THEN
         IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
             MET_INDEX = 1
@@ -412,12 +411,11 @@
         ENDIF
       END IF
 
-
       iradgas = 1
       DO J = 1,NLAYER
           j1 = max(1, j-1)
 
-!         First the solar at standard resolution
+            !         First the solar at standard resolution
           DO L = solar_calculation_indexer,NSOL
               TAUL(L,J) = TAUGAS(L,J)+TAURAY(L,J)+TAUAER(L,J)
 
@@ -427,7 +425,6 @@
 
               utauL(L,j)  = TAUL(L,J)
               WOT = (TAURAY(L,J)+TAUAER(L,J)*WOL(L,J))/TAUL(L,J)
-
               if (iradgas.eq.0) then
                   wot = woL(L,j)
               endif
@@ -547,9 +544,6 @@
               END DO
           END DO
       END DO
-    !   write(*,*) 'in ropprmulti.f'
-    !   write(*,*) 'TAUL:', TAUL(1,:)
-    !   write(*,*) 'OPD:', OPD(1,:)
       RETURN
       END
 

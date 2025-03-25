@@ -58,7 +58,7 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toai, SLOPE(NTOTAL,2*NL+2)
 
-      REAL tau_IRe(NIR,NL+1), tau_Ve(NSOL,NL+1)
+      REAL tau_IRe(NIR,NL+1), tau_Ve(NSOL,NL+1), tau_ray_temp(NSOL, NL+1)
       real, dimension(NL+1) :: dpe, Pl, Tl, pe
       real :: k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met
       real :: Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val
@@ -105,11 +105,11 @@
       real fsl_net_aerad(NL+1)
       ! Corr-K common block:
       COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &      INT_SPEC, OPAC_CIA
+     &      INT_SPEC, OPAC_CIA, TAURAY_PER_DPG
       REAL :: OPAC_CORRK(73, 20, 11, 8)
       REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
       REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
-      REAL :: OPAC_CIA(73, 20, 11)
+      REAL :: OPAC_CIA(73, 20, 11), TAURAY_PER_DPG(73, 20, 11)
       integer :: stel_idx, chan_idx
 
       ! For getting a doubled grid for the IR channels
@@ -416,12 +416,14 @@
      &  qrad,alb_tomi,alb_toai, num_layers,
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
-     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl)
+     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl, tau_ray_temp)
         ! WRITE(*,*) solar_calculation_indexer
         ! solar calculation indexer is 1 when mu>0, NSOL+1 when mu==0, so we skip this loop
         ! when starlight is a non-issue
         DO L = solar_calculation_indexer,NSOL
           tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
+          tau_ray_temp(L, NLAYER) = 10.0**(LOG10(tau_ray_temp(L, NLAYER-1))+(LOG10(tau_ray_temp(L, NLAYER-1)) 
+     &         - LOG10(tau_ray_temp(L, NLAYER-2))))
         END DO
 
         DO L = NSOL+1, NTOTAL
@@ -432,14 +434,19 @@
         DO L = solar_calculation_indexer,NSOL
             DO J = 1,NLAYER
                 TAUGAS(L,J) = tau_Ve(L,J)
+                TAURAY(L,J) = tau_ray_temp(L,J)
             END DO
         END DO
+        
         ! smooth out the IR optical depths to twice the resolution (linear interpolation)
         DO L = NSOL+1, NTOTAL
             k  =  1
             DO  J = 1,NDBL,2
                 TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
                 TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
+
+                TAURAY(L, J)   = tau_ray_temp(L-NSOL, k)
+                TAURAY(L, J+1) = tau_ray_temp(L-NSOL, k)+ ABS(tau_ray_temp(L-NSOL,k) - tau_ray_temp(L-NSOL,k+1)) / 2.0
                 k = k + 1
             END DO
         END DO
@@ -454,16 +461,27 @@
 !     CALCULATE RAYLEIGH OPTICAL DEPTH PARAMETERS.
 
       IF (RAYSCAT) THEN
-        DO J = 1,NLAYER
-          ! Calculate the rayleigh scattering
-          DO L = 1,NTOTAL
-            if( L .LE. NSOL )then
-              TAURAY(L,J) = RAYPERBARCONS(L) * PBAR(J)
-            else
-              TAURAY(L,J)= 0.0
-            endif
+        if ((opacity_method .EQ. 'picket') .or. (opacity_method .EQ. 'dogray')) then
+          DO J = 1,NLAYER
+            ! Calculate the rayleigh scattering
+            DO L = 1,NTOTAL
+              if( L .LE. NSOL )then
+                TAURAY(L,J) = RAYPERBARCONS(L) * PBAR(J)
+              else
+                TAURAY(L,J)= 0.0
+              endif
+            END DO
           END DO
-        END DO
+        else if (opacity_method .EQ. 'correk') then
+          ! already done a few lines up
+          continue
+          ! DO J = 1, NLAYER
+          !   DO L = 1, NTOTAL
+          !     TAURAY(L,J) = 0.0
+          !   END DO
+          ! END DO
+        END IF
+        
       ELSE
         DO 320 J     = 1,NLAYER
           DO 325 L    = 1,NTOTAL
