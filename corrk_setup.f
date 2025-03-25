@@ -7,7 +7,7 @@
       SUBROUTINE get_gas_opacity_corrk(METALLICITY,C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO)
           implicit none
           COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &                    INT_SPEC, OPAC_CIA, TAURAY_PER_DPG
+     &                    INT_SPEC, TAURAY_PER_DPG
           COMMON/PLANCK_INT/PLANCK_INTS, PLANCK_TS
           INTEGER :: I, J, K, L
           REAL, INTENT(IN) :: METALLICITY, C_TO_O, FBASEFLUX
@@ -74,33 +74,39 @@
           READ(1,*) TEMP_TAURAY_PER_DPG_PERMU
           CLOSE(1)
 
+          ! Reshape into 3D array
+          ! Index order of new array: T, P, wavelength (no gauss pt because gray in each band)
+          DO I = 1, 73
+            DO J = 1, 20
+              DO K = 1, 11
+                ! after this line we have m^2/kg
+                ! file is in units of m^2/molecule
+                OPAC_CIA(I,J,K) = TEMP_OPAC_CIA(K,(I-1)*20+J) * 6.022e23 / (MMW/1000)
+                ! after this line we should have log(tau / (deltap / gravity), all in SI units)
+                TAURAY_PER_DPG(I,J,K) = log10(TEMP_TAURAY_PER_DPG_PERMU(K,(I-1)*20+J) / MMW)
+              END DO
+            END DO
+          END DO
+
           ! Reshape into 4D array
           ! Index order of new array: T, P, wavelength, gauss pt
-          ! write(*,*) 'test gauss: ', TEMP_OPAC_CORRK(1,2)
           DO I = 1, 73
             DO J = 1, 20
               DO K = 1, 11
                 DO L = 1, 8
                   ! After exponential, we're in cm^2/molecule units which we convert to m^2/molecule since RT uses SI units
                   ! avagadro + MMW/1000 conversion factor get us to m^2/kg
-                  OPAC_CORRK(I,J,K,L) = LOG10(EXP(TEMP_OPAC_CORRK(L,(I-1)*20*11+(J-1)*11+K)) * 1e-4 * 6.022e23 / (MMW/1000))
+                  OPAC_CORRK(I,J,K,L) = EXP(TEMP_OPAC_CORRK(L,(I-1)*20*11+(J-1)*11+K)) * 1e-4 * 6.022e23 / (MMW/1000)
+                  ! Add in CIA and H- opacities
+                  OPAC_CORRK(I,J,K,L) = OPAC_CORRK(I,J,K,L) + OPAC_CIA(I,J,K)
+                  ! Convert to log space
+                  OPAC_CORRK(I,J,K,L) = LOG10(OPAC_CORRK(I,J,K,L))
                 END DO
               END DO
             END DO
           END DO
 
-          DO I = 1, 73
-            DO J = 1, 20
-              DO K = 1, 11
-                ! after this line we have log10(m^2/kg)
-                ! file is in units of m^2/molecule
-                OPAC_CIA(I,J,K) = LOG10(TEMP_OPAC_CIA(K,(I-1)*20+J) * 6.022e23 / (MMW/1000))
 
-                ! after this line we should have log(tau / (deltap / gravity), all in SI units)
-                TAURAY_PER_DPG(I,J,K) = log10(TEMP_TAURAY_PER_DPG_PERMU(K,(I-1)*20+J) / MMW)
-              END DO
-            END DO
-          END DO
 
 
 
