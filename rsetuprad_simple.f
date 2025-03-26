@@ -63,7 +63,7 @@
       real :: k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met
       real :: Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val
 
-      real, dimension(NIR, NL+1) :: k_IRl, tau_ray_temp
+      real, dimension(NIR, NL+1) :: k_IRl
       real, dimension(NSOL, NL+1) :: k_Vl
       ! New variables for calculating the IR absorbtion coefficient as a power law
       real, dimension(NLAYER) :: IR_ABS_COEFFICIENT
