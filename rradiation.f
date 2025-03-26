@@ -249,7 +249,7 @@ c     The following for parallel testing --MTR
       REAL, DIMENSION(NTOTAL,NSOL,2*NL+2) :: Y1, Y2, Y4, Y8
       REAL, DIMENSION(NTOTAL,2*NL+2)   :: A1, A2, A3, A4, A5, A7, Y5
 
-      real, dimension(NIR, NL+1) :: k_IRl
+      real, dimension(NIR, NL+1) :: k_IRl, tau_ray_temp
       real, dimension(NSOL, NL+1) :: k_Vl
 
       ! For the new picket fence stuff
@@ -346,7 +346,8 @@ c     ntstep is the number of timesteps to skip.
 !$   &    ibinm, a3, heats_aerad,  jdbledble, fdownbs2, tl10, pbarsub, heats, uintent, alb_tot, a1, uopd, pe, pl10, freedman_t,
 !$   &    ptempt, tmiu, y2, ic, ir, ih, htneto,
 !$   &    gauss_idx, wave_idx, stel_idx, chan_idx, J, K, T_idx, P_idx, temp_idx, index_num, lo_temp_flag, it1, kindex,
-!$   &    iffirst, tgrnd, ibinmin, log_start, log_end, log_step, P_pass_sub, ir_abs_coefficient, wavea, ttsub, albedoa)
+!$   &    iffirst, tgrnd, ibinmin, log_start, log_end, log_step, P_pass_sub, ir_abs_coefficient, wavea, ttsub, albedoa,
+!$   &    tau_ray_temp)
 
 
           !!$   &    y, x1, Q11, q12, q21, q22, result, r1, r2 ! bilinearinterp adds, should NOT be necessary, all private by default
@@ -505,7 +506,7 @@ c     ntstep is the number of timesteps to skip.
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl, tau_ray_temp)
 
               pr=prb2t
 

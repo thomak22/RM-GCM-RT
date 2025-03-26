@@ -22,7 +22,7 @@
      &  qrad,alb_tomi,alb_toai, num_layers, SLOPE,
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
-     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, k_IRl, k_Vl)
+     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, k_IRl, k_Vl, tau_ray_temp)
 
 !     *********************************************************
 !     *  Purpose            :  Defines all constants, and     *
@@ -63,7 +63,7 @@
       real :: k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met
       real :: Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val
 
-      real, dimension(NIR, NL+1) :: k_IRl
+      real, dimension(NIR, NL+1) :: k_IRl, tau_ray_temp
       real, dimension(NSOL, NL+1) :: k_Vl
       ! New variables for calculating the IR absorbtion coefficient as a power law
       real, dimension(NLAYER) :: IR_ABS_COEFFICIENT
