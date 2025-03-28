@@ -29,10 +29,10 @@
           ! Thomas inclusions from corr-k common block
     !       COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
     !  &                    INT_SPEC, TAURAY_PER_DPG
-    !       REAL :: OPAC_CORRK(73, 20, NWNO, 8)
-    !       REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+    !       REAL :: OPAC_CORRK(NTGRID, 20, NWNO, 8)
+    !       REAL :: TS_CORRK(NTGRID), PS_CORRK(20), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(20), WGTS_CORRK(8) 
     !       REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
-    !       REAL :: TAURAY_PER_DPG(73, 20, NWNO)
+    !       REAL :: TAURAY_PER_DPG(NTGRID, 20, NWNO)
           ! End Thomas inclusions
           REAL :: GASCON
 
@@ -102,7 +102,7 @@
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
           CALL calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
      &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK,
-     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO)
+     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
           
           ! DO L = 1, NSOL
           !   ! write(*,*)  'L: ', L
@@ -121,10 +121,10 @@
 
       subroutine calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
      &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK,
-     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO)
+     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
 
         implicit none
-        integer :: k, NLAYER, J, NSOL, NIR, i, NWNO
+        integer :: k, NLAYER, J, NSOL, NIR, i, NWNO, NTGRID, NPGRID
 
         real :: R, gravity_SI
 
@@ -134,15 +134,15 @@
         real, dimension(NIR,NLAYER+1) :: tau_IRe
         real, dimension(NSOL,NLAYER+1) :: tau_Ve, tau_ray_temp
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, NWNO, 8), TAURAY_PER_DPG(73, 20, NWNO)
-        REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
+        REAL :: OPAC_CORRK(NTGRID, NPGRID, NWNO, 8), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
+        REAL :: TS_CORRK(NTGRID), PS_CORRK(NPGRID), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(NPGRID)
         ! WRITE(*,*) "OPAC_CORRK: ", OPAC_CORRK(1,1,1,1), OPAC_CORRK(1,1,2,1), OPAC_CORRK(1,1,3,1)
         tau_Ve(:,1) = 0.0
         tau_IRe(:,1) = 0.0
         ! write(*,*) 'loc(tau_ray_temp)1: ', LOC(tau_ray_temp)
         do k = 1, NLAYER
           call local_opacities_corrk(Tl(k), Pl(k), k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
           tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
           tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
           tau_ray_temp(:,k) = tau_ray_temp(:,k) * dpe(k) / gravity_SI
@@ -152,24 +152,23 @@
       end subroutine calculate_opacities_corrk
 
       subroutine local_opacities_corrk(Tin, Pin, k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
         implicit none
         real :: Tin, Pin
-        integer :: NLAYER, NIR, NSOL, I, NWNO
+        integer :: NLAYER, NIR, NSOL, I, NWNO, NTGRID, NPGRID
         real, dimension(NIR, NLAYER) :: k_IRl
         real, dimension(NSOL, NLAYER) :: k_Vl, tau_ray_temp
         ! For now, interpolating molceular opacities (cm^2/molecule) linearly in both pressure and temperature
         ! Since we're explicitly spectral now, I think K_IRl and K_Vl are the same thing
         ! chan_idx is the overall idx in the flat GCM stuff, so should always be wave_idx * 8 + gauss_idx
         integer :: T_idx, P_idx, wave_idx, gauss_idx, chan_idx, k
-        integer :: NTS_CORRK, NPS_CORRK
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, NWNO, 8), TAURAY_PER_DPG(73, 20, NWNO)
-        REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
+        REAL :: OPAC_CORRK(NTGRID, NPGRID, NWNO, 8), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
+        REAL :: TS_CORRK(NTGRID), PS_CORRK(NPGRID), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(NPGRID)
         ! WRITE(*,*) "OPAC_CORRK: ", OPAC_CORRK(1,1,1,1), OPAC_CORRK(1,1,2,1), OPAC_CORRK(1,1,3,1)
 
-        NTS_CORRK = 73
-        NPS_CORRK = 20
+        ! NTGRID = 73
+        ! NPGRID = 20
 
         T_idx = MINLOC(ABS(TS_CORRK - Tin),1)
         P_idx = MINLOC(ABS(PS_CORRK - Pin),1)

@@ -2,10 +2,10 @@
         IMPLICIT NONE
         include 'nwno.inc'
         ! COMMON BLOCK SHAPES HERE:
-        REAL :: OPAC_CORRK(73, 20, NWNO, 8)
-        REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+        REAL :: OPAC_CORRK(NTGRID, NPGRID, NWNO, 8)
+        REAL :: TS_CORRK(NTGRID), PS_CORRK(NPGRID), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(NPGRID), WGTS_CORRK(8) 
         REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
-        REAL :: OPAC_CIA(73, 20, NWNO), TAURAY_PER_DPG(73, 20, NWNO)
+        REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
         REAL :: PLANCK_INTS(NWNO, 3925), PLANCK_TS(3925)
         
 
@@ -26,15 +26,15 @@
             CHARACTER(LEN=32) :: dummyMETALLICITY_str, dummyC_TO_O_str, tiovo_str
             CHARACTER(len=30) :: FOLDER
             CHARACTER(len=80) :: FNM, CIAFNM, RAYFNM
-            REAL :: TEMP_OPAC_CORRK(8,73*20*NWNO) ! 8 gauss pts, 73 T, 20 P, NWNO wavelengths
-            REAL :: TEMP_OPAC_CIA(NWNO,73*20) ! 73 T, 20 P, NWNO wavelengths
-            REAL :: TEMP_TAURAY_PER_DPG_PERMU(NWNO, 73*20)
+            REAL :: TEMP_OPAC_CORRK(8,NTGRID*NPGRID*NWNO) ! 8 gauss pts, NTGRID T, NPGRID P, NWNO wavelengths
+            REAL :: TEMP_OPAC_CIA(NWNO,NTGRID*NPGRID) ! NTGRID T, NPGRID P, NWNO wavelengths
+            REAL :: TEMP_TAURAY_PER_DPG_PERMU(NWNO, NTGRID*NPGRID)
 
             ! COMMON BLOCK SHAPES HERE:
-            REAL :: OPAC_CORRK(73, 20, NWNO, 8)
-            REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+            REAL :: OPAC_CORRK(NTGRID, NPGRID, NWNO, 8)
+            REAL :: TS_CORRK(NTGRID), PS_CORRK(NPGRID), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(NPGRID), WGTS_CORRK(8) 
             REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
-            REAL :: OPAC_CIA(73, 20, NWNO), TAURAY_PER_DPG(73, 20, NWNO)
+            REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
             MMW = 8314.462618 / GASCON ! Mean molecular weight in g/mol (or H masses per molecule)
 
             ! Convert METALLICITY and C_TO_O to strings
@@ -66,7 +66,7 @@
             ELSE IF (NWNO.eq.30) THEN
                 FOLDER = '../30bands/'
             ELSE
-                WRITE(*,*) 'NWNO is wrong in params.i, options are 11 and 30'
+                WRITE(*,*) 'NWNO is wrong in nwno.inc, options are 11 and 30'
             STOP
                 END IF
             ! FOLDER = '../11bands/'
@@ -91,27 +91,28 @@
 
             ! Reshape into 3D array
             ! Index order of new array: T, P, wavelength (no gauss pt because gray in each band)
-            DO I = 1, 73
-                DO J = 1, 20
+            DO I = 1, NTGRID
+                DO J = 1, NPGRID
                     DO K = 1, NWNO
                     ! after this line we have m^2/kg
                     ! file is in units of m^2/molecule
-                    OPAC_CIA(I,J,K) = TEMP_OPAC_CIA(K,(I-1)*20+J) * 6.022e23 / (MMW/1000)
+                    OPAC_CIA(I,J,K) = TEMP_OPAC_CIA(K,(I-1)*NPGRID+J) * 6.022e23 / (MMW/1000)
                     ! after this line we should have log(tau / (deltap / gravity), all in SI units)
-                    TAURAY_PER_DPG(I,J,K) = log10(TEMP_TAURAY_PER_DPG_PERMU(K,(I-1)*20+J) / MMW)
+                    TAURAY_PER_DPG(I,J,K) = log10(TEMP_TAURAY_PER_DPG_PERMU(K,(I-1)*NPGRID+J) / MMW)
                     END DO
                 END DO
             END DO
 
             ! Reshape into 4D array
             ! Index order of new array: T, P, wavelength, gauss pt
-            DO I = 1, 73
-                DO J = 1, 20
+            DO I = 1, NTGRID
+                DO J = 1, NPGRID
                     DO K = 1, NWNO
                     DO L = 1, 8
                             ! After exponential, we're in cm^2/molecule units which we convert to m^2/molecule since RT uses SI units
                             ! avagadro + MMW/1000 conversion factor get us to m^2/kg
-                            OPAC_CORRK(I,J,K,L) = EXP(TEMP_OPAC_CORRK(L,(I-1)*20*NWNO+(J-1)*NWNO+K)) * 1e-4 * 6.022e23 / (MMW/1000)
+                            OPAC_CORRK(I,J,K,L) = EXP(TEMP_OPAC_CORRK(L,(I-1)*NPGRID*NWNO+(J-1)*NWNO+K)) * 1e-4 * 6.022e23 / 
+     &                                              (MMW/1000)
                             ! Add in CIA and H- opacities
                             OPAC_CORRK(I,J,K,L) = OPAC_CORRK(I,J,K,L) + OPAC_CIA(I,J,K)
                             ! Convert to log space
