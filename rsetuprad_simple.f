@@ -34,6 +34,9 @@
 !     * Such as adding more wavelength bins or mie calculations
 !     * then consult that program first.                      *
 !     * *******************************************************
+      use corrkmodule, only : corrk_setup, TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
+     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO
       include 'rcommons.h'
       ! KENNEDY NOTES: Changing the hardcoded stuff to be dependent on channel numbers
       ! This block is repeated throughout the radiative transfer stuff, but I'm first changing here
@@ -104,12 +107,12 @@
       real fir_net_aerad(NL+1)
       real fsl_net_aerad(NL+1)
       ! Corr-K common block:
-      COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &      INT_SPEC, TAURAY_PER_DPG
-      REAL :: OPAC_CORRK(73, 20, 11, 8)
-      REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
-      REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
-      REAL :: TAURAY_PER_DPG(73, 20, 11)
+    !   COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
+    !  &      INT_SPEC, TAURAY_PER_DPG
+    !   REAL :: OPAC_CORRK(73, 20, NWNO, 8)
+    !   REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+    !   REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
+    !   REAL :: TAURAY_PER_DPG(73, 20, NWNO)
       integer :: stel_idx, chan_idx
 
       ! For getting a doubled grid for the IR channels
@@ -494,7 +497,7 @@
       else if (opacity_method .EQ. 'correk') then
         DO L   =   1,NSOL
           chan_idx = MODULO(L-1, 8) + 1
-          stel_idx = MODULO((L-chan_idx)/8,11) + 1
+          stel_idx = MODULO((L-chan_idx)/8,NWNO) + 1
           SOL(L)  = PSOL_aerad * STEL_SPEC(stel_idx)
         END DO
       END IF

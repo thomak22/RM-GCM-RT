@@ -332,6 +332,11 @@ c     ntstep is the number of timesteps to skip.
           istart = 1
           iend = mg
           printt = 0
+          ! THOMAS NOTE: I think the rule here is that everything that gets passed between subroutines needs to be 
+          ! declared as shared or private, while anything local to one subroutine is privated by default (good).
+          ! Variables in common blocks (which, thankfully, are never edited in this part fo the code) seem to be
+          ! properly shared between threads.
+          ! In general, variables should be private unless they hold information about all lats and lons
 !$OMP     PARALLEL default(none) private(im, imp, imm, istart, iend, idocalc, ilast, ld, l, PR, PRB2T, T, aeroprof, 
 !$   &    p_pass, alon, rfluxes_aerad, fluxes, fsl_dn_aerad, fir_up_aerad, Y1, Y3, Y4, Y5, k_irl, k_vl, htlw, htsw, thread_num,
 !$   &    psol_aerad, el2, taul, cheati, pl, dpg, tin, gol, em2, k_lowp, u0, tauaer, sfcs, pbar, a5, cheats, utaul, dintent,
@@ -350,7 +355,7 @@ c     ntstep is the number of timesteps to skip.
 !$   &    tau_ray_temp)
 
 
-          !!$   &    y, x1, Q11, q12, q21, q22, result, r1, r2 ! bilinearinterp adds, should NOT be necessary, all private by default
+!!$   &    y, x1, Q11, q12, q21, q22, result, r1, r2 ! bilinearinterp adds, should NOT be necessary, all private by default
 !!$   &    YA, YB, ckp, m, !) newflux1 adds here, nothing new from 2stream
 !!$   &    du0, b4, x2, x3, c1_var, c2_var, cp1, x4_add, cm1, x,! radd adds
 !!$   &    layer_pressure_bar, haze_wavelength_indices, cloud_wavelength_indices, haze_layer_index, wav_loc, tau_haze, temp_loc,! ropprmulti adds
@@ -358,7 +363,7 @@ c     ntstep is the number of timesteps to skip.
 !!$   &    TINT, TIRR, grav, TEFF, BOND_ALBEDO, L10T, L10T2, AV1, AV2, AV3, BV1, BV2, BV3, aB, bB, aP, bP, gam_V, ! radiative_transfer_picket_fence adds
 !!$   &    gam_p, RT, R, gam_1, gam_2) ! radiative_transfer_picket_fence adds
 !$   &    shared(nthreads, nskip, lnnsk, sigma, GSG, PLG, P0, CT, FBASEFLUX, rrflux, alat, lfluxdiag, kountp, koutp, 
-!$   &    ntstep_in, porb, sslon, kount,itspd, sslat, obliq, day, albsw,aerosols, aerosolmodel, tauaerosol, doy, epsilon,
+!$   &    ntstep_in, porb, sslon, kount, itspd, sslat, obliq, day, albsw,aerosols, aerosolmodel, tauaerosol, doy, epsilon,
 !$   &    avg, alos, SCDAY, RGAS, GANGLE, GWEIGHT, GRATIO, RAYPERBAR, num_layers, CHRF, 
 !$   &    PNET, SNET, HTNET, TTRD, ihem, jh, iofm, printt) ! stuff that should definitely be shared
 !$   &    firstprivate(TG) ! not sure whether this should eb firstprivate or shared, but it's not updated in the parallel section, so I doubt it matters

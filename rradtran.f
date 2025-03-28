@@ -34,6 +34,9 @@
 !                 are all loaded into interface common block).
 !     **************************************************************
 !
+      use corrkmodule, only : TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
+     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO
       include 'rcommons.h'
 
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, kount, itspd
@@ -93,12 +96,12 @@
       INTEGER j1
       real denom
       ! Corr-K common block:
-      COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &      INT_SPEC, TAURAY_PER_DPG
-      REAL :: OPAC_CORRK(73, 20, 11, 8)
-      REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
-      REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
-      REAL :: TAURAY_PER_DPG(73, 20, 11)
+    !   COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
+    !  &      INT_SPEC, TAURAY_PER_DPG
+    !   REAL :: OPAC_CORRK(73, 20, NWNO, 8)
+    !   REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+    !   REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
+    !   REAL :: TAURAY_PER_DPG(73, 20, NWNO)
 
       integer L, J, K, chan_idx, stel_idx
 
@@ -473,7 +476,7 @@
         DO L = NSOL+1,NTOTAL
           chan_idx = MODULO(L-1,8)+1
         !   stel_idx = (L - chan_idx)/8 + 1
-          stel_idx = MODULO((L-chan_idx)/8, 11) + 1
+          stel_idx = MODULO((L-chan_idx)/8, NWNO) + 1
         !   write(*,*) "stel_idx: ", stel_idx
         !   write(*,*) "chan_idx: ", chan_idx
         !   write(*,*) "FNET: ", FNET(L,NLAYER)
@@ -486,7 +489,7 @@
         DO J = 1, NLAYER
             DO L = 1, NTOTAL
                 chan_idx = MODULO(L-1,8)+1
-                stel_idx = MODULO((L-chan_idx)/8, 11) + 1
+                stel_idx = MODULO((L-chan_idx)/8, NWNO) + 1
                 ! stel_idx = (L - chan_idx)/8 + 1
                 IF (L .LE. NSOL) THEN
                     FNET(L,J) = FNET(L,J) * WGTS_CORRK(chan_idx) ! * STEL_SPEC(stel_idx)
@@ -625,7 +628,7 @@
             DO L       =  1,NSOL
                 chan_idx = MODULO(L-1,8)+1
                 ! stel_idx = (L - chan_idx)/8 + 1
-                stel_idx = MODULO((L-chan_idx)/8, 11) + 1
+                stel_idx = MODULO((L-chan_idx)/8, NWNO) + 1
                 SOLNET  = SOLNET - FNET(L,NLAYER)
                 ! This line shouldn't menanigful until reflection is added, but should have either a stel_spec of a wgts_corrk or both
                 fp      = (ck1(L,1) * eL2(L,1) - ck2(L,1) * em2(L,1) + cp(L,1)) * WGTS_CORRK(chan_idx)!* STEL_SPEC(stel_idx)
@@ -663,7 +666,7 @@
             do  i = 1, nsoL
                 chan_idx = MODULO(i-1,8)+1
                 ! stel_idx = (i - chan_idx)/8 + 1
-                stel_idx = MODULO((i-chan_idx)/8, 11) + 1
+                stel_idx = MODULO((i-chan_idx)/8, NWNO) + 1
                 fsLd(i) = psol_aerad * incident_starlight_fraction * WGTS_CORRK(chan_idx) * STEL_SPEC(stel_idx) !
                 alb_toa(i) = fsLu(i)/fsLd(i)
                 tsLu = tsLu + fsLu(i)

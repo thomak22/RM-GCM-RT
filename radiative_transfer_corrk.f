@@ -19,16 +19,20 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl, tau_ray_temp)
-
+          use corrkmodule, only : corrk_setup, TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
+     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS
           include 'rcommons.h'
+          include 'nwno.inc'
+          ! integer :: NWNO
 
           ! Thomas inclusions from corr-k common block
-          COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
-     &                    INT_SPEC, TAURAY_PER_DPG
-          REAL :: OPAC_CORRK(73, 20, 11, 8)
-          REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
-          REAL :: WNO_EDGES(12), WNO_CTRS(11), STEL_SPEC(11), INT_SPEC(11)
-          REAL :: TAURAY_PER_DPG(73, 20, 11)
+    !       COMMON/CORRKGAS/OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC,
+    !  &                    INT_SPEC, TAURAY_PER_DPG
+    !       REAL :: OPAC_CORRK(73, 20, NWNO, 8)
+    !       REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20), WGTS_CORRK(8) 
+    !       REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
+    !       REAL :: TAURAY_PER_DPG(73, 20, NWNO)
           ! End Thomas inclusions
           REAL :: GASCON
 
@@ -73,6 +77,8 @@
           real :: total_layer_taus(NLAYER), dummy_weights(NSOL)
           integer :: gauss_idx, stel_idx
 
+          ! WRITE(*,*) "OPAC_CORRK: ", OPAC_CORRK(1,1,1,1), OPAC_CORRK(1,1,2,1), OPAC_CORRK(1,1,3,1)
+
           ! write(*,*) 'gravity_SI: ', gravity_SI
           do J = 1, NL+1
              pe(J) = p_pass(J)
@@ -96,7 +102,7 @@
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
           CALL calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
      &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK,
-     &                                   tau_ray_temp, TAURAY_PER_DPG)
+     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO)
           
           ! DO L = 1, NSOL
           !   ! write(*,*)  'L: ', L
@@ -115,10 +121,10 @@
 
       subroutine calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
      &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK,
-     &                                   tau_ray_temp, TAURAY_PER_DPG)
+     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO)
 
         implicit none
-        integer :: k, NLAYER, J, NSOL, NIR, i
+        integer :: k, NLAYER, J, NSOL, NIR, i, NWNO
 
         real :: R, gravity_SI
 
@@ -128,15 +134,15 @@
         real, dimension(NIR,NLAYER+1) :: tau_IRe
         real, dimension(NSOL,NLAYER+1) :: tau_Ve, tau_ray_temp
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, 11, 8), TAURAY_PER_DPG(73, 20, 11)
+        REAL :: OPAC_CORRK(73, 20, NWNO, 8), TAURAY_PER_DPG(73, 20, NWNO)
         REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
-
+        ! WRITE(*,*) "OPAC_CORRK: ", OPAC_CORRK(1,1,1,1), OPAC_CORRK(1,1,2,1), OPAC_CORRK(1,1,3,1)
         tau_Ve(:,1) = 0.0
         tau_IRe(:,1) = 0.0
         ! write(*,*) 'loc(tau_ray_temp)1: ', LOC(tau_ray_temp)
         do k = 1, NLAYER
           call local_opacities_corrk(Tl(k), Pl(k), k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO)
           tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
           tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
           tau_ray_temp(:,k) = tau_ray_temp(:,k) * dpe(k) / gravity_SI
@@ -146,10 +152,10 @@
       end subroutine calculate_opacities_corrk
 
       subroutine local_opacities_corrk(Tin, Pin, k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO)
         implicit none
         real :: Tin, Pin
-        integer :: NLAYER, NIR, NSOL, I
+        integer :: NLAYER, NIR, NSOL, I, NWNO
         real, dimension(NIR, NLAYER) :: k_IRl
         real, dimension(NSOL, NLAYER) :: k_Vl, tau_ray_temp
         ! For now, interpolating molceular opacities (cm^2/molecule) linearly in both pressure and temperature
@@ -158,8 +164,9 @@
         integer :: T_idx, P_idx, wave_idx, gauss_idx, chan_idx, k
         integer :: NTS_CORRK, NPS_CORRK
         ! corrk commons:
-        REAL :: OPAC_CORRK(73, 20, 11, 8), TAURAY_PER_DPG(73, 20, 11)
+        REAL :: OPAC_CORRK(73, 20, NWNO, 8), TAURAY_PER_DPG(73, 20, NWNO)
         REAL :: TS_CORRK(73), PS_CORRK(20), TS_LOG_CORRK(73), PS_LOG_CORRK(20)
+        ! WRITE(*,*) "OPAC_CORRK: ", OPAC_CORRK(1,1,1,1), OPAC_CORRK(1,1,2,1), OPAC_CORRK(1,1,3,1)
 
         NTS_CORRK = 73
         NPS_CORRK = 20
@@ -170,7 +177,8 @@
         ! Nearest-neighbor the rayleigh scattering optical depth (faster and accurate enough)
         do chan_idx = 1, NSOL
           gauss_idx = modulo(chan_idx - 1, 8) + 1
-          wave_idx = MODULO((chan_idx - gauss_idx)/8,11) + 1
+          ! write(*,*) 'nwno: ', NWNO
+          wave_idx = MODULO((chan_idx - gauss_idx)/8,NWNO) + 1
           tau_ray_temp(chan_idx, k) = TAURAY_PER_DPG(T_idx, P_idx, wave_idx)
         end do
         ! Set up indices for bilinear interpolation
@@ -184,7 +192,7 @@
 
         do chan_idx = 1, NSOL
           gauss_idx = modulo(chan_idx - 1, 8) + 1
-          wave_idx = MODULO((chan_idx - gauss_idx)/8,11) + 1
+          wave_idx = MODULO((chan_idx - gauss_idx)/8,NWNO) + 1
           ! k_IRl(chan_idx, k) = OPAC_CORRK(T_idx, P_idx, wave_idx, gauss_idx)
           ! interpolate molecular line opacities
 

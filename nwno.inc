@@ -1,0 +1,2 @@
+      INTEGER NWNO
+      PARAMETER (NWNO = 11)

@@ -475,7 +475,7 @@ CDIR$    IVDEP
       GRAYCLDV     = .False.
       READ(7,INCLOUDY)
       CALL get_cloud_scattering_properties_wrapper
-      CALL get_gas_opacity_corrk_wrapper
+      CALL get_gas_opacity_corrk_wrapper(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO)
       write(*,*) ' '
 
 

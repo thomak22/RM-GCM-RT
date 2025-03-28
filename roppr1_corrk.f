@@ -25,6 +25,9 @@
 !     *  Output              :  PTEMP, PTEMPG, SLOPE           *
 !     * ********************************************************
 !
+      use corrkmodule, only : TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
+     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO
       include 'rcommons.h'
       
       integer kindex, J, L, num_layers, K, index_num
@@ -67,8 +70,8 @@
       !    TTsub(L) = t(K)
       !    K  =  K+1
       !END DO
-      COMMON/PLANCK_INT/PLANCK_INTS, PLANCK_TS
-      REAL :: PLANCK_INTS(11, 3925), PLANCK_TS(3925)
+      ! COMMON/PLANCK_INT/PLANCK_INTS, PLANCK_TS
+      ! REAL :: PLANCK_INTS(NWNO, 3925), PLANCK_TS(3925)
       INTEGER :: temp_idx, gauss_idx, stel_idx
       logical :: lo_temp_flag
 
@@ -114,8 +117,8 @@
                 ! Modulo is used here to figure out which bin we're in from the big array
                 !   write(*,*) "L: ", L, "J: ", J, "temp_idx: ", temp_idx, "MODULO: ", MODULO(L-1,8)+1
                 gauss_idx = MODULO(L-1,8)+1 ! This is the index of the gauss point
-                ! stel_idx = (L - gauss_idx)/8 + 1 - 11! This is the index of the wavenumber bin
-                stel_idx = MODULO((L-gauss_idx)/8, 11) + 1
+                ! stel_idx = (L - gauss_idx)/8 + 1 - NWNO! This is the index of the wavenumber bin
+                stel_idx = MODULO((L-gauss_idx)/8, NWNO) + 1
                 ! IT1 = PLANCK_INTS(stel_idx, temp_idx) ! Nearest-neighbor interpolation in T
                 IT1 = PLANCK_INTS(stel_idx, temp_idx) + (PLANCK_INTS(stel_idx, temp_idx+1) - 
      &                PLANCK_INTS(stel_idx, temp_idx)) * 
