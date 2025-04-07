@@ -121,7 +121,7 @@
 
       subroutine calculate_opacities_corrk(NLAYER, NSOL, NIR, Tl, Pl, dpe, tau_IRe, tau_Ve, gravity_SI, k_IRl, k_Vl,
      &                                   OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK,
-     &                                   tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
+     &                                   tau_ray_temp, TAURAY_PER_DPG, NWNO, NTGRID, NPGRID)
 
         implicit none
         integer :: k, NLAYER, J, NSOL, NIR, i, NWNO, NTGRID, NPGRID
@@ -142,7 +142,7 @@
         ! write(*,*) 'loc(tau_ray_temp)1: ', LOC(tau_ray_temp)
         do k = 1, NLAYER
           call local_opacities_corrk(Tl(k), Pl(k), k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG, NWNO, NTGRID, NPGRID)
           tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
           tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
           tau_ray_temp(:,k) = tau_ray_temp(:,k) * dpe(k) / gravity_SI
@@ -152,7 +152,7 @@
       end subroutine calculate_opacities_corrk
 
       subroutine local_opacities_corrk(Tin, Pin, k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
-     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG,NWNO,NTGRID,NPGRID)
+     &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG, NWNO, NTGRID, NPGRID)
         implicit none
         real :: Tin, Pin
         integer :: NLAYER, NIR, NSOL, I, NWNO, NTGRID, NPGRID

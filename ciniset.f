@@ -140,7 +140,14 @@ C
       NAMELIST/INPOP/RNTAPE,KOUNTH,KOUNTR,KOUNTP,KOUNTE                   
      + ,NCOEFF,NLAT,LGPO,LSPO                                             
      + ,RNTAPO,NTRACO                                                     
-     $     ,LSHIST,LMINIH                                                 
+     $     ,LSHIST,LMINIH        
+      COMMON/VARPARAM/OOM_IN, LPLOTMAP,NLPLOTMAP_IN,RFCOEFF_IN, 
+     & NTSTEP_IN, NSKIP_IN, BOTRELAXTIME, FBASEFLUX, FORCE1DDAYS, 
+     & OPACIR_POWERLAW, OPACIR_REFPRES, SOLC_IN, TOAALB, 
+     & PORB, OBLIQ, ECCEN, TAULIMIT
+      REAL :: OOM_IN, RFCOEFF_IN, BOTRELAXTIME, FBASEFLUX
+      LOGICAL :: LPLOTMAP
+      INTEGER :: NLPLOTMAP_IN, NTSTEP_IN, NSKIP_IN                                         
 C
 C
 C                                                                         

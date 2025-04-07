@@ -25,9 +25,7 @@
 !     *  Output              :  PTEMP, PTEMPG, SLOPE           *
 !     * ********************************************************
 !
-      use corrkmodule, only : TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
-     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO
+      use corrkmodule, only : PLANCK_INTS, PLANCK_TS, NWNO
       include 'rcommons.h'
       
       integer kindex, J, L, num_layers, K, index_num

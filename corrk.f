@@ -10,13 +10,13 @@
         
 
         CONTAINS
-        SUBROUTINE corrk_setup(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO,TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
-     &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
+        SUBROUTINE corrk_setup(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO,TS_CORRK, PS_CORRK, 
+     &           TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
      &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO)
             implicit none
             integer :: NWNO
             INTEGER :: I, J, K, L
-            REAL, INTENT(IN) :: METALLICITY, C_TO_O, FBASEFLUX
+            REAL :: METALLICITY, C_TO_O, FBASEFLUX
             REAL :: TINT
             INTEGER :: TINT_INDEX
             REAL :: GASCON, MMW
@@ -97,7 +97,7 @@
                     ! after this line we have m^2/kg
                     ! file is in units of m^2/molecule
                     OPAC_CIA(I,J,K) = TEMP_OPAC_CIA(K,(I-1)*NPGRID+J) * 6.022e23 / (MMW/1000)
-                    ! after this line we should have log(tau / (deltap / gravity), all in SI units)
+                    ! after this line we should have log10(tau / (deltap / gravity), all in SI units)
                     TAURAY_PER_DPG(I,J,K) = log10(TEMP_TAURAY_PER_DPG_PERMU(K,(I-1)*NPGRID+J) / MMW)
                     END DO
                 END DO
@@ -108,7 +108,7 @@
             DO I = 1, NTGRID
                 DO J = 1, NPGRID
                     DO K = 1, NWNO
-                    DO L = 1, 8
+                        DO L = 1, 8
                             ! After exponential, we're in cm^2/molecule units which we convert to m^2/molecule since RT uses SI units
                             ! avagadro + MMW/1000 conversion factor get us to m^2/kg
                             OPAC_CORRK(I,J,K,L) = EXP(TEMP_OPAC_CORRK(L,(I-1)*NPGRID*NWNO+(J-1)*NWNO+K)) * 1e-4 * 6.022e23 / 
@@ -171,7 +171,8 @@
             INT_SPEC = PLANCK_INTS(:, TINT_INDEX)
             INT_SPEC = INT_SPEC / SUM(INT_SPEC)
             write(*,*) 'TINT: ', TINT, 'TINT_INDEX: ', TINT_INDEX
-            write(*,*) 'INT_SPEC: ', INT_SPEC
+            write(*,*) 'BINNED INTERIOR SPECTRUM: ', INT_SPEC
+            write(*,*) 'BINNED STELLAR SPECTRUM: ', STEL_SPEC
         END SUBROUTINE corrk_setup
 
         SUBROUTINE BIN_STELLAR_SPECTRUM(file_name, STEL_SPEC, WNO_EDGES, NWNO)

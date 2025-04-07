@@ -12,7 +12,7 @@
  CLATNT  = 2500000.00000000
  /
  &INPRN
- KRUN   = 9600.0,
+ KRUN   = 4800.0,
  BEGDAY   = 0.0,
  TSPD   = 4800.0,
  KITS     = 3,
