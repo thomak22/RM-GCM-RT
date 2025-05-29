@@ -167,7 +167,7 @@ C Setup SW code
 
 C     globally averaged solar constant, vertical rays
       AMU0=1.0
-      PSOL=SOLC/4.
+      PSOL=SOLC/4. * SQRT(3.0)
       IF(.NOT.L1DZENITH) THEN
          DDAY=FORCE1DDAYS
          IF(DAY.GT.DDAY) THEN
@@ -177,13 +177,15 @@ C     globally averaged solar constant, vertical rays
      &              +DFAC*MAX(0.0,SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)
      &                           +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)
      &                           *COS((ALON-SSLON)/360.*PI2))
-               PSOL=(1.0-DFAC)*PSOL + DFAC*SOLC
+               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0) + DFAC*SOLC
             ELSE
-               PSOL=(1.0-DFAC)*PSOL+DFAC*SOLC/PI*
+               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0)+DFAC*SOLC/PI*
      &              (SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)*DLENGTH
      &              +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)*SIN(DLENGTH))
             ENDIF
          ENDIF
+      ELSE
+         AMU0=1/SQRT(3.0)
       ENDIF
 
 
