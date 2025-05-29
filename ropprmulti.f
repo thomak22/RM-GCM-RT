@@ -28,6 +28,7 @@
 !     *  Output              :  TAUL, W0, G0, OPD, Y3              *
 !     * ************************************************************
 !
+      use corrkmodule  , only : MINWNOSTEL
       include 'rcommons.h'
 
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, j1,kount, MET_INDEX, itspd
@@ -177,12 +178,12 @@
                 haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1)  ! Both of these are in PA
                 ! This grabs the optical depth per bar, then multiply it by the pressure in bars
                 IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = HAZE_WAVELENGTH_INDEXES(2) !THIS IS THE DOUBLE GRAY VERSION
                         TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
                     END DO
                 ELSE
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = HAZE_WAVELENGTH_INDEXES(L)
                         TAU_HAZE(L,J) = HAZE_wav_tau_per_bar(WAV_LOC, haze_layer_index) * layer_pressure_bar(J)
                     END DO
@@ -223,7 +224,7 @@
             DO I = 1,NCLOUDS
                 ! GET THE SCATTERING PROPERTIES
                 IF (PICKET_FENCE_CLOUDS .eqv. .False.) THEN
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
                         PI0_TEMP(L,J,I) = PI0_OPPR(1,WAV_LOC,size_loc,I)
                         G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
@@ -235,7 +236,7 @@
                         G0_TEMP(L,J,I)  = G0_OPPR(1,WAV_LOC,size_loc,I)
                     END DO
                 ELSE
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
                         PI0_TEMP(L,J,I) = PI0_OPPR(L,WAV_LOC,size_loc,I)
                         G0_TEMP(L,J,I)  = G0_OPPR(L,WAV_LOC,size_loc,I)
@@ -255,7 +256,7 @@
 
                 ! DPG is CGS before that 10x
                 IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
 
                         tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
@@ -269,7 +270,7 @@
      &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
                 ELSE
-                    DO L = solar_calculation_indexer,NSOL
+                    DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                         WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
                         tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
      &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
@@ -306,7 +307,7 @@
             DO J = 1,NLAYER
                 haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
 
-                DO L = solar_calculation_indexer,NSOL
+                DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                     WAV_LOC = CLOUD_WAVELENGTH_INDEXES(2)
                     TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
                     WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
@@ -345,7 +346,7 @@
         !     SW AT STANDARD VERTICAL RESOLUTION
             DO J = 1,NLAYER
                 haze_layer_index = MINLOC(ABS((haze_pressure_array_pascals) - (p_pass(J))),1) ! Pascals
-                DO L = solar_calculation_indexer,NSOL
+                DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                     WAV_LOC = CLOUD_WAVELENGTH_INDEXES(L)
                     TAUAER(L,J) = SUM(tauaer_temp(L,J,1:NCLOUDS)) + TAU_HAZE(L,J)
                     WOL(L,J)    = SUM(tauaer_temp(L,J,1:NCLOUDS)/(TAUAER(L,J)+1e-8) * PI0_TEMP(L,J,1:NCLOUDS))
@@ -416,7 +417,7 @@
           j1 = max(1, j-1)
 
             !         First the solar at standard resolution
-          DO L = solar_calculation_indexer,NSOL
+          DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
               TAUL(L,J) = TAUGAS(L,J)+TAURAY(L,J)+TAUAER(L,J)
 
               if(TAUL(L,J) .lt. 1d-6 ) then

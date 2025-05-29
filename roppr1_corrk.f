@@ -54,6 +54,7 @@
       real, dimension(NTOTAL,2*NL+2) :: TAUL
       real, dimension(NTOTAL,NDBL) :: SLOPE
       real, dimension(2*NL+2) :: ttsub
+      real :: localT
 
 
 !     **************************************
@@ -89,14 +90,15 @@
           if (MOD(J, 2) .eq. 0) THEN
               index_num = J / 2
               temp_idx = MINLOC(ABS(PLANCK_TS - T(index_num)), 1)
-              if (TT(index_num) .LT. PLANCK_TS(temp_idx)) THEN
+              if (T(index_num) .LT. PLANCK_TS(temp_idx)) THEN
                 temp_idx = temp_idx - 1
               END IF
               if (T(index_num) .GE. 75.) THEN
                   lo_temp_flag = .TRUE.
               END IF
+              localT = T(index_num)
              
-            !   IT1 = T(index_num)*T(index_num)*T(index_num)*T(index_num)*SBKoverPI
+              ! IT1 = T(index_num)*T(index_num)*T(index_num)*T(index_num)*SBKoverPI
           ELSE
               index_num = (J / 2) + 1
               temp_idx = MINLOC(ABS(PLANCK_TS - TT(index_num)), 1)
@@ -106,6 +108,7 @@
               if (TT(index_num) .GE. 75.) THEN
                 lo_temp_flag = .TRUE.
               END IF
+              localT = TT(index_num)
             !   IT1 = TT(index_num)*TT(index_num)*TT(index_num)*TT(index_num)*SBKoverPI
           END IF
           IF (lo_temp_flag) THEN
@@ -116,19 +119,18 @@
                 !   write(*,*) "L: ", L, "J: ", J, "temp_idx: ", temp_idx, "MODULO: ", MODULO(L-1,8)+1
                 gauss_idx = MODULO(L-1,8)+1 ! This is the index of the gauss point
                 ! stel_idx = (L - gauss_idx)/8 + 1 - NWNO! This is the index of the wavenumber bin
-                stel_idx = MODULO((L-gauss_idx)/8, NWNO) + 1
+                stel_idx = (L-gauss_idx-NSOL)/8 + 1
                 ! IT1 = PLANCK_INTS(stel_idx, temp_idx) ! Nearest-neighbor interpolation in T
                 IT1 = PLANCK_INTS(stel_idx, temp_idx) + (PLANCK_INTS(stel_idx, temp_idx+1) - 
      &                PLANCK_INTS(stel_idx, temp_idx)) * 
-     &                (T(index_num) - PLANCK_TS(temp_idx)) / (PLANCK_TS(temp_idx+1) - PLANCK_TS(temp_idx)) ! linear T interpolation
+     &                (localT - PLANCK_TS(temp_idx)) / (PLANCK_TS(temp_idx+1) - PLANCK_TS(temp_idx)) ! linear T interpolation
+    !  &                (T(index_num) - PLANCK_TS(temp_idx)) / (PLANCK_TS(temp_idx+1) - PLANCK_TS(temp_idx)) ! linear T interpolation
                 
 
 
-                kindex          = max(1,j-1)
-                PTEMP(L,J)=IT1
-                SLOPE(L,J)   = (PTEMP(L,J)-PTEMP(L,KINDEX)) / TAUL(L,J)
-
-
+                kindex     = max(1,j-1)
+                PTEMP(L,J) = IT1
+                SLOPE(L,J) = (PTEMP(L,J)-PTEMP(L,KINDEX)) / TAUL(L,J)
 
 
                 if( TAUL(L,J) .le. 1.0E-6 ) THEN
@@ -142,9 +144,6 @@
                 kindex = max(1,j-1)
                 PTEMP(L,J)=IT1
                 SLOPE(L,J)   = (PTEMP(L,J)-PTEMP(L,KINDEX)) / TAUL(L,J)
-
-
-
 
                 if( TAUL(L,J) .le. 1.0E-6 ) THEN
                     SLOPE(L,J) = 0.

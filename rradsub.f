@@ -168,7 +168,11 @@ C Setup SW code
 
 C     globally averaged solar constant, vertical rays
       AMU0=1.0
-      PSOL=SOLC/4.
+      ! multiply by sqrt3 here, then divide by it later either explicitly if L1DZENITH=F or implicitly 
+      ! if L1DZENITH=T by setting the incident starlight fraction to 1/sqrt(3). This is my hacky way of making L1DZenith=T do a planet-average profile
+      ! It's weird and complicated because the cosine of the zenith angle and the fraction of flux that is incident on a given column are identical in 3-D,
+      ! but not if you want to take a 1-D average (see, e.g., Guillot+2010, Parmentier+Guillot 2014).
+      PSOL=SOLC/4. * SQRT(3.0) 
       IF(.NOT.L1DZENITH) THEN
          DDAY=FORCE1DDAYS
          IF(DAY.GT.DDAY) THEN
@@ -178,21 +182,29 @@ C     globally averaged solar constant, vertical rays
      &              +DFAC*MAX(0.0,SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)
      &                           +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)
      &                           *COS((ALON-SSLON)/360.*PI2))
-               PSOL=(1.0-DFAC)*PSOL + DFAC*SOLC
+               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0) + DFAC*SOLC
             ELSE
-               PSOL=(1.0-DFAC)*PSOL+DFAC*SOLC/PI*
+               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0)+DFAC*SOLC/PI*
      &              (SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)*DLENGTH
      &              +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)*SIN(DLENGTH))
             ENDIF
          ENDIF
+        if ((AMU0.gt.0) .and. (AMU0.lt.1e-6)) THEN
+          AMU0 = 0.0
+        endif
+        incident_starlight_fraction = MAX(0.0, AMU0)
+
+      ELSE
+         incident_starlight_fraction = 1.0 / SQRT(3.0)
+         ! AMU0 = 1.0 / SQRT(3.0)
       ENDIF
 
 
-      if ((AMU0.gt.0) .and. (AMU0.lt.1e-6)) THEN
-          AMU0 = 0.0
-      endif
+      ! if ((AMU0.gt.0) .and. (AMU0.lt.1e-6)) THEN
+      !     AMU0 = 0.0
+      ! endif
 
-      incident_starlight_fraction = MAX(0.0, AMU0)
+      ! incident_starlight_fraction = MAX(0.0, AMU0)
 
       if (incident_starlight_fraction .lt. 1e-10) THEN
           solar_calculation_indexer = NSOL + 1

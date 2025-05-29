@@ -7,12 +7,13 @@
         REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
         REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
         REAL :: PLANCK_INTS(NWNO, 3925), PLANCK_TS(3925)
+        INTEGER :: MINWNOSTEL
         
 
         CONTAINS
         SUBROUTINE corrk_setup(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO,TS_CORRK, PS_CORRK, 
      &           TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO)
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL)
             implicit none
             integer :: NWNO
             INTEGER :: I, J, K, L
@@ -35,6 +36,8 @@
             REAL :: TS_CORRK(NTGRID), PS_CORRK(NPGRID), TS_LOG_CORRK(NTGRID), PS_LOG_CORRK(NPGRID), WGTS_CORRK(8) 
             REAL :: WNO_EDGES(NWNO+1), WNO_CTRS(NWNO), STEL_SPEC(NWNO), INT_SPEC(NWNO)
             REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
+            INTEGER :: MINWNOSTEL
+
             MMW = 8314.462618 / GASCON ! Mean molecular weight in g/mol (or H masses per molecule)
 
             ! Convert METALLICITY and C_TO_O to strings
@@ -173,6 +176,15 @@
             write(*,*) 'TINT: ', TINT, 'TINT_INDEX: ', TINT_INDEX
             write(*,*) 'BINNED INTERIOR SPECTRUM: ', INT_SPEC
             write(*,*) 'BINNED STELLAR SPECTRUM: ', STEL_SPEC
+            MINWNOSTEL = 0
+            ! the number in the if statement is the fraction of starlight you want to capture
+            DO I=1, NWNO
+                IF (SUM(STEL_SPEC(I:)) > 1.) then
+                    MINWNOSTEL = I-1
+                END IF
+            END DO
+            ! MINWNOSTEL = 1
+            WRITE(*,*) 'WNO MIN: ', MINWNOSTEL
         END SUBROUTINE corrk_setup
 
         SUBROUTINE BIN_STELLAR_SPECTRUM(file_name, STEL_SPEC, WNO_EDGES, NWNO)

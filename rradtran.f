@@ -483,7 +483,7 @@
           FNET(L,NLAYER)= FBASEFLUX * INT_SPEC(stel_idx)
         !   write(*,*) "FNET2: ", FNET(L,NLAYER)
         !   write(*,*) " "
-          DIRECTU(L,NLAYER) = FBASEFLUX * INT_SPEC(stel_idx)+DIREC(L,NLAYER)
+          DIRECTU(L,NLAYER) = (FBASEFLUX * INT_SPEC(stel_idx)) + DIREC(L,NLAYER)
         END DO
         ! Prepare to combine channels
         DO J = 1, NLAYER
@@ -519,7 +519,7 @@
           TERM1      =  FDEGDAY/(DPG(J+1)*G)
 
           IF(incident_starlight_fraction.ge. 0) THEN
-              DO 480 L     =  1,NSOL
+              DO 480 L     =  MINWNOSTEL,NSOL
                   HEATS(J)   =  HEATS(J)+(FNET(L,J+1)-FNET(L,J)) * TERM1
  480          CONTINUE
           ENDIF
@@ -581,7 +581,7 @@
 !     solar fluxes at top-of-atmosphere (spectrally-resolved)
 !     <alb_toa> is albedo at top-of-atmosphere (spectrally-resolved)
 
-      do 509 i = 1, nsoL
+      do 509 i = MAX(solar_calculation_indexer,MINWNOSTEL*8), nsoL
           fsLu(i)    = 0.0
           fsLd(i)    = 0.0
 509   continue
@@ -605,7 +605,7 @@
       SOLNET   = 0.0
       IF (ISL .GT. 0) THEN
           if ((opacity_method .eq. 'picket') .or. (opacity_method .eq. 'dogray')) then
-            DO L       =  1,NSOL
+            DO L       =  MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                 SOLNET  = SOLNET - FNET(L,NLAYER)
                 fp      = (ck1(L,1) * eL2(L,1) - ck2(L,1) * em2(L,1) + cp(L,1)) * Beta_V(L)
 
@@ -625,7 +625,7 @@
                 end do
             END DO
           else if (opacity_method .eq. 'correk') then
-            DO L       =  1,NSOL
+            DO L       =  MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                 chan_idx = MODULO(L-1,8)+1
                 ! stel_idx = (L - chan_idx)/8 + 1
                 stel_idx = MODULO((L-chan_idx)/8, NWNO) + 1
@@ -655,7 +655,7 @@
         !   write(*,*) "FDOWNBS2:", fdownbs2
     ! 510       CONTINUE
           if ((opacity_method .eq. 'picket') .or. (opacity_method .eq. 'dogray')) then
-            do  i = 1, nsoL              
+            do  i = MAX(solar_calculation_indexer,MINWNOSTEL*8), nsoL              
                 fsLd(i) = psol_aerad * incident_starlight_fraction * (Beta_V(i))
                 alb_toa(i) = fsLu(i)/fsLd(i)
                 tsLu = tsLu + fsLu(i)
@@ -663,7 +663,7 @@
             END DO
           else if (opacity_method .eq. 'correk') then
             !psol_aerad is just solc_in here
-            do  i = 1, nsoL
+            do  i = MAX(solar_calculation_indexer,MINWNOSTEL*8), nsoL
                 chan_idx = MODULO(i-1,8)+1
                 ! stel_idx = (i - chan_idx)/8 + 1
                 stel_idx = MODULO((i-chan_idx)/8, NWNO) + 1
@@ -743,7 +743,7 @@ C     1st index - flux 1=SW, 2=LW
 C     2nd index - Direction 1=DN, 2=UP
 C     3rd index - Where 1=TOP, 2=SURFACE
       if (opacity_method .eq. 'correk') then
-        do L = 1, NSOL
+        do L = MAX(solar_calculation_indexer,MINWNOSTEL*8), NSOL
           chan_idx = MODULO(L-1,8)+1
           RFLUXES_aerad(1,1,1) = RFLUXES_aerad(1,1,1) + fsl_dn_aerad(NLAYER) * WGTS_CORRK(chan_idx)
           RFLUXES_aerad(1,1,2) = RFLUXES_aerad(1,1,2) + fsl_dn_aerad(1)/(1.0-ALBSW) * WGTS_CORRK(chan_idx)

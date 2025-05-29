@@ -27,6 +27,7 @@
 !     *  Output              :  B3, EE3, DIRECT, SFCS, CPB, CMB, DS *
 !     * *************************************************************
 !
+      use corrkmodule, only : MINWNOSTEL
       include 'rcommons.h'
 
       INTEGER LLA, LLS, JDBLE, JDBLEDBLE, JN, JN2, iblackbody_above, ISL, IR, IRS, kindex, J, K, L
@@ -74,7 +75,7 @@
         DU0                =  1./U0
         DO 10 J            =  1,NLAYER
             j1 = max( 1, j-1 )
-            DO 10 L        =  1,NSOL
+            DO 10 L        =  MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
                B3(L,J)     =  0.5*(1.-SQ3*G0(L,J)*U0)
                B4          =  1. - B3(L,J)
                X2          =  TAUL(L,J)*DU0
@@ -110,7 +111,7 @@
                CM(L,J)     =  CM1 * x4_add
 
   10  CONTINUE
-        DO 20 L            =  1,NSOL
+        DO 20 L            =  MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
           SFCS(L)         =  DIRECT(L,NLAYER) * RSFX(L)
   20  CONTINUE
       END IF
@@ -142,7 +143,7 @@
       J                =  0
       DO 42 JD         =  2,JN,2
          J             =  J + 1
-         DO 42 L       =  solar_calculation_indexer,NSOL
+         DO 42 L       =  MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
 !           HERE ARE THE EVEN MATRIX ELEMENTS
             DF(L,JD) = (CP(L,J+1) - CPB(L,J))*EM1(L,J+1) -
      &                  (CM(L,J+1) - CMB(L,J))*EM2(L,J+1)
@@ -172,7 +173,7 @@
 !     DIFFUSE RADIATION IS INCIDENT AT THE TOP.
 !
 !VIS
-      DO 44 L        = solar_calculation_indexer,NSOL
+      DO 44 L        = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
          DF(L,1)     = -CM(L,1)
          DF(L,JDBLE) = SFCS(L)+RSFX(L)*CMB(L,NLAYER)-CPB(L,NLAYER)
          DS(L,JDBLE) = DF(L,JDBLE)/BF(L,JDBLE)
@@ -192,7 +193,7 @@
 !     ********************************************
 
       DO 46 J               = 2, JDBLE
-         DO 46 L            = solar_calculation_indexer,NSOL
+         DO 46 L            = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
             X               = 1./(BF(L,JDBLE+1-J) - EF(L,JDBLE+1-J)*AS(L,JDBLE+2-J))
             AS(L,JDBLE+1-J) = AF(L,JDBLE+1-J)*X
             DS(L,JDBLE+1-J) = (DF(L,JDBLE+1-J) - EF(L,JDBLE+1-J) *DS(L,JDBLE+2-J))*X
@@ -208,11 +209,11 @@
   47  CONTINUE
 
 
-      DO 48 L       = solar_calculation_indexer,NTOTAL
+      DO 48 L       = MAX(solar_calculation_indexer,MINWNOSTEL*8),NTOTAL
   48     XK(L,1)    = DS(L,1)
 
       DO 50 J       = 2, JDBLE
-         DO 50 L    = solar_calculation_indexer,NTOTAL
+         DO 50 L    = MAX(solar_calculation_indexer,MINWNOSTEL*8),NTOTAL
             XK(L,J) = DS(L,J) - AS(L,J)*XK(L,J-1)
   50  CONTINUE
 
@@ -227,7 +228,7 @@
 !  ***************************************************************
 
       do J = 1,NLAYER
-        do L = solar_calculation_indexer,NSOL
+        do L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
           CK1(L,J)   = XK(L,2*J-1)
           CK2(L,J)   = XK(L,2*J)
 

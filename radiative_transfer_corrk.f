@@ -143,9 +143,17 @@
         do k = 1, NLAYER
           call local_opacities_corrk(Tl(k), Pl(k), k_IRl, k_Vl, OPAC_CORRK, TS_CORRK, PS_CORRK, TS_LOG_CORRK, PS_LOG_CORRK, k,
      &                                 NLAYER, NIR, NSOL, tau_ray_temp, TAURAY_PER_DPG, NWNO, NTGRID, NPGRID)
-          tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
-          tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
-          tau_ray_temp(:,k) = tau_ray_temp(:,k) * dpe(k) / gravity_SI
+          ! double-gray overwrite:
+          ! k_IRl(:,k) = 1.e-3 ! should be m^2/kg (= cm^2/g / 10)
+          ! k_Vl(:,k) = 1.e-4
+          ! DPG bug fix adds:
+          k_Vl(:,k) = k_IRl(:,k) ! spectral, so these are interchangeable
+
+          ! DPG bug fix removes:
+          ! tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
+          ! tau_Ve(:,k)  = tau_IRe(:,k) ! spectral, so these are the same 
+          ! tau_Ve(:,k) = ((k_Vl(:,k) * dpe(k)) / gravity_SI) ! k, dpe, and gravity_SI are all in SI units
+          ! tau_ray_temp(:,k) = tau_ray_temp(:,k) !* dpe(k) / gravity_SI
 
           
         end do
@@ -173,11 +181,12 @@
         T_idx = MINLOC(ABS(TS_CORRK - Tin),1)
         P_idx = MINLOC(ABS(PS_CORRK - Pin),1)
 
-        ! Nearest-neighbor the rayleigh scattering optical depth (faster and accurate enough)
+        ! Nearest-neighbor the rayleigh scattering optical depth (faster than bilinear and accurate enough)
         do chan_idx = 1, NSOL
+
           gauss_idx = modulo(chan_idx - 1, 8) + 1
-          ! write(*,*) 'nwno: ', NWNO
           wave_idx = MODULO((chan_idx - gauss_idx)/8,NWNO) + 1
+
           tau_ray_temp(chan_idx, k) = TAURAY_PER_DPG(T_idx, P_idx, wave_idx)
         end do
         ! Set up indices for bilinear interpolation
@@ -207,7 +216,7 @@
     !  &                                  OPAC_CIA(T_idx, P_idx+1, wave_idx), OPAC_CIA(T_idx+1, P_idx+1, wave_idx), 
     !  &                                  k_CIA(chan_idx, k))
 
-          ! interpolate Rayleigh scattering opacities (could definitely be nearest-neighbor)
+          ! interpolate Rayleigh scattering opacities (This is now nearest-neighbor, see above)
     !       call bilinear_interpolation(LOG10(Tin), log10(Pin), TS_LOG_CORRK(T_idx), TS_LOG_CORRK(T_idx+1), PS_LOG_CORRK(P_idx), 
     !  &                       PS_LOG_CORRK(P_idx+1), 
     !  &                       TAURAY_PER_DPG(T_idx, P_idx, wave_idx), TAURAY_PER_DPG(T_idx+1, P_idx, wave_idx),
@@ -216,7 +225,7 @@
 
           k_IRl(chan_idx, k) = 10**k_IRl(chan_idx, k) ! take out of logspace
           ! write(*,*), 'Pin, Tin, k_IRl: ', Pin, Tin, k_IRl(chan_idx, :)
-          tau_ray_temp(chan_idx, k) = 10**tau_ray_temp(chan_idx, k)
+          tau_ray_temp(chan_idx, k) = 10**tau_ray_temp(chan_idx, k) ! should be SI, m^2/kg
 
         end do
 

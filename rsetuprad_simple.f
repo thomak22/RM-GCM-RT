@@ -36,7 +36,7 @@
 !     * *******************************************************
       use corrkmodule, only : corrk_setup, TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
      &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL
       include 'rcommons.h'
       ! KENNEDY NOTES: Changing the hardcoded stuff to be dependent on channel numbers
       ! This block is repeated throughout the radiative transfer stuff, but I'm first changing here
@@ -67,6 +67,7 @@
       real :: Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val
 
       real, dimension(NIR, NL+1) :: k_IRl
+      real, dimension(NIR, 2*NL+2) :: k_irl_doubled, k_ray_doubled
       real, dimension(NSOL, NL+1) :: k_Vl
       ! New variables for calculating the IR absorbtion coefficient as a power law
       real, dimension(NLAYER) :: IR_ABS_COEFFICIENT
@@ -315,30 +316,56 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl)
-
+        
+        ! Thomas Hack to get consistency between DG and PF column densities starts here
         DO L = solar_calculation_indexer,NSOL
-          tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
+          DO J     =   1,NLAYER
+            TAUGAS(L,J) = k_VL(L,J)*10. * DPG(J)
+          END DO
         END DO
+        k_irl_doubled = 0.0
+        ! smooth out the IR optical depths to twice the resolution (linear interpolation)
+        DO L = NSOL+1,NTOTAL
+          k = 1
+          DO J     =   1,NDBL, 2
+            k_irl_doubled(L-NSOL,J) = k_irl(L-NSOL, k)
+            k_irl_doubled(L-NSOL,J+1) = k_irl(L-NSOL, k)+ ABS(k_irl(L-NSOL,k) - k_irl(L-NSOL,k+1)) / 2.0
 
-        DO L = NSOL+1, NTOTAL
-          tau_IRe(L-NSOL,NLAYER) = 10.0 ** (LOG10(tau_IRe(L-NSOL,NLAYER-1))+
-     &            (LOG10(tau_IRe(L-NSOL,NLAYER-1))-LOG10(tau_IRe(L-NSOL,NLAYER-2))))
+            k = k + 1
+          END DO
         END DO
+        DO L  = NSOL+1,NTOTAL
+          DO J     =   1,NDBL
+            TAUGAS(L,J) = k_irl_doubled(L-NSOL,J)*10. * DPGSUB(J)
+            ! write(*,*) J
+          END DO
+        END DO
+        ! Thomas Hack to get consistency between DG and PF column densities ends here
 
-        DO L = solar_calculation_indexer,NSOL
-            DO J = 1,NLAYER
-                TAUGAS(L,J) = tau_Ve(L,J)
-            END DO
-        END DO
+    !     Old code for smoothing and stuff:
+    !     DO L = solar_calculation_indexer, NSOL
+    !       tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
+    !     END DO
 
-        DO L = NSOL+1, NTOTAL
-            k  =  1
-            DO  J = 1,NDBL,2
-                TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
-                TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
-                k = k + 1
-            END DO
-        END DO
+    !     DO L = NSOL+1, NTOTAL
+    !       tau_IRe(L-NSOL,NLAYER) = 10.0 ** (LOG10(tau_IRe(L-NSOL,NLAYER-1))+
+    !  &            (LOG10(tau_IRe(L-NSOL,NLAYER-1))-LOG10(tau_IRe(L-NSOL,NLAYER-2))))
+    !     END DO
+
+    !     DO L = solar_calculation_indexer, NSOL
+    !         DO J = 1,NLAYER
+    !             TAUGAS(L,J) = tau_Ve(L,J)
+    !         END DO
+    !     END DO
+
+    !     DO L = NSOL+1, NTOTAL
+    !         k  =  1
+    !         DO  J = 1,NDBL,2
+    !             TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
+    !             TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
+    !             k = k + 1
+    !         END DO
+    !     END DO
       ELSE IF (opacity_method .EQ. 'dogray') THEN
           if (NSOL .gt. 1) then
               Beta_V(1) = 1.0
@@ -421,36 +448,67 @@
         ! WRITE(*,*) solar_calculation_indexer
         ! solar calculation indexer is 1 when mu>0, NSOL+1 when mu==0, so we skip this loop
         ! when starlight is a non-issue
+        ! Thomas Hack to get consistency between DG and PF column densities starts here
         DO L = solar_calculation_indexer,NSOL
-          tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
-          tau_ray_temp(L, NLAYER) = 10.0**(LOG10(tau_ray_temp(L, NLAYER-1))+(LOG10(tau_ray_temp(L, NLAYER-1)) 
-     &         - LOG10(tau_ray_temp(L, NLAYER-2))))
+          DO J     =   1,NLAYER
+            TAUGAS(L,J) = k_VL(L,J)*10. * DPG(J)
+            TAURAY(L,J) = tau_ray_temp(L,J)*10. * DPG(J)
+          END DO
         END DO
-
-        DO L = NSOL+1, NTOTAL
-          tau_IRe(L-NSOL,NLAYER) = 10.0 ** (LOG10(tau_IRe(L-NSOL,NLAYER-1))+
-     &            (LOG10(tau_IRe(L-NSOL,NLAYER-1))-LOG10(tau_IRe(L-NSOL,NLAYER-2))))
-        END DO
-
-        DO L = solar_calculation_indexer,NSOL
-            DO J = 1,NLAYER
-                TAUGAS(L,J) = tau_Ve(L,J)
-                TAURAY(L,J) = tau_ray_temp(L,J)
-            END DO
-        END DO
-        
+        k_irl_doubled = 0.0
+        k_ray_doubled = 0.0
         ! smooth out the IR optical depths to twice the resolution (linear interpolation)
-        DO L = NSOL+1, NTOTAL
-            k  =  1
-            DO  J = 1,NDBL,2
-                TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
-                TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
+        DO L = NSOL+1,NTOTAL
+          k = 1
+          DO J     =   1,NDBL, 2
+            k_irl_doubled(L-NSOL,J) = k_irl(L-NSOL, k)
+            k_irl_doubled(L-NSOL,J+1) = k_irl(L-NSOL, k)+ ABS(k_irl(L-NSOL,k) - k_irl(L-NSOL,k+1)) / 2.0
 
-                TAURAY(L, J)   = tau_ray_temp(L-NSOL, k)
-                TAURAY(L, J+1) = tau_ray_temp(L-NSOL, k)+ ABS(tau_ray_temp(L-NSOL,k) - tau_ray_temp(L-NSOL,k+1)) / 2.0
-                k = k + 1
-            END DO
+            k_ray_doubled(L-NSOL,J) = tau_ray_temp(L-NSOL, k)
+            k_ray_doubled(L-NSOL,J+1) = tau_ray_temp(L-NSOL, k)+ ABS(tau_ray_temp(L-NSOL,k) - tau_ray_temp(L-NSOL,k+1)) / 2.0
+            k = k + 1
+          END DO
         END DO
+        ! multiply opacities by deltaP/g to get optical depths
+        DO L  = NSOL+1,NTOTAL
+          DO J     =   1,NDBL
+            TAUGAS(L,J) = k_irl_doubled(L-NSOL,J)*10. * DPGSUB(J) ! factor of 10 is SI-->CGS m^2/kg-->cm^2/g
+            TAURAY(L,J) = k_ray_doubled(L-NSOL,J)*10. * DPGSUB(J)
+          END DO
+        END DO
+        ! Thomas Hack to get consistency between DG and PF column densities ends here
+        
+    !     Old code for smoothing and stuff (in case we need it later):
+    !     DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
+    !       tau_Ve(L,NLAYER) = 10.0**(LOG10(tau_Ve(L,NLAYER-1))+(LOG10(tau_Ve(L,NLAYER-1)) - LOG10(tau_Ve(L,NLAYER-2))))
+    !       tau_ray_temp(L, NLAYER) = 10.0**(LOG10(tau_ray_temp(L, NLAYER-1))+(LOG10(tau_ray_temp(L, NLAYER-1)) 
+    !  &         - LOG10(tau_ray_temp(L, NLAYER-2))))
+    !     END DO
+
+    !     DO L = NSOL+1, NTOTAL
+    !       tau_IRe(L-NSOL,NLAYER) = 10.0 ** (LOG10(tau_IRe(L-NSOL,NLAYER-1))+
+    !  &            (LOG10(tau_IRe(L-NSOL,NLAYER-1))-LOG10(tau_IRe(L-NSOL,NLAYER-2))))
+    !     END DO
+
+    !     DO L = MAX(solar_calculation_indexer,MINWNOSTEL*8),NSOL
+    !         DO J = 1,NLAYER
+    !             TAUGAS(L,J) = tau_Ve(L,J)
+    !             TAURAY(L,J) = tau_ray_temp(L,J)
+    !         END DO
+    !     END DO
+        
+    !     ! smooth out the IR optical depths to twice the resolution (linear interpolation)
+    !     DO L = NSOL+1, NTOTAL
+    !         k  =  1
+    !         DO  J = 1,NDBL,2
+    !             TAUGAS(L, J)   = tau_IRe(L - NSOL, k)
+    !             TAUGAS(L, J+1) = tau_IRe(L - NSOL, k)+ ABS(tau_IRe(L - NSOL,k) - tau_IRe(L - NSOL,k+1)) / 2.0
+
+    !             TAURAY(L, J)   = tau_ray_temp(L-NSOL, k)
+    !             TAURAY(L, J+1) = tau_ray_temp(L-NSOL, k)+ ABS(tau_ray_temp(L-NSOL,k) - tau_ray_temp(L-NSOL,k+1)) / 2.0
+    !             k = k + 1
+    !         END DO
+    !     END DO
       END IF
 
       FNET(:,:)   = 0.0
