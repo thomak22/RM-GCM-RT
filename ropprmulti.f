@@ -48,6 +48,7 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toais
 
+      REAL FACTOR, RAMP
       REAL DENOM
       REAL DPG(NLAYER), p_pass(NLAYER), layer_pressure_bar(NLAYER)
       REAL CONDFACT(NLAYER,NCLOUDS)
@@ -435,6 +436,15 @@
           END DO
       END DO
 
+      ramp = 0.0  ! Set an appropriate value for ramp (days)
+      ! Apply a ramp to the cloud properties
+      IF (KOUNT/ITSPD .LT. ramp) THEN
+       factor = (KOUNT/ramp)/ITSPD
+       ! write(*,*) 'Ramping up the cloud properties by a factor of:', factor
+       ! write(*,*) 'TAUAER before ramp:', TAUAER
+       TAUAER = TAUAER * factor
+       ! write(*,*) 'TAUAER after ramp:', TAUAER
+      ENDIF
 
       iradgas = 1
       DO J = 1,NLAYER
