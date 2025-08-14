@@ -67,10 +67,10 @@
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(50) :: input_temperature_array
-      real, dimension(50) :: input_pressure_array_cgs
+      real, dimension(80) :: input_pressure_array_cgs
 
       real, dimension(50) :: input_particle_size_array_in_meters
-      real, dimension(50) :: particle_size_vs_layer_array_in_meters
+      real, dimension(80) :: particle_size_vs_layer_array_in_meters
 
       REAL QE_OPPR(NSOL + NIR, 50, 50, NCLOUDS)
       REAL PI0_OPPR(NSOL + NIR, 50, 50, NCLOUDS)
@@ -82,8 +82,8 @@
       real, dimension(500, 100) :: HAZE_wav_tau_per_bar, HAZE_wav_pi0, HAZE_wav_gg
       real, dimension(100)      :: haze_pressure_array_pascals
 
-      REAL TCONDS(5,51,NCLOUDS)
-      REAL CORFACT(51)
+      REAL TCONDS(5,80,NCLOUDS)
+      REAL CORFACT(80)
 
       REAL DENSITY(NCLOUDS)
       REAL FMOLW(NCLOUDS)
@@ -436,15 +436,15 @@
           END DO
       END DO
 
-      ramp = 0.0  ! Set an appropriate value for ramp (days)
-      ! Apply a ramp to the cloud properties
-      IF (KOUNT/ITSPD .LT. ramp) THEN
-       factor = (KOUNT/ramp)/ITSPD
-       ! write(*,*) 'Ramping up the cloud properties by a factor of:', factor
-       ! write(*,*) 'TAUAER before ramp:', TAUAER
-       TAUAER = TAUAER * factor
-       ! write(*,*) 'TAUAER after ramp:', TAUAER
-      ENDIF
+    !   ramp = 0.0  ! Set an appropriate value for ramp (days)
+    !   ! Apply a ramp to the cloud properties
+    !   IF (KOUNT/ITSPD .LT. ramp) THEN
+    !    factor = (KOUNT/ramp)/ITSPD
+    !    ! write(*,*) 'Ramping up the cloud properties by a factor of:', factor
+    !    ! write(*,*) 'TAUAER before ramp:', TAUAER
+    !    TAUAER = TAUAER * factor
+    !    ! write(*,*) 'TAUAER after ramp:', TAUAER
+    !   ENDIF
 
       iradgas = 1
       DO J = 1,NLAYER
