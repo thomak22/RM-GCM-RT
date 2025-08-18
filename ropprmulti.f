@@ -83,7 +83,7 @@
       real, dimension(500, 100) :: HAZE_wav_tau_per_bar, HAZE_wav_pi0, HAZE_wav_gg
       real, dimension(100)      :: haze_pressure_array_pascals
 
-      REAL TCONDS(5,80,NCLOUDS)
+      REAL TCONDS(6,80,NCLOUDS)
       REAL CORFACT(80)
 
       REAL DENSITY(NCLOUDS)
@@ -176,10 +176,11 @@
       ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
           MET_INDEX = 5
       ELSE
-          write(*,*) 'Something is wrong with your metallicity'
-          write(*,*) 'Check ropprrmulti'
-          write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
-          stop
+        !   write(*,*) 'Something is wrong with your metallicity'
+        !   write(*,*) 'Check ropprrmulti'
+        !   write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
+        !   stop
+        MET_INDEX = 6
       END IF
 
 
