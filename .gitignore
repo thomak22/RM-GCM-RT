@@ -6,3 +6,5 @@ Isaac-Tests/*
 Planet_Run/*
 CLOUD_DATA_OLD/*
 *.o
+*.i
+Planet_Run*
