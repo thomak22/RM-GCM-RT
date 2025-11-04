@@ -27,7 +27,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V,k_IRl, k_Vl, tau_ray_temp)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V,k_IRl, k_Vl, tau_ray_temp, MUSTEL, ISF)
 
 !      use physical_constants
 
@@ -97,6 +97,7 @@
       real fir_dn_aerad(NL+1)
       real fir_net_aerad(NL+1)
       real fsl_net_aerad(NL+1)
+      REAL :: MUSTEL, ISF
 
       tgrnd=t(NZ)
       iffirst = 1
@@ -133,7 +134,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, fluxes, k_IRl, k_Vl, tau_ray_temp)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, fluxes, k_IRl, k_Vl, tau_ray_temp, MUSTEL, ISF)
 
       iffirst = 0
 

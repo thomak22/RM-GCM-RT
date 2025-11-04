@@ -15,7 +15,7 @@
      &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, p_pass,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, itspd)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, ITSPD)
 !
 !     **************************************************************
 !     *  Purpose             :  CaLculates optical properties      *
@@ -50,6 +50,7 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toais
 
+      INTEGER ITSPD
       REAL FACTOR, RAMP
       REAL DENOM
       REAL DPG(NLAYER), p_pass(NLAYER), layer_pressure_bar(NLAYER)
@@ -66,13 +67,13 @@
       real, dimension(NIR+NSOL,2*NL+2) :: TAURAY,TAUL,TAUGAS,TAUAER
       real, dimension(NIR+NSOL,NL+1) :: TAU_HAZE
 
-      ! These are hardcoded to 50 but they are just lookup tables
+      ! These are hardcoded to 100 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(100) :: input_temperature_array
-      real, dimension(50) :: input_pressure_array_cgs
+      real, dimension(80) :: input_pressure_array_cgs
 
       real, dimension(100) :: input_particle_size_array_in_meters
-      real, dimension(50) :: particle_size_vs_layer_array_in_meters
+      real, dimension(80) :: particle_size_vs_layer_array_in_meters
 
       REAL KE_OPPR(5, 100, 100, NCLOUDS)
       REAL PI0_OPPR(5, 100, 100, NCLOUDS)
@@ -84,8 +85,8 @@
       real, dimension(500, 100) :: HAZE_wav_tau_per_bar, HAZE_wav_pi0, HAZE_wav_gg
       real, dimension(100)      :: haze_pressure_array_pascals
 
-      REAL TCONDS(6,51,NCLOUDS)
-      REAL CORFACT(51)
+      REAL TCONDS(6,80,NCLOUDS)
+      REAL CORFACT(80)
 
       REAL DENSITY(NCLOUDS)
       REAL FMOLW(NCLOUDS)
@@ -118,26 +119,23 @@
       ! THE THREE Condensation curve sets are for 1X, 100X, and 300X Met
       ! Sorry that this is bad code
       ! Malsky
-    !   write(*,*) 'made it to ropprmulti.f'
-      IF (aerosolcomp .eq. 'standard') THEN
-        IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
-            MET_INDEX = 1
-        ELSE IF (METALLICITY .gt. 0.9 .AND. METALLICITY .lt. 1.1) THEN
-            MET_INDEX = 2
-        ELSE IF (METALLICITY .gt. 1.4 .AND. METALLICITY .lt. 1.6) THEN
-            MET_INDEX = 3
-        ELSE IF (METALLICITY .gt. 1.9 .AND. METALLICITY .lt. 2.1) THEN
-            MET_INDEX = 4
-        ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
-            MET_INDEX = 5
-        ELSE
-            !   write(*,*) 'Something is wrong with your metallicity'
-            !   write(*,*) 'Check ropprrmulti'
-            !   write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
-            !   stop
-            ! If not in the list of real curves, use the interpolated curve
-            MET_INDEX = 6
-        END IF
+      IF (METALLICITY .gt. -0.1 .AND. METALLICITY .lt. 0.1) THEN
+          MET_INDEX = 1
+      ELSE IF (METALLICITY .gt. 0.9 .AND. METALLICITY .lt. 1.1) THEN
+          MET_INDEX = 2
+      ELSE IF (METALLICITY .gt. 1.4 .AND. METALLICITY .lt. 1.6) THEN
+          MET_INDEX = 3
+      ELSE IF (METALLICITY .gt. 1.9 .AND. METALLICITY .lt. 2.1) THEN
+          MET_INDEX = 4
+      ELSE IF (METALLICITY .gt. 2.37 .AND. METALLICITY .lt. 2.57) THEN
+          MET_INDEX = 5
+      ELSE
+        !   write(*,*) 'Something is wrong with your metallicity'
+        !   write(*,*) 'Check ropprrmulti'
+        !   write(*,*) 'THE THREE Condensation curve sets are for 1X, 100X, and 300X Met'
+        !   stop
+        MET_INDEX = 6
+      END IF
 
 
         DO J  = 2,NLAYER
@@ -293,13 +291,14 @@
                 tauaer_temp(:,J,I) = 0.0
             END DO
 
-            !if (TOPLEV(I) + 4 .le. NLAYER) THEN
-            !    tauaer_temp(:,TOPLEV(I)+4,I) = tauaer_temp(:,TOPLEV(I)+4,I)*0.01 !i.e.e(-3)
-            !    tauaer_temp(:,TOPLEV(I)+3,I) = tauaer_temp(:,TOPLEV(I)+3,I)*0.03 !i.e.e(-3)
-            !    tauaer_temp(:,TOPLEV(I)+2,I) = tauaer_temp(:,TOPLEV(I)+2,I)*0.1 !i.e.e(-2)
-            !    tauaer_temp(:,TOPLEV(I)+1,I) = tauaer_temp(:,TOPLEV(I)+1,I)*0.3 !i.e.e(-1)
-            !ENDIF
-        END DO
+          if ((TOPLEV(I) + 5 .le. NLAYER) .and. (TOPLEV(I) .ne. 0)) THEN
+              tauaer_temp(:,TOPLEV(I)+1,I) = tauaer_temp(:,TOPLEV(I)+1,I)*0.167
+              tauaer_temp(:,TOPLEV(I)+2,I) = tauaer_temp(:,TOPLEV(I)+2,I)*0.333
+              tauaer_temp(:,TOPLEV(I)+3,I) = tauaer_temp(:,TOPLEV(I)+3,I)*0.5
+              tauaer_temp(:,TOPLEV(I)+4,I) = tauaer_temp(:,TOPLEV(I)+4,I)*0.667
+              tauaer_temp(:,TOPLEV(I)+5,I) = tauaer_temp(:,TOPLEV(I)+5,I)*0.833
+          ENDIF
+      END DO
 
 
         IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN
@@ -401,7 +400,7 @@
             END DO
         END DO
 
-        ramp = 5.0  ! Set an appropriate value for ramping up clouds linearly
+        ramp = 0.0  ! Set an appropriate value for ramping up clouds linearly
         ! Apply a ramp to the cloud properties
         IF (KOUNT/ITSPD .LT. ramp) THEN
           factor = (KOUNT/ramp)/ITSPD

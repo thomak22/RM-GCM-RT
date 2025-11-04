@@ -1,0 +1,11 @@
+#!/bin/bash -x
+make
+PRUNDIR='Planet_Run'
+rm -r $PRUNDIR
+mkdir $PRUNDIR
+cp 1DRT $PRUNDIR
+cp fort.7 $PRUNDIR/fort.7
+cd $PRUNDIR
+#(time ./igcm3_nopg) 2> runtime.txt
+./1DRT
+cd ..

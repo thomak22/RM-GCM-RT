@@ -24,7 +24,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom, fluxes, k_IRl, k_Vl, tau_ray_temp)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom, fluxes, k_IRl, k_Vl, tau_ray_temp, MUSTEL, ISF)
 
 
 !     iffirst is just the indicator for numbering and runs the setup
@@ -108,6 +108,7 @@
       REAL SSLON,SSLAT  ! ER:
       REAL DLENGTH  ! ER: half-length of solar day
       real PI2
+      REAL MUSTEL, ISF
  582  FORMAT(I4,5(F12.3))
 
       ! Malsky what does this do???
@@ -167,38 +168,34 @@ C Setup SW code
 
 
 C     globally averaged solar constant, vertical rays
-      AMU0=1.0
-      ! multiply by sqrt3 here, then divide by it later either explicitly if L1DZENITH=F or implicitly 
-      ! if L1DZENITH=T by setting the incident starlight fraction to 1/sqrt(3). This is my hacky way of making L1DZenith=T do a planet-average profile
-      ! It's weird and complicated because the cosine of the zenith angle and the fraction of flux that is incident on a given column are identical in 3-D,
-      ! but not if you want to take a 1-D average (see, e.g., Guillot+2010, Parmentier+Guillot 2014).
-      PSOL=SOLC/4. * SQRT(3.0) 
-      IF(.NOT.L1DZENITH) THEN
-         DDAY=FORCE1DDAYS
-         IF(DAY.GT.DDAY) THEN
-            DFAC=MIN(1.0,(DAY - DDAY)/DDAY)
-            IF(.NOT.LDIUR) THEN
-               AMU0=(1.0-DFAC)*AMU0
-     &              +DFAC*MAX(0.0,SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)
-     &                           +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)
-     &                           *COS((ALON-SSLON)/360.*PI2))
-               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0) + DFAC*SOLC
-            ELSE
-               PSOL=(1.0-DFAC)*PSOL/SQRT(3.0)+DFAC*SOLC/PI*
-     &              (SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)*DLENGTH
-     &              +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)*SIN(DLENGTH))
-            ENDIF
-         ENDIF
-        if ((AMU0.gt.0) .and. (AMU0.lt.1e-6)) THEN
-          AMU0 = 0.0
-        endif
-        incident_starlight_fraction = MAX(0.0, AMU0)
-
-      ELSE
-         incident_starlight_fraction = 1.0 / SQRT(3.0)
-         ! AMU0 = 1.0 / SQRT(3.0)
-      ENDIF
-
+   !    AMU0=1.0
+   !    PSOL=SOLC/4 * SQRT(3.0)
+   !    DAY = 1
+   !    IF(.NOT.L1DZENITH) THEN
+   !       DDAY=FORCE1DDAYS
+   !       IF(DAY.GT.DDAY) THEN
+   !          DFAC=MIN(1.0,(DAY - DDAY)/DDAY)
+   !          IF(.NOT.LDIUR) THEN
+   !             AMU0=(1.0-DFAC)*AMU0
+   !   &              +DFAC*MAX(0.0,SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)
+   !   &                           +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)
+   !   &                           *COS((ALON-SSLON)/360.*PI2))
+   !             PSOL=(1.0-DFAC)*PSOL/SQRT(3.0) + DFAC*SOLC
+   !          ELSE
+   !             PSOL=(1.0-DFAC)*PSOL/SQRT(3.0)+DFAC*SOLC/PI*
+   !   &              (SIN(alat1/360.*PI2)*SIN(SSLAT/360.*PI2)*DLENGTH
+   !   &              +COS(alat1/360.*PI2)*COS(SSLAT/360.*PI2)*SIN(DLENGTH))
+   !          ENDIF
+   !       ENDIF
+   !    ELSE
+   !       AMU0=1/SQRT(3.0)
+   !    ENDIF
+      ! write(*,*) 'AMU0 = ', AMU0, PSOL
+      ! Ignoring all that, we hardocde the values to be our inputs
+      AMU0 = MUSTEL
+      PSOL = SOLC * ISF / MUSTEL
+      ! write(*,*) 'MU, SOLC, ISF', MU, SOLC, ISF
+      ! write(*,*) 'AMU0 = ', AMU0, PSOL
 
       ! if ((AMU0.gt.0) .and. (AMU0.lt.1e-6)) THEN
       !     AMU0 = 0.0
@@ -244,7 +241,7 @@ C     globally averaged solar constant, vertical rays
      &  qrad,alb_tomi,alb_toai, num_layers, SLOPE,
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
-     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, k_IRl, k_Vl, tau_ray_temp)
+     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, k_IRl, k_Vl, tau_ray_temp, ISF)
 
          !  write(*,*) 'made it to radtran'
           call radtran(Beta_V, Beta_IR, incident_starlight_fraction,TAURAY,TAUL,TAUGAS,TAUAER,
@@ -269,7 +266,7 @@ C     globally averaged solar constant, vertical rays
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, num_layers, SLOPE,
      &  Y1, Y2, Y4, Y8, A1, A2, A3, A4, A5, A7, Y5,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount,itspd)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount, ITSPD, ISF)
 
           cheats = 0.
           cheati = 0.

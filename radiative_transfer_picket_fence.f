@@ -18,7 +18,7 @@
      &  qrad,alb_tomi,alb_toai, num_layers,
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
-     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl)
+     &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, k_IRl, k_Vl, ISF)
 
           include 'rcommons.h'
 
@@ -46,7 +46,7 @@
           real, dimension(NSOL, NL+1) :: k_Vl
 
           integer :: NLAYER, J, k
-          real :: Tirr, Tint, gravity_SI, incident_starlight_fraction
+          real :: Tirr, Tint, gravity_SI, ISF, incident_starlight_fraction
 
           real, dimension(NIR) :: Beta_IR
           real, dimension(NSOL) :: Beta_V
@@ -83,14 +83,15 @@
           dpe(NLAYER) = 10.0 ** (LOG10(dpe(NLAYER-1)) + (LOG10(dpe(NLAYER-1)) - LOG10(dpe(NLAYER-2))))
           pl(NLAYER)  = 10.0 ** (LOG10(pl(NLAYER-1))  + (LOG10(pl(NLAYER-1))  - LOG10(pl(NLAYER-2))))
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
-          CALL calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction, Tirr, Tint,
+
+          CALL calculate_opacities(NLAYER, NSOLP, NIRP, ISF, Tirr, Tint,
      &                             Tl, Pl, dpe, tau_IRe,tau_Ve, Beta_V,
      &                             Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY,pe, k_IRl, k_Vl, TOAALB)
           ! write(*,*) 'tau_IRe:', tau_IRe
           ! write(*,*) 'tau_Vee:', tau_Ve
       end subroutine opacity_wrapper
 
-      subroutine calculate_opacities(NLAYER, NSOL, NIR, incident_starlight_fraction,
+      subroutine calculate_opacities(NLAYER, NSOLP, NIRP, ISF,
      &                               Tirr, Tint, Tl, Pl, dpe, tau_IRe,tau_Ve,Beta_V,
      &                               Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY, pe, k_IRl, k_Vl, TOAALB)
         ! Input:
@@ -109,10 +110,10 @@
 
         implicit none
         real :: gam_1, gam_2, tau_lim, gam_P
-        real, dimension(NSOL) :: Beta_V, gam_V
-        real, dimension(NIR) :: Beta_IR
-        integer :: k, NLAYER, J, NSOL, NIR, i
-        real :: Teff, Tint, Tirr, incident_starlight_fraction
+        real, dimension(NSOLP) :: Beta_V, gam_V
+        real, dimension(NIRP) :: Beta_IR
+        integer :: k, NLAYER, J, NSOLP, NIRP, i
+        real :: Teff, Tint, Tirr, ISF
 
         real :: R,gravity_SI
         real :: aP, bP, cP
@@ -140,8 +141,7 @@
         Bond_Albedo = TOAALB
 
         !! Recalculate Teff and then find parameters
-        !! for L1DZenith models, need to hard-code incident_starlight fraction in this line to 0.25 to get a planet avg profile (sorry, pains of doing 1-D with a 3-D code)
-        Teff = ((Tint * Tint * Tint * Tint) + (1.0 - Bond_Albedo) * incident_starlight_fraction *
+        Teff = ((Tint * Tint * Tint * Tint) + (1.0 - Bond_Albedo) * ISF *
      &          (Tirr * Tirr * Tirr * Tirr)) ** (0.25)
 
         ! Log 10 T_eff variables
@@ -277,12 +277,14 @@
           k_IRl(1,k) = k_IRl(1,k) * gam_1
           ! Double-gray overwrite (for testing:)
 
+          ! double gray overwrite:
           ! k_Vl(1,k) = 1.e-4
           ! k_Vl(2,k) = 1.e-4
           ! k_Vl(3,k) = 1.e-4
           ! k_IRl(2,k) = 1.e-3
           ! k_IRl(1,k) = 1.e-3
-          ! these calculations now done in rsetupradsimple.f instead (consistent with RM-GCM v5.2 update)
+
+          ! Removed in v5.2, optical depths are now calculated from opacities in rsetupradsimple.f
           ! tau_Ve(:,k)  = ((k_Vl(:,k)  * dpe(k)) / grav)
           ! tau_IRe(:,k) = ((k_IRl(:,k) * dpe(k)) / grav)
         end do

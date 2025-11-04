@@ -1,7 +1,8 @@
 C**********************************************************
 C             SUBROUTINE RADIATION
 C**********************************************************
-      SUBROUTINE RADIATION(TROPHT,IH)
+      SUBROUTINE RADIATION(TROPHT,IH, T, PR, MUSTEL, ISF)
+
 C     RADIATION SCHEME DERIVED FROM PREVIOUS CMORC.F AND THE
 C     TOON CODES (TOON ET AL 1989). THE SCHEME IS CURRENTLY DOUBLE GRAY
 C     AND APPLIES THE TWO-STREAM APPROXIMATION WITH QUADRATURE IN THE
@@ -271,6 +272,12 @@ c     The following for parallel testing --MTR
       INTEGER printt
       REAL :: exp_92_lnsig2_pi
 
+      REAL :: MUSTEL, ISF
+      COMMON/ONEDRT/TTKPD(NL)
+      REAL :: TTKPD
+
+
+
       COMMON /CLOUD_PROPERTIES/ TCONDS, KE_OPPR, PI0_OPPR, G0_OPPR,
      &                              DENSITY, FMOLW,
      &                              CORFACT,
@@ -312,68 +319,94 @@ c     ntstep is the number of timesteps to skip.
       nskip=NSKIP_IN
 
       IOFM=0
-      call cpu_time(tstart)
-      DO 800 ihem=1,nhem
-        IF (mod(kount,ntstep) .eq. 0) THEN          
-!!$        print *, "Number of threads: ", OMP_GET_MAX_THREADS()
-          
-!!$OMP     PARALLEL default(none) private(thread_num)
-!!$          thread_num = OMP_GET_THREAD_NUM()
-!!$          write(*,*) "Number of threads: ", thread_num
-!!$OMP     END PARALLEL
-!$        nthreads = OMP_GET_MAX_THREADS()
+
+      DO 800 ihem=1,1!nhem
+        IF (mod(kount,ntstep) .eq. 0) THEN
           ilast=0
 
           ! schedule(guided), default(none),
 
           ! Do all the parallel stuff here
-          ! File is fixed-format, which means you need to put the "openmp sentinel" ("!$") in column 1 to have it work right
-          ! Line continuation characters still belong in column 6, and nothing but the sentinel can come before the continuation character
-          istart = 1
-          iend = mg
-          printt = 0
-          ! THOMAS NOTE: I think the rule here is that everything that gets passed between subroutines needs to be 
-          ! declared as shared or private, while anything local to one subroutine is privated by default (good).
-          ! Variables in common blocks (which, thankfully, are never edited in this part fo the code) seem to be
-          ! properly shared between threads.
-          ! In general, variables should be private unless they hold information about all lats and lons
-!$OMP     PARALLEL default(none) private(im, imp, imm, istart, iend, idocalc, ilast, ld, l, PR, PRB2T, T, aeroprof, 
-!$   &    p_pass, alon, rfluxes_aerad, fluxes, fsl_dn_aerad, fir_up_aerad, Y1, Y3, Y4, Y5, k_irl, k_vl, htlw, htsw, thread_num,
-!$   &    psol_aerad, el2, taul, cheati, pl, dpg, tin, gol, em2, k_lowp, u0, tauaer, sfcs, pbar, a5, cheats, utaul, dintent,
-!$   &    uw0, xk, lla, cpb, ee3, el3, fnet, cm, heat, heati, heati_aerad, tauray, b2, fnetbi, alb_toai, b3, emis, a4, el1, cmb,
-!$   &    fird, ee1, df, ug0, as, radheat_tot, alb_toa, freedman_met, beta_v, denom, weight, ef, fupbs, tslu, fsl_net_aerad, irs,
-!$   &    fsld, w0, b1, tiru, jdble, dpgsub, fslu, fdegday, dpe, u1s, solnet, freedman_p, jn2, sol, u1i, a2, direct, swalb, am,
-!$   &    jn, slope, ds, pin, sbk, fupbi, af, qrad, opd, isl, k_hip, gami, alat1, beta_ir, tauaer_temp, fir_dn_aerad, nprob,
-!$   &    fdownbi, tmid, total_downwelling, tau_ire, taugas, ck2, j1, ptempg, iblackbody_above, emisir, g0_temp, pi0_temp,
-!$   &    heats_aerad_tot, fnetbs, sq3, pressure_val, tl, ifsetup, heati_aerad_tot, lls, solar_calculation_indexer, direc, bf, 
-!$   &    alb_tomi, fsl_up_aerad, firu, fir_net_aerad, radheat, cf, got, fsln, temperature_val, directu, toon_ak, rsfx, 
-!$   &    incident_starlight_fraction, fdownbs, wot, ptemp, tmi, g0, ck1, y8, tt, tau_ve, k_ir, em1, a7, wol, cp, tpi, wave, 
-!$   &    ibinm, a3, heats_aerad,  jdbledble, fdownbs2, tl10, pbarsub, heats, uintent, alb_tot, a1, uopd, pe, pl10, freedman_t,
-!$   &    ptempt, tmiu, y2, ic, ir, ih, htneto,
-!$   &    gauss_idx, wave_idx, stel_idx, chan_idx, J, K, T_idx, P_idx, temp_idx, index_num, lo_temp_flag, it1, kindex,
-!$   &    iffirst, tgrnd, ibinmin, log_start, log_end, log_step, P_pass_sub, ir_abs_coefficient, wavea, ttsub, albedoa,
-!$   &    tau_ray_temp)
+          !$OMP PARALLEL DO private(test_wctime,
+!     &    im,idocalc, incident_starlight_fraction, RAYSCAT, solar_calculation_indexer, qrad, alb_toai,
+!     &    dpe, Pl, Tl, pe, k_IRl, k_Vl,
+!     &    PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,
+!     &    k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
+!     &    Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve, Beta_IR, Beta_V,
+!     &    heats_aerad_tot, heati_aerad_tot, radheat_tot, radheat, cheati, cheats,
+!     &    EF, SFCS,
+!     &    imp,PR,T,
+!     &    TT, Y1, Y2, Y4, Y8, A1, A2, A3, A4, A5, A7, Y5,
+!     &    imm,alat1,cf,ic,SWALB,alon,htlw, fluxes, GA,
+!     &    htsw,HTNETO,a,b,
+!     &    PRB2T, AEROPROF, ALBSW, AEROSOLS, AEROSOLMODEL,  IH,
+!     &    EMISIR,
+!     &    HEATI, HEATS, HEAT,
+!     &    SOLNET,
+!     &    LLA, LLS,
+!     &    TPI,
+!     &    AM,
+!     &    EMIS, RSFX,NPROB,
+!     &    SOL,RAYPERBAR, RAYPERBARCONS, WEIGHT,
+!     &    GOL,
+!     &    WOL,
+!     &    iblackbody_above,
+!     &    WAVE,
+!     &    TAUGAS, TAURAY, TAUAER, TAUAEROSOL, TAUL, TAUA, uTAUL,
+!     &    Y3,
+!     &    U0,  ISL, IR, IRS,
+!     &    WOT, GOT,
+!     &    PTEMPG, PTEMPT,
+!     &    G0, OPD,
+!     &    PTEMP,
+!     &    uG0,
+!     &    W0,uW0,
+!     &    uopd,
+!     &    U1S,U1I,
+!     &    TOON_AK,
+!     &    B1,
+!     &    B2, EE1,
+!     &    EM1,
+!     &    EM2, EL1,
+!     &    EL2,    GAMI,
+!     &    AF, BF, EF
+!     &    SFCS,
+!     &    B3,   CK1,
+!     &    CK2,   CP,
+!     &    CPB,   CM,
+!     &    CMB,   DIRECT,
+!     &    EE3,   EL3,
+!     &    FNET,   TMI,
+!     &    AS,     DF,
+!     &    DS,     XK,
+!     &    DIREC, DIRECTU, SLOPE,
+!     &    DINTENT,
+!     &    UINTENT,
+!     &    TMID,TMIU,
+!     &    tslu,total_downwelling,alb_tot,tiru,firu,fird,fsLu,
+!     &    fsLd,fsLn,alb_toa,
+!     &    fupbs,fdownbs,fnetbs,fdownbs2,
+!     &    fupbi,fdownbi,fnetbi,
+!     &    alb_tomi,alb_toai,
+!     &    TCONDS, KE_OPPR, PI0_OPPR, G0_OPPR,
+!     &    DENSITY, FMOLW, MOLEF,
+!     &    CORFACT,
+!     &    input_particle_size_array_in_meters,
+!     &    input_temperature_array,
+!     &    particle_size_vs_layer_array_in_meters,
+!     &    input_pressure_array_cgs,
+!     &    ifsetup, ibinm,
+!     &    rfluxes_aerad,
+!     &    psol_aerad,
+!     &    heati_aerad, heats_aerad,
+!     &    fsl_up_aerad, fsl_dn_aerad,
+!     &    fir_up_aerad, fir_dn_aerad,
+!     &    fir_net_aerad,fsl_net_aerad,
+!     &    p_pass, dpg, pbar, dpgsub, pbarsub,
+!     &    firstprivate(ilast),
+!     &    lastprivate(ilast))
 
-
-!!$   &    y, x1, Q11, q12, q21, q22, result, r1, r2 ! bilinearinterp adds, should NOT be necessary, all private by default
-!!$   &    YA, YB, ckp, m, !) newflux1 adds here, nothing new from 2stream
-!!$   &    du0, b4, x2, x3, c1_var, c2_var, cp1, x4_add, cm1, x,! radd adds
-!!$   &    layer_pressure_bar, haze_wavelength_indices, cloud_wavelength_indices, haze_layer_index, wav_loc, tau_haze, temp_loc,! ropprmulti adds
-!!$   &    layer_index, particle_size, size_loc, CONDFACT, CLOUDLOC, BASELEV, TOPLEV, JJ, iradgas, ! ropprmulti adds
-!!$   &    TINT, TIRR, grav, TEFF, BOND_ALBEDO, L10T, L10T2, AV1, AV2, AV3, BV1, BV2, BV3, aB, bB, aP, bP, gam_V, ! radiative_transfer_picket_fence adds
-!!$   &    gam_p, RT, R, gam_1, gam_2) ! radiative_transfer_picket_fence adds
-!$   &    shared(nthreads, nskip, lnnsk, sigma, GSG, PLG, P0, CT, FBASEFLUX, rrflux, alat, lfluxdiag, kountp, koutp, 
-!$   &    ntstep_in, porb, sslon, kount, itspd, sslat, obliq, day, albsw,aerosols, aerosolmodel, tauaerosol, doy, epsilon,
-!$   &    avg, alos, SCDAY, RGAS, GANGLE, GWEIGHT, GRATIO, RAYPERBAR, num_layers, CHRF, 
-!$   &    PNET, SNET, HTNET, TTRD, ihem, jh, iofm, printt) ! stuff that should definitely be shared
-!$   &    firstprivate(TG) ! not sure whether this should eb firstprivate or shared, but it's not updated in the parallel section, so I doubt it matters
-!$        thread_num = OMP_GET_THREAD_NUM()
-        
-!$        istart = (mg / nthreads) * (thread_num)+1
-!$        iend = (mg / nthreads) * (thread_num + 1)
-!$        if (thread_num .eq. nthreads-1) iend = mg
-!$        if (printt.eq.1) write(*,*) thread_num, istart, iend
-          DO i=istart,iend
+          DO i=1,1!mg
 
             im=i+iofm
             idocalc=0
@@ -398,13 +431,14 @@ c     ntstep is the number of timesteps to skip.
                 ENDIF
               ENDIF
             ENDIF
-            ! if ((printt.eq.2).and.(i.eq.2)) write(*,*) "idocalc, i, im, ilast, nskip:", idocalc, i, im, ilast, nskip ! all good here
+            PLG(im) = 1
+
             IF (idocalc.eq.1) then
               DO LD=1,NL    ! Start of loop over column.
-                L=NL-LD+2  ! Reverse index (Morc goes bottom up).
-                PR(LD)=SIGMA(LD)*PLG(im)*P0 ! Pressure
-                PRB2T(L)=PR(LD)
-                T(LD)=TG(im,ld)*CT ! Temperature
+                ! L=NL-LD+2  ! Reverse index (Morc goes bottom up).
+                ! PR(LD)=SIGMA(LD)*PLG(im)*P0 ! Pressure
+                ! PRB2T(L)=PR(LD)
+                ! T(LD)=TG(im,ld)*CT ! Temperature
                 AEROPROF(LD)=0.0
               ENDDO
               if ((printt.eq.2).and.(i.eq.2)) write(*,*) "PR, PRB2T, T, IGC:", PR, PRB2T, T
@@ -414,8 +448,9 @@ c     ntstep is the number of timesteps to skip.
               endif
 
               AEROPROF(NL+1)=0.0
-              PRB2T(1)=PLG(im)*P0
-              PR(NL+1)=PLG(im)*P0
+              ! PRB2T(1)=PLG(im)*P0
+              ! PR(NL+1)=PLG(im)*P0 ! let's not update this in 1-D
+
               T(NL+1)=((FBASEFLUX+rrflux(IM,JH,1))/5.6704e-8)**0.25
 
               alat1=alat(JH)*REAL(-(ihem*2.)+3)
@@ -451,7 +486,7 @@ c     ntstep is the number of timesteps to skip.
 !             LAYER EDGES AT WHICH FLUXES ARE COMPUTED, p_pass.
 
               DO LD    = 1,NL-1
-                p_pass(LD+1)=(pr(LD)+pr(LD+1))/2.
+                p_pass(LD+1)= (pr(LD) + pr(LD+1))/2. !POW(10,(LOG10(pr(LD))+LOG10(pr(LD+1)))/2.)
               ENDDO
 
               p_pass(NL+1)=PR(NL+1)
@@ -511,9 +546,9 @@ c     ntstep is the number of timesteps to skip.
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl, tau_ray_temp)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl, tau_ray_temp, MUSTEL, ISF)
 
-              pr=prb2t
+              ! pr=prb2t
 
               PNET(IM,JH)=fluxes(1,1,1)-fluxes(1,2,1)+fluxes(2,1,1)-fluxes(2,2,1)
               SNET(IM,JH)=fluxes(1,1,2)-fluxes(1,2,2)+fluxes(2,1,2)-fluxes(2,2,2)
@@ -534,6 +569,7 @@ c             bottom heating rate is zero in morecret
                 IM=I+IOFM
                 HTNETO=HTNET(IHem,JH,I,LD)
                 htnet(ihem,jh,i,ld)=(htlw(l+1)+htsw(l+1))
+                TTKPD(LD)= (HTNETO+HTNET(IHEM,JH,I,LD))
                 TTRD(IM,LD)=(HTNETO+HTNET(IHEM,JH,I,LD))/(CHRF*2.0)
               ENDDO
               if ((i.eq.2).and.(printt.eq.1)) then
