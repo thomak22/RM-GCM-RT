@@ -2,6 +2,7 @@
 */fort.*
 .*  # Ignores files starting with a dot
 *.i
+*.o
 *__*
 *!._*
 igcm3_nopg*

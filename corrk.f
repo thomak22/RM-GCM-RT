@@ -8,12 +8,13 @@
         REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
         REAL :: PLANCK_INTS(NWNO, 3925), PLANCK_TS(3925)
         INTEGER :: MINWNOSTEL
+        real :: CLOUD_KEXT(13, 100, NWNO), CLOUD_A(13, 100, NWNO), CLOUD_G(13, 100, NWNO)
         
 
         CONTAINS
         SUBROUTINE corrk_setup(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO,TS_CORRK, PS_CORRK, 
      &           TS_LOG_CORRK, PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL)
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL, CLOUD_KEXT, CLOUD_A, CLOUD_G)
             implicit none
             integer :: NWNO
             INTEGER :: I, J, K, L
@@ -38,14 +39,19 @@
             REAL :: OPAC_CIA(NTGRID, NPGRID, NWNO), TAURAY_PER_DPG(NTGRID, NPGRID, NWNO)
             INTEGER :: MINWNOSTEL
 
+            ! Declare cloud opacity stuff:
+            real :: CLOUD_KEXT(13, 100, NWNO), CLOUD_A(13, 100, NWNO), CLOUD_G(13, 100, NWNO)
+
             MMW = 8314.462618 / GASCON ! Mean molecular weight in g/mol (or H masses per molecule)
 
             ! Convert METALLICITY and C_TO_O to strings
             if (METALLICITY .eq. 0.0) then
                 dummyMETALLICITY_str = '+000'
             else
-                write(*,*) "Thomas hasn't coded non-solar metallicity k-tables yet"
-                stop
+                dummyMETALLICITY_str = '+100'
+                write(*,*) "USING 10x SOLAR METALLICITY, SEE LINE 53 OF corrk.f"
+                ! write(*,*) "Thomas hasn't coded non-solar metallicity k-tables yet"
+                ! stop
             end if
             if (C_TO_O .eq. 0.0) then
                 dummyC_TO_O_str = '100'
@@ -152,6 +158,9 @@
             READ(1,*) WNO_CTRS
             CLOSE(1)
 
+            ! Read cloud opacities:
+            CALL CLOUD_SETUP(NWNO, FOLDER, CLOUD_KEXT, CLOUD_A, CLOUD_G)
+
             ! Read in the stellar spectrum
             CALL BIN_STELLAR_SPECTRUM(trim(FOLDER)//"kcoeffs/stellar_spectrum.txt", STEL_SPEC, WNO_EDGES, NWNO)
             ! WRITE(*,*) 'STELLAR SPECTRUM: ', STEL_SPEC
@@ -218,6 +227,73 @@
             STEL_SPEC = STEL_SPEC / SUM(STEL_SPEC)
 
         END SUBROUTINE BIN_STELLAR_SPECTRUM
+
+        SUBROUTINE CLOUD_SETUP(NWNO, FOLDER, CLOUD_KEXT, CLOUD_A, CLOUD_G)
+            implicit none
+            integer :: NWNO
+            real :: CLOUD_KEXT(13, 100, NWNO) ! species, radius, wavenumber bin 
+            real :: CLOUD_A(13, 100, NWNO)
+            real :: CLOUD_G(13, 100, NWNO)
+            real :: DUMMY(NWNO, 100) ! to hold each array as it's read in
+            character(len=30) :: FOLDER
+            character(len=15) :: CLOUD_SPECIES(13)
+            integer :: I, J, K
+            
+            
+            CLOUD_SPECIES(1)  = 'KCl'
+            CLOUD_SPECIES(2)  = 'ZnS'
+            CLOUD_SPECIES(3)  = 'Na2S'
+            CLOUD_SPECIES(4)  = 'MnS'
+            CLOUD_SPECIES(5)  = 'Cr'
+            CLOUD_SPECIES(6)  = 'SiO2_amorph'
+            CLOUD_SPECIES(7)  = 'Mg2SiO4_amorph'
+            CLOUD_SPECIES(8)  = 'VO'
+            CLOUD_SPECIES(9)  = 'Ni'
+            CLOUD_SPECIES(10) = 'Fe'
+            CLOUD_SPECIES(11) = 'CaSiO4'
+            CLOUD_SPECIES(12) = 'CaTiO3'
+            CLOUD_SPECIES(13) = 'Al2O3'
+
+            ! Read in the cloud kext values
+            DO I = 1, 13
+                OPEN(UNIT=1, FILE=trim(FOLDER)//"clouds/"//trim(CLOUD_SPECIES(I))//"_corrk_kext.txt")
+                READ(1,*) DUMMY
+                CLOSE(1)
+                DO J = 1, 100
+                    DO K = 1, NWNO
+                        CLOUD_KEXT(I,J,K) = DUMMY(K,J) !TODO: figure out what units this should be in
+                        ! tested, indices are what you expect (species, radius, wavenumber)
+                    END DO
+                END DO
+            END DO
+            ! Read in the cloud albedos
+            DO I = 1, 13
+                OPEN(UNIT=1, FILE=trim(FOLDER)//"clouds/"//trim(CLOUD_SPECIES(I))//"_corrk_pi0.txt")
+                READ(1,*) DUMMY
+                CLOSE(1)
+                DO J = 1, 100
+                    DO K = 1, NWNO
+                        CLOUD_A(I,J,K) = DUMMY(K,J) !TODO: figure out what units this should be in
+                        ! tested, indices are what you expect (species, radius, wavenumber)
+                    END DO
+                END DO
+            END DO
+            ! Read in the cloud asymmetry factors
+            DO I = 1, 13
+                OPEN(UNIT=1, FILE=trim(FOLDER)//"clouds/"//trim(CLOUD_SPECIES(I))//"_corrk_gg.txt")
+                READ(1,*) DUMMY
+                CLOSE(1)
+                DO J = 1, 100
+                    DO K = 1, NWNO
+                        CLOUD_G(I,J,K) = DUMMY(K,J) !TODO: figure out what units this should be in
+                        ! tested, indices are what you expect (species, radius, wavenumber)
+                    END DO
+                END DO
+            END DO
+        END SUBROUTINE CLOUD_SETUP
+
+
+
 
       END MODULE corrkmodule
 

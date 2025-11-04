@@ -1,7 +1,7 @@
       SUBROUTINE get_gas_opacity_corrk_wrapper(METALLICITY, C_TO_O, FBASEFLUX, GASCON, with_TiO_and_VO)
           use corrkmodule, only : corrk_setup, TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
      &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL, CLOUD_KEXT, CLOUD_A, CLOUD_G
           ! include 'rcommons.h'
           ! include 'nwno.inc'
           REAL :: METALLICITY, C_TO_O, FBASEFLUX, GASCON
@@ -16,7 +16,7 @@
           WRITE(*,*) "In get_gas_opacity_corrk_wrapper"
           call corrk_setup(METALLICITY,0.0, FBASEFLUX, GASCON, with_TiO_and_VO,TS_CORRK, PS_CORRK, TS_LOG_CORRK, 
      &           PS_LOG_CORRK, WGTS_CORRK, WNO_EDGES, WNO_CTRS, STEL_SPEC, INT_SPEC, TAURAY_PER_DPG,
-     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL)
+     &           OPAC_CORRK, PLANCK_INTS, PLANCK_TS, NWNO, MINWNOSTEL, CLOUD_KEXT, CLOUD_A, CLOUD_G)
           ! write(*,*) "After call to corrk_setup"
           ! write(*,*) nwno
           ! write(*,*) TS_CORRK(1), PS_CORRK(1), TS_LOG_CORRK(1), PS_LOG_CORRK(1)

@@ -69,14 +69,14 @@
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(100) :: input_temperature_array
-      real, dimension(80) :: input_pressure_array_cgs
+      real, dimension(50) :: input_pressure_array_cgs
 
       real, dimension(100) :: input_particle_size_array_in_meters
-      real, dimension(80) :: particle_size_vs_layer_array_in_meters
+      real, dimension(50) :: particle_size_vs_layer_array_in_meters
 
-      REAL KE_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
-      REAL PI0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
-      REAL G0_OPPR(NSOL + NIR, 100, 100, NCLOUDS)
+      REAL KE_OPPR(5, 100, 100, NCLOUDS)
+      REAL PI0_OPPR(5, 100, 100, NCLOUDS)
+      REAL G0_OPPR(5, 100, 100, NCLOUDS)
 
       ! HAZE ARRAYS ARE DIFFERENT THAN THE OTHER ONES
       real, dimension(50, 100)  :: HAZE_RosselandMean_tau_per_bar, HAZE_RosselandMean_pi0, HAZE_RosselandMean_gg
@@ -91,8 +91,8 @@
       REAL FMOLW(NCLOUDS)
     !   REAL MOLEF(NCLOUDS)
 
-      INTEGER CLOUD_WAVELENGTH_INDEXES(NSOL + NIR)
-      INTEGER HAZE_WAVELENGTH_INDEXES(NSOL + NIR)
+      INTEGER CLOUD_WAVELENGTH_INDEXES(5)
+      INTEGER HAZE_WAVELENGTH_INDEXES(5)
       INTEGER WAV_LOC
 
       INTEGER K,J,L, iradgas
@@ -279,7 +279,7 @@
 
                     DO L = NSOL+1,NTOTAL
                         tauaer_temp(L,J,I) = (DPG(J)*10.0)*molef(I)*3./4./particle_size/particle_size/particle_size/density(I)*
-     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,WAV_LOC,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
+     &                              fmolw(I)*CONDFACT(J,I)*MTLX*CORFACT(layer_index)*KE_OPPR(L,temp_loc,size_loc,I) / 1.0e4 ! convert k from cm^2 to m^2
      &                              * exp_92_lnsig2_pi ! correction factor for mean vs median radius, divided by pi
                     END DO
                 END IF
