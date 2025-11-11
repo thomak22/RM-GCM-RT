@@ -84,14 +84,14 @@
           pl(NLAYER)  = 10.0 ** (LOG10(pl(NLAYER-1))  + (LOG10(pl(NLAYER-1))  - LOG10(pl(NLAYER-2))))
           Tl(NLAYER)  = Tl(NLAYER-1) + ABS(Tl(NLAYER-1) - Tl(NLAYER-2)) / 2.0
 
-          CALL calculate_opacities(NLAYER, NSOLP, NIRP, ISF, Tirr, Tint,
+          CALL calculate_opacities(NLAYER, NSOL, NIR, ISF, Tirr, Tint,
      &                             Tl, Pl, dpe, tau_IRe,tau_Ve, Beta_V,
      &                             Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY,pe, k_IRl, k_Vl, TOAALB)
           ! write(*,*) 'tau_IRe:', tau_IRe
           ! write(*,*) 'tau_Vee:', tau_Ve
       end subroutine opacity_wrapper
 
-      subroutine calculate_opacities(NLAYER, NSOLP, NIRP, ISF,
+      subroutine calculate_opacities(NLAYER, NSOL, NIR, ISF,
      &                               Tirr, Tint, Tl, Pl, dpe, tau_IRe,tau_Ve,Beta_V,
      &                               Beta_IR,gravity_SI, with_TiO_and_VO, METALLICITY, pe, k_IRl, k_Vl, TOAALB)
         ! Input:
@@ -110,9 +110,9 @@
 
         implicit none
         real :: gam_1, gam_2, tau_lim, gam_P
-        real, dimension(NSOLP) :: Beta_V, gam_V
-        real, dimension(NIRP) :: Beta_IR
-        integer :: k, NLAYER, J, NSOLP, NIRP, i
+        real, dimension(NSOL) :: Beta_V, gam_V
+        real, dimension(NIR) :: Beta_IR
+        integer :: k, NLAYER, J, NSOL, NIR, i
         real :: Teff, Tint, Tirr, ISF
 
         real :: R,gravity_SI

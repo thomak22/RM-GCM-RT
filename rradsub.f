@@ -201,7 +201,7 @@ C     globally averaged solar constant, vertical rays
       !     AMU0 = 0.0
       ! endif
 
-      ! incident_starlight_fraction = MAX(0.0, AMU0)
+      incident_starlight_fraction = MAX(0.0, AMU0)
 
       if (incident_starlight_fraction .lt. 1e-10) THEN
           solar_calculation_indexer = NSOL + 1

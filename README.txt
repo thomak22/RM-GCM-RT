@@ -4,5 +4,7 @@ Unlike typical radiative equilibrium codes, which explicitly iterate toward radi
 
 To-dos:
 - ~~Get the 1-D code working, benchmark against analytic double-gray profiles~~
-- Add convective adjustment scheme, currently pure radiative transport (present in the RM-GCM already)
-- Add correlated-k opacity implementation in addition to existing double-gray and picket-fence opacities (work mostly done for 3-D code but need to port over)
+- ~~Add convective adjustment scheme, currently pure radiative transport (present in the RM-GCM already)~~ implemented using the adiabatic gradient tables as PICASO
+- try a more sophisticated integration scheme (e.g. RK4), might save time
+- fix it so picket fence and correlated-k work in the same code version
+- ~~Add correlated-k opacity implementation in addition to existing double-gray and picket-fence opacities (work mostly done for 3-D code but need to port over)~~

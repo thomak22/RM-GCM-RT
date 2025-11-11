@@ -60,7 +60,7 @@
 
       REAL ttsub(2*NL+2)
 
-      integer ITSPD
+
       real wavea(NTOTAL),albedoa(NTOTAL),t(NZ)
       real maxopd(NTOTAL)
       real, dimension(NIR)  :: Beta_IR

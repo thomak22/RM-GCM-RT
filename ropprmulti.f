@@ -50,7 +50,6 @@
       REAL fdownbs(NL+1),fnetbs(NL+1),fdownbs2(NL+1), fupbi(NL+1),fdownbi(NL+1),fnetbi(NL+1)
       REAL qrad(NL+1),alb_tomi,alb_toais
 
-      INTEGER ITSPD
       REAL FACTOR, RAMP
       REAL DENOM
       REAL DPG(NLAYER), p_pass(NLAYER), layer_pressure_bar(NLAYER)
@@ -136,8 +135,7 @@
         !   stop
         MET_INDEX = 6
       END IF
-
-
+      IF (aerosolcomp .eq. 'standard') THEN
         DO J  = 2,NLAYER
             layer_pressure_bar(J)  = (p_pass(J)-p_pass(J-1)) * 1e-5
         END DO

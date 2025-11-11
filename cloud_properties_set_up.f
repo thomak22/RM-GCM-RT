@@ -7,11 +7,9 @@
 
       SUBROUTINE get_cloud_scattering_properties(NCLOUDS, NLAYER, NVERT, NIR, NSOL, GASCON, METALLICITY, GRAYCLDV)
           implicit none
-          integer :: I, J, L, K, NL, NCLOUDS, NLAYER, NVERT, NIR, NSOL
+          integer :: J, L, K, NL, NCLOUDS, NLAYER, NVERT, NIR, NSOL
           real :: GAS_CONSTANT_R, GASCON, METALLICITY
           LOGICAL :: GRAYCLDV
-          integer :: MET_INDEX, LOW_MET_INDEX, HIGH_MET_INDEX
-          real :: COND_CURVE_METS(5) ! These are log10(Z/Zsun) values for the pre-calculated curves
 
           character (len = 40) :: haze_type
 
