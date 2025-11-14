@@ -125,6 +125,13 @@ C
       COMMON/ONEDRT/TTKPD(NL)
       REAL TTKPD
 
+      ! Here is Thomas's adiabatic gradient table setup:
+      REAL :: DELADIAB(NL)
+      REAL :: DELADIABGRID(26,53) ! rows:P, cols:T
+      REAL :: TADIABGRID(53)
+      REAL :: PADIABGRID(26)
+      INTEGER :: AD_P_IDX, AD_T_IDX
+
       ! Here we declare the variables we care the most about
       REAL :: T(NL+1) ! temp at layer centers + bottom edge (K)
       REAL :: PR(NL+1) ! pressure at layer centers + bottom edge (Pa)
@@ -168,6 +175,16 @@ C
       ! T(:) = RESTTT
       READ(7,ONED)
       WRITE(2,ONED)
+      OPEN(UNIT=10, FILE='../convection/adiabat_grad_grid.txt', ACTION='read')
+      READ(10,*) DELADIABGRID
+      CLOSE(10)
+      OPEN(UNIT=10, FILE='../convection/adiabat_grad_gridP.txt', ACTION='read')
+      READ(10,*) PADIABGRID
+      CLOSE(10)      
+      OPEN(UNIT=10, FILE='../convection/adiabat_grad_gridT.txt', ACTION='read')
+      READ(10,*) TADIABGRID
+      CLOSE(10)
+
       write(*,*) 'MUSTEL, ISF: ', MUSTEL, ISF
       CALL RADIATION(0, 1, T, PR, MUSTEL, ISF)
       write(*,*) ""
@@ -184,7 +201,7 @@ C
         TTKPD = 0.0
         CALL RADIATION(0, 1, T, PR, MUSTEL, ISF)
         maxfracchange = ABS(TTKPD(1)) / TSPD / 86400.0 * PI2 / WW * TSTEPINTERVAL / T(1)
-        DO I = 1, NL
+        DO I = 1, NL-1
           fracchange = ABS(TTKPD(I)) / TSPD / 86400.0 * PI2 / WW * TSTEPINTERVAL / T(I)
           IF (fracchange .GT. maxfracchange) THEN
             maxfracchange = fracchange
@@ -236,6 +253,29 @@ C
           CALL RENAME('fort.8', TRIM(ADJUSTL(myCharacterString))//'day_fort.8')
           EXIT
         end if
+        ! Simple convective adjustment scheme:
+        ! write(*,*) GASCON/CT
+        ! CALL CONVECTIVE_ADJUSTMENT(T, PR)
+        ! find the adiabatic gradient at each layer (nearest-neighbor):
+        DO I=1, NL
+          AD_P_IDX = MINLOC(ABS(PADIABGRID - LOG10(PR(I))), 1)
+          AD_T_IDX = MINLOC(ABS(TADIABGRID - LOG10(T(I))), 1)
+          DELADIAB(I) = DELADIABGRID(AD_P_IDX, AD_T_IDX)
+        END DO
+
+        DO I = NL, 2, -1
+          TADIAB = T(I) * (PR(I-1)/PR(I))**(DELADIAB(I))
+          IF (T(I-1) .LT. TADIAB) THEN
+            T(I-1) = TADIAB
+          END IF
+        END DO
+        ! DO I = 1, NL-1, 1
+        !   TADIAB = T(I) * (PR(I+1)/PR(I))**(0.286)
+        !   IF (T(I+1) .GT. TADIAB) THEN
+        !     T(I+1) = TADIAB
+        !   END IF
+        ! END DO
+        ! write(*,*) 'Time step ', TSTEPSTOT, ' completed, T = ', T
       END DO
       WRITE(*,*) 'Final temperatures after ', TSTEPSTOT, ' time steps:'
       WRITE(*,*) T
