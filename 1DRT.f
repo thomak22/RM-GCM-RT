@@ -137,6 +137,7 @@ C
       REAL :: PR(NL+1) ! pressure at layer centers + bottom edge (Pa)
       INTEGER :: I
       INTEGER :: TSTEPSTOT
+      LOGICAL :: OUTPUT
       CALL INISET
       CALL INITAL
 
@@ -186,7 +187,8 @@ C
       CLOSE(10)
 
       write(*,*) 'MUSTEL, ISF: ', MUSTEL, ISF
-      CALL RADIATION(0, 1, T, PR, MUSTEL, ISF)
+      OUTPUT=.False.
+      CALL RADIATION(0, 1, T, PR, MUSTEL, ISF, OUTPUT)
       write(*,*) ""
       WRITE(*,*) TTKPD ! is correct heating rate output in units of K/day (I have assumed real day and not planet day)
       ! now our time-stepping loop, the general idea is to call RADIATION at each time step and get heating rates
@@ -198,8 +200,14 @@ C
       TSTEPINTERVALRECORD = TSTEPINTERVAL
       NEXTRESTART = 100 * TSPD
       DO WHILE (TSTEPSTOT < KRUN)
+        TSTEPSTOT = TSTEPSTOT + TSTEPINTERVAL
+        IF (TSTEPSTOT .EQ. NEXTRESTART) THEN
+          OUTPUT = .True.
+        ELSE
+          OUTPUT = .False.
+        END IF
         TTKPD = 0.0
-        CALL RADIATION(0, 1, T, PR, MUSTEL, ISF)
+        CALL RADIATION(0, 1, T, PR, MUSTEL, ISF, OUTPUT)
         maxfracchange = ABS(TTKPD(1)) / TSPD / 86400.0 * PI2 / WW * TSTEPINTERVAL / T(1)
         DO I = 1, NL-1
           fracchange = ABS(TTKPD(I)) / TSPD / 86400.0 * PI2 / WW * TSTEPINTERVAL / T(I)
@@ -209,8 +217,8 @@ C
           T(I) = T(I) + TTKPD(I)/86400.0 / (TSPD) * PI2 / WW * TSTEPINTERVAL ! converting from K/day to K/s and multiplying by time step
         END DO
 
-        TSTEPSTOT = TSTEPSTOT + TSTEPINTERVAL
-        IF (TSTEPSTOT .EQ. NEXTRESTART) THEN
+        
+        IF (OUTPUT) THEN
           WRITE(*,*) 'After time step ', TSTEPSTOT
           WRITE(*,*) 'day', TSTEPSTOT/TSPD, '/', KRUN/TSPD
           WRITE(*,*) T(1)

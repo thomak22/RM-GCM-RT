@@ -1,7 +1,7 @@
 C**********************************************************
 C             SUBROUTINE RADIATION
 C**********************************************************
-      SUBROUTINE RADIATION(TROPHT,IH, T, PR, MUSTEL, ISF)
+      SUBROUTINE RADIATION(TROPHT,IH, T, PR, MUSTEL, ISF, OUTPUT)
 
 C     RADIATION SCHEME DERIVED FROM PREVIOUS CMORC.F AND THE
 C     TOON CODES (TOON ET AL 1989). THE SCHEME IS CURRENTLY DOUBLE GRAY
@@ -267,6 +267,7 @@ c     The following for parallel testing --MTR
       REAL :: MUSTEL, ISF
       COMMON/ONEDRT/TTKPD(NL)
       REAL :: TTKPD
+      LOGICAL :: OUTPUT
 
 
 
@@ -532,7 +533,7 @@ c     ntstep is the number of timesteps to skip.
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl, MUSTEL, ISF)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V, k_IRl, k_Vl, MUSTEL, ISF, OUTPUT)
 
               ! pr=prb2t
 

@@ -27,7 +27,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V,k_IRl, k_Vl, MUSTEL, ISF)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, Beta_IR, Beta_V,k_IRl, k_Vl, MUSTEL, ISF, OUTPUT)
 
 !      use physical_constants
 
@@ -97,6 +97,7 @@
       real fir_net_aerad(NL+1)
       real fsl_net_aerad(NL+1)
       REAL :: MUSTEL, ISF
+      LOGICAL :: OUTPUT
 
       tgrnd=t(NZ)
       iffirst = 1
@@ -106,7 +107,7 @@
       GRAV = GA * 100.
       eps= Rd/Rv
       RdCp = Rd/Cpd
-
+    !   write(*,*) "UPDOWN:", tslu, total_downwelling
 
       call radsub(iffirst,pr,p_pass,t,radheat,htlw,htsw,alat1,alon,KOUNT,ITSPD,Beta_IR,Beta_V,
      &            incident_starlight_fraction, TAURAY, TAUL, TAUGAS, TAUAER,solar_calculation_indexer, DPG,
@@ -138,7 +139,8 @@
       iffirst = 0
 
 
-      IF ((LFLUXDIAG).AND.(KOUNTP-KOUTP.LT.NTSTEP_IN)) THEN !-1)) THEN
+    !   IF ((LFLUXDIAG).AND.(KOUNTP-KOUTP.LT.NTSTEP_IN)) THEN !-1)) THEN
+      IF (OUTPUT) THEN !-1)) THEN
          WRITE(63,*) 'LATITUDE, LONGITUDE:',ALAT1,ALON
          WRITE(63,2010)'1)P(Bars)',
      $        'FLUXES(Wm-2): 2)LW UP','3)LW DOWN',         
