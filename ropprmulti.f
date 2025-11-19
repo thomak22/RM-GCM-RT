@@ -15,7 +15,7 @@
      &  tiru,firu,fird,fsLu,fsLd,fsLn,alb_toa,fupbs,
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, p_pass,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, ITSPD)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom,kount, ITSPD, OUTPUT)
 !
 !     **************************************************************
 !     *  Purpose             :  CaLculates optical properties      *
@@ -101,6 +101,7 @@
       REAL, dimension (500) :: HAZE_WAV_GRID
       REAL, dimension (100)  :: CLOUD_WAV_GRID
       REAL exp_92_lnsig2_pi
+      LOGICAL OUTPUT
       COMMON /CLOUD_PROPERTIES/ TCONDS, KE_OPPR, PI0_OPPR, G0_OPPR,
      &                              DENSITY, FMOLW,
      &                              CORFACT,
@@ -245,7 +246,7 @@
               CONDFACT(J,I) = min(max((Tconds(MET_INDEX,layer_index,I)-TT(J))/10.,0.0),1.0)
 
               CLOUDLOC(J,I) = NINT(CONDFACT(J,I))*J
-              BASELEV = MAXVAL(CLOUDLOC(1:50,I),1)
+              BASELEV = MAXVAL(CLOUDLOC(:,I),1)
               TOPLEV(I)  = max(BASELEV-AERLAYERS,0)
 
               ! DPG is CGS before that 10x
@@ -285,6 +286,7 @@
       DO I = 1,NCLOUDS
           DO J = 1, TOPLEV(I)
               tauaer_temp(:,J,I) = 0.0
+              CONDFACT(J,I) = 0.0
           END DO
 
           if ((TOPLEV(I) + 5 .le. NLAYER) .and. (TOPLEV(I) .ne. 0)) THEN
@@ -295,6 +297,14 @@
               tauaer_temp(:,TOPLEV(I)+5,I) = tauaer_temp(:,TOPLEV(I)+5,I)*0.833
           ENDIF
       END DO
+      IF (OUTPUT) then
+ 1100 FORMAT(F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2,F10.2)
+        OPEN(UNIT=40, FILE="CONDFACT", STATUS="REPLACE")
+        DO I=1,NLAYER
+            write(40,FMT=1100) CONDFACT(I,:)
+        END DO
+        CLOSE(40)
+      END IF
 
 
       IF (PICKET_FENCE_CLOUDS .eqv. .FALSE.) THEN

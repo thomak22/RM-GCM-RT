@@ -134,7 +134,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, fluxes, k_IRl, k_Vl, MUSTEL, ISF)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom, fluxes, k_IRl, k_Vl, MUSTEL, ISF, OUTPUT)
 
       iffirst = 0
 
@@ -210,6 +210,17 @@ C     ER Modif: output pressures in bar instead of mbar
      $             E12.5,1X,E12.5) 
           END DO
           WRITE(62,*) ''
+
+          IF (OUTPUT) then
+ 1000 FORMAT(E12.5,F8.2,E12.5,E12.5,E12.5,E12.5,E12.5,E12.5,E12.5,E12.5,E12.5,E12.5)
+            OPEN(UNIT=30, FILE='taus', STATUS='REPLACE')
+            WRITE(30,*) 'P(Pa) T(K) TAUGAS(1-5) TAUAER(1-5)'
+            DO I=1, NL
+              write(30,FMT=1000) PR(I), T(I), TAUGAS(1,I), TAUGAS(2,I), TAUGAS(3,I), TAUGAS(4,I), TAUGAS(5,I), 
+     &          TAUAER(1,I), TAUAER(2,I), TAUAER(3,I), TAUAER(4,I), TAUAER(5,I)
+            END DO
+            CLOSE(30)
+          END IF
       ENDIF
       end
 

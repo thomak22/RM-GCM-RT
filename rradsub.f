@@ -24,7 +24,7 @@
      &  dpe, Pl, Tl, pe,
      &  k_IR, k_lowP, k_hiP, Tin, Pin, Freedman_met,
      &  Freedman_T, Freedman_P, Tl10, Pl10, temperature_val, pressure_val, tau_IRe, tau_Ve,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom, fluxes, k_IRl, k_Vl, MUSTEL, ISF)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp,j1,denom, fluxes, k_IRl, k_Vl, MUSTEL, ISF, OUTPUT)
 
 
 !     iffirst is just the indicator for numbering and runs the setup
@@ -108,6 +108,7 @@
       REAL DLENGTH  ! ER: half-length of solar day
       real PI2
       REAL MUSTEL, ISF
+      LOGICAL OUTPUT
  582  FORMAT(I4,5(F12.3))
 
       ! Malsky what does this do???
@@ -265,7 +266,7 @@ C     globally averaged solar constant, vertical rays
      &  fdownbs,fnetbs,fdownbs2,fupbi,fdownbi,fnetbi,
      &  qrad,alb_tomi,alb_toai, num_layers, SLOPE,
      &  Y1, Y2, Y4, Y8, A1, A2, A3, A4, A5, A7, Y5,
-     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount, ITSPD, ISF)
+     &  PI0_TEMP, G0_TEMP, tauaer_temp, j1, denom,kount, ITSPD, ISF, OUTPUT)
 
           cheats = 0.
           cheati = 0.

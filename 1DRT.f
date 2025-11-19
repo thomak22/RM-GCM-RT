@@ -101,11 +101,12 @@ C
       INTEGER :: AERLAYERS
       LOGICAL HAZES, PICKET_FENCE_CLOUDS, DELTASCALE
       REAL TAUAEROSOL(nl+1,mg,2,jg),AEROPROF(NL+1),MAXTAU,TCON(NL+1)
-      NAMELIST/ONED/MUSTEL,ISF
+      NAMELIST/ONED/MUSTEL, ISF, LRSTRT1D, GCM_CONV
       REAL :: MUSTEL, ISF
       REAL :: fracchange, maxfracchange
       integer :: TSTEPINTERVAL, TSTEPINTERVALRECORD, NEXTRESTART
       CHARACTER(len=20) :: myCharacterString
+      REAL RSTRTFILE(3)
 
 
     !   COMMON/GRIDP/ CHIG(IGC,NL),SFG(IGC,NL),UG(IGC,NL),VG(IGC,NL)
@@ -138,6 +139,7 @@ C
       INTEGER :: I
       INTEGER :: TSTEPSTOT
       LOGICAL :: OUTPUT
+      LOGICAL :: LRSTRT1D, GCM_CONV
       CALL INISET
       CALL INITAL
 
@@ -166,16 +168,30 @@ C
       ! IC setup:
       ! just took this from a 7 OOM 50 lay run with the regular GCM, should eventually make this more general though
       write(*,*) 'SIGMA:', SIGMA
+
       
-      DO I = 1, NL
-        PR(I) = SIGMA(I)*P0
-        T(I) = RESTTT(I)
-      END DO
-      PR(NL+1) = P0
-      T(NL+1) = TGR
       ! T(:) = RESTTT
       READ(7,ONED)
       WRITE(2,ONED)
+      IF (LRSTRT1D) THEN
+        write(myCharacterString, '(F8.0)') BEGDAY
+        OPEN(UNIT=9, FILE=TRIM(ADJUSTL(myCharacterString))//'day_fort.8', STATUS='OLD', ACTION='READ')
+        READ(9,*) ! skip header
+        DO I=1,NL
+          READ(9,*) RSTRTFILE
+          PR(I) = RSTRTFILE(1)
+          T(I) = RSTRTFILE(2)
+        END DO
+      ELSE
+        DO I = 1, NL
+          PR(I) = SIGMA(I)*P0
+          T(I) = RESTTT(I)
+        END DO
+      END IF
+      PR(NL+1) = P0
+      T(NL+1) = TGR
+      write(*,*) "STARTING T PROFILE: ", T
+
       OPEN(UNIT=10, FILE='../convection/adiabat_grad_grid.txt', ACTION='read')
       READ(10,*) DELADIABGRID
       CLOSE(10)
@@ -228,7 +244,7 @@ C
             WRITE(8,*) PR(I), T(I), TTKPD(I)
           END DO
           CLOSE(8)
-          write(myCharacterString, '(F8.0)') TSTEPSTOT/TSPD
+          write(myCharacterString, '(F8.0)') TSTEPSTOT/TSPD + BEGDAY
           CALL RENAME('fort.8', TRIM(ADJUSTL(myCharacterString))//'day_fort.8')
 
           TSTEPINTERVAL = TSTEPINTERVALRECORD
@@ -266,9 +282,13 @@ C
         ! CALL CONVECTIVE_ADJUSTMENT(T, PR)
         ! find the adiabatic gradient at each layer (nearest-neighbor):
         DO I=1, NL
-          AD_P_IDX = MINLOC(ABS(PADIABGRID - LOG10(PR(I))), 1)
-          AD_T_IDX = MINLOC(ABS(TADIABGRID - LOG10(T(I))), 1)
-          DELADIAB(I) = DELADIABGRID(AD_P_IDX, AD_T_IDX)
+          IF (GCM_CONV) then
+            DELADIAB(I) = 0.286
+          ELSE
+            AD_P_IDX = MINLOC(ABS(PADIABGRID - LOG10(PR(I))), 1)
+            AD_T_IDX = MINLOC(ABS(TADIABGRID - LOG10(T(I))), 1)
+            DELADIAB(I) = DELADIABGRID(AD_P_IDX, AD_T_IDX)
+          END IF
         END DO
 
         DO I = NL, 2, -1
