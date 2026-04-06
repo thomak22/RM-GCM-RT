@@ -69,10 +69,10 @@
       ! These are hardcoded to 50 but they are just lookup tables
       ! Don't worry about expanding the GCM to more levels
       real, dimension(100) :: input_temperature_array
-      real, dimension(50) :: input_pressure_array_cgs
+      real, dimension(80) :: input_pressure_array_cgs
 
       real, dimension(100) :: input_particle_size_array_in_meters
-      real, dimension(50) :: particle_size_vs_layer_array_in_meters
+      real, dimension(80) :: particle_size_vs_layer_array_in_meters
 
       REAL KE_OPPR(5, 100, 100, NCLOUDS) ! hardcoded for PF and DG!
       REAL PI0_OPPR(5, 100, 100, NCLOUDS) ! hardcoded for PF and DG!
@@ -84,8 +84,8 @@
       real, dimension(500, 100) :: HAZE_wav_tau_per_bar, HAZE_wav_pi0, HAZE_wav_gg
       real, dimension(100)      :: haze_pressure_array_pascals
 
-      REAL TCONDS(6,51,NCLOUDS)
-      REAL CORFACT(51)
+      REAL TCONDS(6,80,NCLOUDS)
+      REAL CORFACT(80)
 
       REAL DENSITY(NCLOUDS)
       REAL FMOLW(NCLOUDS)
